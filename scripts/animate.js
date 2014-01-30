@@ -33,14 +33,20 @@
   // ------------------------------------------------------------------------------------------- //
   // Private static functions
 
-  // TODO: jsdoc
+  /**
+   * Starts the animation loop, if it was not already running.
+   * @function animate~startAnimationLoop
+   */
   function startAnimationLoop() {
     if (!currentlyLooping) {
       requestAnimationFrame.call(window, animationLoop);
     }
   }
 
-  // TODO: jsdoc
+  /**
+   * The animation loop. This continuously re-invokes itself while there are animations to animate.
+   * @function animate~animationLoop
+   */
   function animationLoop() {
     currentlyLooping = true;
 
@@ -55,7 +61,11 @@
     }
   }
 
-  // TODO: jsdoc
+  /**
+   * Updates all of the current animations.
+   * @function animate~updateAnimations
+   * @param {number} currentTime The current time.
+   */
   function updateAnimations(currentTime) {
     var i, animationFinished, animation;
 
@@ -77,7 +87,14 @@
     }
   }
 
-  // TODO: jsdoc
+  /**
+   * Updates the given animation.
+   * @function animate~updateAnimation
+   * @param {ObjectPropertyAnimation|NumericAttributeAnimation|ColorAttributeAnimation} animation
+   * An object representing the animation.
+   * @param {number} currentTime The current time.
+   * @returns {boolean} True if the animation is finished at this time.
+   */
   function updateAnimation(animation, currentTime) {
     var animationFinished;
 
@@ -94,7 +111,13 @@
     return animationFinished;
   }
 
-  // TODO: jsdoc
+  /**
+   * Updates the given object property animation.
+   * @function animate~updateObjectPropertyAnimation
+   * @param {ObjectPropertyAnimation} animation An object representing the animation.
+   * @param {number} currentTime The current time.
+   * @returns {boolean} True if the animation is finished at this time.
+   */
   function updateObjectPropertyAnimation(animation, currentTime) {
     var deltaTime, animationFinished, progress, remaining;
 
@@ -111,12 +134,18 @@
       animationFinished = true;
     }
 
-    animation.object.property = animation.currentValue;
+    animation.object[animation.property] = animation.currentValue;
 
     return animationFinished;
   }
 
-  // TODO: jsdoc
+  /**
+   * Updates the given numeric attribute animation.
+   * @function animate~updateNumericAttributeAnimation
+   * @param {NumericAttributeAnimation} animation An object representing the animation.
+   * @param {number} currentTime The current time.
+   * @returns {boolean} True if the animation is finished at this time.
+   */
   function updateNumericAttributeAnimation(animation, currentTime) {
     var deltaTime, animationFinished, progress, remaining;
 
@@ -139,7 +168,13 @@
     return animationFinished;
   }
 
-  // TODO: jsdoc
+  /**
+   * Updates the given HSLA attribute animation.
+   * @function animate~updateHSLAAttributeAnimation
+   * @param {ColorAttributeAnimation} animation An object representing the animation.
+   * @param {number} currentTime The current time.
+   * @returns {boolean} True if the animation is finished at this time.
+   */
   function updateHSLAAttributeAnimation(animation, currentTime) {
     var deltaTime, animationFinished, h, s, l, a, progress, remaining;
 
@@ -155,7 +190,7 @@
       animation.currentColor = new HSLAColor(h, s, l, a);
       animationFinished = false;
     } else {
-      animation.currentColor = animation.endValue;
+      animation.currentColor = animation.endColor;
       animationFinished = true;
     }
 
@@ -164,7 +199,13 @@
     return animationFinished;
   }
 
-  // TODO: jsdoc
+  /**
+   * Updates the given RGBA attribute animation.
+   * @function animate~updateRGBAAttributeAnimation
+   * @param {ColorAttributeAnimation} animation An object representing the animation.
+   * @param {number} currentTime The current time.
+   * @returns {boolean} True if the animation is finished at this time.
+   */
   function updateRGBAAttributeAnimation(animation, currentTime) {
     var deltaTime, animationFinished, r, g, b, a, progress, remaining;
 
@@ -180,7 +221,7 @@
       animation.currentColor = new RGBAColor(r, g, b, a);
       animationFinished = false;
     } else {
-      animation.currentColor = animation.endValue;
+      animation.currentColor = animation.endColor;
       animationFinished = true;
     }
 
@@ -189,17 +230,35 @@
     return animationFinished;
   }
 
-  // TODO: jsdoc
+  /**
+   * Calculates an eased progress value.
+   * @function animate~getEasedProgress
+   * @param {number} deltaTime The elapsed time since the start of the animation.
+   * @param {number} duration The duration of the animation.
+   * @param {Function} easingFunction The easing function to use.
+   * @returns {number} The eased progress value.
+   */
   function getEasedProgress(deltaTime, duration, easingFunction) {
     return easingFunction(deltaTime / duration);
   }
 
-  // TODO: jsdoc
+  /**
+   * Interpolates the given values using the given weights.
+   * @function animate~interpolate
+   * @param {number} value1 The first value.
+   * @param {number} value2 The second value.
+   * @param {number} weight1 The weight of the first value.
+   * @param {number} weight2 The weight of the second value.
+   * @returns {number} The interpolated value.
+   */
   function interpolate(value1, value2, weight1, weight2) {
     return value1 * weight1 + value2 * weight2;
   }
 
-  // TODO: jsdoc
+  /**
+   * Synchronizes all attributes/properties from the synchronization collection.
+   * @function animate~refreshSynchronizations
+   */
   function refreshSynchronizations() {
     currentSynchronizations.forEach(function(synchronization) {
       if (synchronization instanceof ObjectNumericPropertySync) {
@@ -212,7 +271,11 @@
     });
   }
 
-  // TODO: jsdoc
+  /**
+   * Synchronizes the values represented by the given synchronization object.
+   * @function animate~refreshNumericSynchronization
+   * @param {ObjectNumericPropertySync} synchronization An object representing the synchronization.
+   */
   function refreshNumericSynchronization(synchronization) {
     synchronization.element.setAttribute(
       synchronization.attribute,
@@ -220,14 +283,24 @@
         synchronization.suffix);
   }
 
-  // TODO: jsdoc
+  /**
+   * Synchronizes the values represented by the given synchronization object.
+   * @function animate~refreshHSLAColorSynchronization
+   * @param {ObjectHSLAColorPropertySync} synchronization An object representing the
+   * synchronization.
+   */
   function refreshHSLAColorSynchronization(synchronization) {
     synchronization.element.setAttribute(
       synchronization.attribute,
       hslaColorToString(synchronization.object[synchronization.property]));
   }
 
-  // TODO: jsdoc
+  /**
+   * Synchronizes the values represented by the given synchronization object.
+   * @function animate~refreshRGBAColorSynchronization
+   * @param {ObjectRGBAColorPropertySync} synchronization An object representing the
+   * synchronization.
+   */
   function refreshRGBAColorSynchronization(synchronization) {
     synchronization.element.setAttribute(
       synchronization.attribute,
@@ -482,7 +555,23 @@
     return animation;
   }
 
-  // TODO: jsdoc
+  /**
+   * Informs the animation module to start synchronizing the given attribute of the given element
+   * with the property of the given object. This synchronizing is helpful when there is a single
+   * attribute value that actually consists of multiple component values, which could all be
+   * animating independently and simultaneously--e.g., the r, g, and b components of a color value.
+   * @function animate.startSyncingObjectNumericProperty
+   * @param {object} object The object whose property is, supposedly, changing.
+   * @param {string} property The property that is, supposedly, changing.
+   * @param {HTMLElement} element The element whose attribute needs to be kept synchronized with
+   * the given property.
+   * @param {string} attribute The attribute that needs to be kept synchronized with the given
+   * property.
+   * @param {string} [prefix] A prefix to prepend to the attribute.
+   * @param {string} [suffix] A suffix to append to the attribute.
+   * @returns {ObjectNumericPropertySync} An object representing the synchronization. This can
+   * be passed to the stopSyncingObjectProperty function to stop the synchronization.
+   */
   function startSyncingObjectNumericProperty(object, property, element, attribute, prefix,
                                              suffix) {
     var synchronization = new ObjectNumericPropertySync(object, property, element, attribute,
@@ -491,14 +580,42 @@
     return synchronization;
   }
 
-  // TODO: jsdoc
+  /**
+   * Informs the animation module to start synchronizing the given attribute of the given element
+   * with the property of the given object. This synchronizing is helpful when there is a single
+   * attribute value that actually consists of multiple component values, which could all be
+   * animating independently and simultaneously--e.g., the r, g, and b components of a color value.
+   * @function animate.startSyncingObjectHSLAColorProperty
+   * @param {object} object The object whose property is, supposedly, changing.
+   * @param {string} property The property that is, supposedly, changing.
+   * @param {HTMLElement} element The element whose attribute needs to be kept synchronized with
+   * the given property.
+   * @param {string} attribute The attribute that needs to be kept synchronized with the given
+   * property.
+   * @returns {ObjectHSLAColorPropertySync} An object representing the synchronization. This can
+   * be passed to the stopSyncingObjectProperty function to stop the synchronization.
+   */
   function startSyncingObjectHSLAColorProperty(object, property, element, attribute) {
     var synchronization = new ObjectHSLAColorPropertySync(object, property, element, attribute);
     currentSynchronizations.push(synchronization);
     return synchronization;
   }
 
-  // TODO: jsdoc
+  /**
+   * Informs the animation module to start synchronizing the given attribute of the given element
+   * with the property of the given object. This synchronizing is helpful when there is a single
+   * attribute value that actually consists of multiple component values, which could all be
+   * animating independently and simultaneously--e.g., the r, g, and b components of a color value.
+   * @function animate.startSyncingObjectRGBAColorProperty
+   * @param {object} object The object whose property is, supposedly, changing.
+   * @param {string} property The property that is, supposedly, changing.
+   * @param {HTMLElement} element The element whose attribute needs to be kept synchronized with
+   * the given property.
+   * @param {string} attribute The attribute that needs to be kept synchronized with the given
+   * property.
+   * @returns {ObjectRGBAColorPropertySync} An object representing the synchronization. This can
+   * be passed to the stopSyncingObjectProperty function to stop the synchronization.
+   */
   function startSyncingObjectRGBAColorProperty(object, property, element, attribute) {
     var synchronization = new ObjectRGBAColorPropertySync(object, property, element, attribute);
     currentSynchronizations.push(synchronization);
@@ -549,8 +666,7 @@
   /**
    * Creates a legal CSS string representation for the given HSLA color.
    * @function animate.hslaColorToString
-   * @param {HSLAColor|{h:number,s:number,l:number,a:number}} color The HSLA color to get the
-   * string representation of.
+   * @param {HSLAColor} color The HSLA color to get the string representation of.
    * @returns {string} The string representation of the given HSLA color.
    */
   function hslaColorToString(color) {
@@ -560,8 +676,7 @@
   /**
    * Creates a legal CSS string representation for the given RGBA color.
    * @function animate.rgbaColorToString
-   * @param {RGBAColor|{r:number,g:number,b:number,a:number}} color The RGBA color to get the
-   * string representation of.
+   * @param {RGBAColor} color The RGBA color to get the string representation of.
    * @returns {string} The string representation of the given RGBA color.
    */
   function rgbaColorToString(color) {

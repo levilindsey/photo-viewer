@@ -3,7 +3,7 @@
  * @module app
  */
 (function() {
-  var TEST_IMG_URL = 'http://ukulelefury.com/weddingphotos/test.png';
+  var SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 
   var animate, ProgressCircle, PhotoLightbox, PhotoGrid;
 
@@ -19,17 +19,29 @@
     PhotoGrid.initStaticFields();
 
     // TODO: remove the following
-    var progressCircle, parentElement, left, top, diameter, dotRadius;
-    parentElement = document.getElementsByTagName('body')[0];
-    parentElement.style.backgroundColor = '#dddddd';
+    var progressCircle, body, svg, left, top, diameter, dotRadius;
+
+    body = document.getElementsByTagName('body')[0];
+    body.style.width = '100%';
+    body.style.height = '100%';
+    body.style.margin = '0px';
+    body.style.backgroundColor = '#202020';
+
+    svg = document.createElementNS(SVG_NAMESPACE, 'svg');
+    svg.style.position = 'absolute';
+    svg.style.width = '100%';
+    svg.style.height = '100%';
+    svg.style.zIndex = '2147483647';
+    body.appendChild(svg);
+
     left = 100;
     top = 100;
-    diameter = 50;
+    diameter = 300;
     dotRadius = 10;
-    progressCircle = new ProgressCircle(parentElement, left, top, diameter, dotRadius);
+    progressCircle = new ProgressCircle(svg, left, top, diameter, dotRadius);
     setTimeout(function() {
       progressCircle.close();
-    }, 10000);
+    }, 1000);
   }
 
   function onImageLoad() {

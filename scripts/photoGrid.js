@@ -45,9 +45,7 @@
    * @param {} ...
    */
   function PhotoGrid() {
-    return {
 
-    };
   }
 
   // Expose this module

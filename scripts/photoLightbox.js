@@ -48,9 +48,7 @@
    * @param {} ...
    */
   function PhotoLightbox() {
-    return {
 
-    };
   }
 
   // Expose this module
