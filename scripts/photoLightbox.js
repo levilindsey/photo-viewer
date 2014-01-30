@@ -6,6 +6,9 @@
   // ------------------------------------------------------------------------------------------- //
   // Private static variables
 
+  var ENLARGE_PERIOD = 0.8,
+      REDUCE_PERIOD = 0.5;
+
 
 
   // ------------------------------------------------------------------------------------------- //
@@ -33,7 +36,7 @@
   function initStaticFields() {
     // TODO:
 
-    console.log('photoLightbox module loaded');
+    console.log('photoLightbox module initialized');
   }
 
   // ------------------------------------------------------------------------------------------- //

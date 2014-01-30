@@ -33,7 +33,7 @@
   function initStaticFields() {
     // TODO:
 
-    console.log('photoGrid module loaded');
+    console.log('photoGrid module initialized');
   }
 
   // ------------------------------------------------------------------------------------------- //
