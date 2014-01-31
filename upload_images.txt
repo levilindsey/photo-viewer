@@ -1,0 +1,8 @@
+In order to upload the image files in bulk, I recommend using lftp. This is a convenient command, that will upload all of the files from a local directory to a directory on the server, and RE-WRITE WHATEVER USED TO BE THERE:
+
+lftp -e "mirror -R <localdir> <remotedir>" -u <username>,<password> <domain>
+
+E.g., this is the command I have run before:
+
+lftp -e "mirror -R weddingphotos weddingphotos" -u ukulelefurycom,mypassword ukulelefury.com
+
