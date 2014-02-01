@@ -17,7 +17,7 @@
   // Public dynamic functions
 
   // TODO: jsdoc
-  function cacheThumbnails(onSingleSuccess, onTotalSuccess, onTotalError) {
+  function cacheImages(targetSize, onSingleSuccess, onTotalSuccess, onTotalError) {
     var images, image, cachedCount, failedPhotos, photoGroup;
 
     photoGroup = this;
@@ -26,7 +26,7 @@
     failedPhotos = [];
 
     photoGroup.photos.forEach(function(photo) {
-      image = photo.cacheThumbnail(onImageLoaded, onImageFailed);
+      image = photo.cacheImage(targetSize, onImageLoaded, onImageFailed);
       images.push(image);
     });
 
@@ -51,7 +51,7 @@
   }
 
   // TODO: jsdoc
-  function loadThumbnails(onSingleSuccess, onTotalSuccess, onTotalError) {
+  function loadImages(targetSize, onSingleSuccess, onTotalSuccess, onTotalError) {
     var loadedCount, failedPhotos, photoGroup;
 
     photoGroup = this;
@@ -59,7 +59,7 @@
     failedPhotos = [];
 
     photoGroup.photos.forEach(function(photo) {
-      photo.loadThumbnail(onImageLoaded, onImageFailed);
+      photo.loadImage(targetSize, onImageLoaded, onImageFailed);
     });
 
     // TODO: jsdoc
@@ -82,62 +82,14 @@
   }
 
   // TODO: jsdoc
-  function addPhotoItemTapEventListeners(tapHandler) {
+  function addPhotoItemTapEventListeners(targetSize, tapHandler) {
     this.photos.forEach(function(photo) {
-      photo.addTapEventListener(tapHandler, 'thumbnail');
+      photo.addTapEventListener(targetSize, tapHandler);
     });
   }
 
   // ------------------------------------------------------------------------------------------- //
   // Private static functions
-
-  // TODO: jsdoc
-  function parsePhotoMetadata(responseText, onSuccess, onError) {
-    var metadata, groupTitle, photoGroups;
-
-    try {
-      metadata = JSON.parse(responseText);
-    } catch (e) {
-      onError('Unable to parse response string into a valid JSON object: ' + responseText);
-    }
-
-    try {
-      photoGroups = [];
-      for (groupTitle in metadata) {
-        photoGroups.push(parsePhotoGroupMetadata(groupTitle, metadata[groupTitle]));
-      }
-    } catch (e) {
-      onError('Unable to parse metadata object into PhotoItems: ' + responseText);
-    }
-
-    onSuccess(photoGroups);
-  }
-
-  // TODO: jsdoc
-  function parsePhotoGroupMetadata(title, groupedPhotoItemMetadata) {
-    var photos, i, count;
-
-    photos = [];
-
-    for (i = 0, count = groupedPhotoItemMetadata.length; i < count; i++) {
-      photos.push(parsePhotoItem(groupedPhotoItemMetadata[i]));
-    }
-
-    return new PhotoGroup(title, photos);
-  }
-
-  // TODO: jsdoc
-  function parsePhotoItem(photoItemMetadata) {
-    var orig, thumb;
-
-    orig = photoItemMetadata.orig;
-    thumb = photoItemMetadata.thumb;
-
-    return new PhotoItem(
-      orig.src, orig.w, orig.h,
-      thumb.src, thumb.w, thumb.h,
-      Number.NaN, Number.NaN);
-  }
 
   // ------------------------------------------------------------------------------------------- //
   // Public static functions
@@ -154,13 +106,6 @@
     log.d('initStaticFields', 'Module initialized');
   }
 
-  // TODO: jsdoc
-  function downloadAndParsePhotoMetadata(url, onSuccess, onError) {
-    util.sendRequest(url, function(responseText) {
-      parsePhotoMetadata(responseText, onSuccess, onError);
-    }, onError);
-  }
-
   // ------------------------------------------------------------------------------------------- //
   // Expose this module's constructor
 
@@ -174,8 +119,8 @@
     this.title = title;
     this.photos = photos;
 
-    this.cacheThumbnails = cacheThumbnails;
-    this.loadThumbnails = loadThumbnails;
+    this.cacheImages = cacheImages;
+    this.loadImages = loadImages;
     this.addPhotoItemTapEventListeners = addPhotoItemTapEventListeners;
   }
 
@@ -183,7 +128,6 @@
   if (!window.app) window.app = {};
   window.app.PhotoGroup = PhotoGroup;
   PhotoGroup.initStaticFields = initStaticFields;
-  PhotoGroup.downloadAndParsePhotoMetadata = downloadAndParsePhotoMetadata;
 
   console.log('photoGroup module loaded');
 })();

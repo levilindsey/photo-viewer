@@ -3,10 +3,8 @@
  * @module app
  */
 (function() {
-  var PHOTO_METADATA_URL = 'http://ukulelefury.com/weddingphotos/metadata.json',
-      SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 
-  var params, util, log, animate, SVGProgressCircle, CSSProgressCircle, PhotoItem, PhotoGroup, PhotoLightbox, PhotoGrid;
+  var params, util, log, animate, SVGProgressCircle, CSSProgressCircle, PhotoItem, PhotoGroup, photoMetadata, PhotoLightbox, PhotoGrid;
 
   // TODO: jsdoc
   function init() {
@@ -25,23 +23,26 @@
   // TODO: jsdoc
   function reset() {
     animate = app.animate;
-    PhotoItem = app.PhotoItem;
-    PhotoGroup = app.PhotoGroup;
     SVGProgressCircle = app.SVGProgressCircle;
     CSSProgressCircle = app.CSSProgressCircle;
+    PhotoItem = app.PhotoItem;
+    PhotoGroup = app.PhotoGroup;
+    photoMetadata = app.photoMetadata;
     PhotoLightbox = app.PhotoLightbox;
     PhotoGrid = app.PhotoGrid;
+
     animate.init();
-    PhotoItem.initStaticFields();
-    PhotoGroup.initStaticFields();
     SVGProgressCircle.initStaticFields();
     CSSProgressCircle.initStaticFields();
+    PhotoItem.initStaticFields();
+    PhotoGroup.initStaticFields();
+    photoMetadata.init();
     PhotoLightbox.initStaticFields();
     PhotoGrid.initStaticFields();
 
     log.i('reset', 'All modules initialized');
 
-    PhotoGroup.downloadAndParsePhotoMetadata(PHOTO_METADATA_URL, onParsePhotoMetadataSuccess, onParsePhotoMetadataError);
+    photoMetadata.downloadAndParsePhotoMetadata(params.PHOTO_METADATA.URL, onParsePhotoMetadataSuccess, onParsePhotoMetadataError);
   }
 
   // TODO: jsdoc
@@ -59,7 +60,7 @@
     body.style.margin = '0px';
     body.style.backgroundColor = '#202020';
 
-    svg = document.createElementNS(SVG_NAMESPACE, 'svg');
+    svg = document.createElementNS(params.SVG_NAMESPACE, 'svg');
     svg.style.position = 'absolute';
     svg.style.width = '100%';
     svg.style.height = '100%';
@@ -93,13 +94,13 @@
       // TODO: replace this with grid module
       for (var i = 0, count = photoGroup.photos.length; i < count; i++) {
         x = i % colCount * width;
-        y = Math.floor(i / colCount) * height;
+        y = parseInt(i / colCount) * height;
         photoGroup.photos[i].thumbnail.x = x;
         photoGroup.photos[i].thumbnail.y = y;
       }
       /////////////////////////////////////////////////////////
 
-      photoGroup.loadThumbnails(onPhotoGroupSingleSuccess,
+      photoGroup.loadImages('thumbnail', onPhotoGroupSingleSuccess,
         onPhotoGroupTotalSuccess, onPhotoGroupTotalError);
     });
   }
@@ -108,7 +109,7 @@
   function onPhotoGroupSingleSuccess(photoGroup, photo) {
     ///////////////////////////////////////////////////////////
     // TODO: replace this with grid module
-    photoGroup.addPhotoItemTapEventListeners(onPhotoItemTap);
+    photoGroup.addPhotoItemTapEventListeners('thumbnail', onPhotoItemTap);
     if (photoGroup.title === 'J+L') {
       photo.thumbnail.image.style.position = 'absolute';
       photo.thumbnail.image.style.left = photo.thumbnail.x + 'px';

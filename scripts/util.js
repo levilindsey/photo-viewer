@@ -105,19 +105,60 @@
   }
 
   /**
-   * Converts a Date object into a string representation in the form yyyy/mm/dd@hh:mm:ss:mmm.
+   * Converts a Date object into a string representation in the form "yyyy/mm/dd@hh:mm:ss.mmm".
    * @function util.dateObjToDateTimeString
    * @param {Date} dateObj The Date object to get a string representation of.
    * @returns {String} A string representation of the date and time.
    */
   function dateObjToDateTimeString(dateObj) {
     return dateObj.getFullYear() + '/' +
-        (dateObj.getMonth() + 1) + '/' +
-        dateObj.getDate() + '@' +
-        dateObj.getHours() + ':' +
-        dateObj.getMinutes() + ':' +
-        dateObj.getSeconds() + ':' +
-        dateObj.getMilliseconds();
+      (dateObj.getMonth() + 1) + '/' +
+      dateObj.getDate() + '@' +
+      dateObj.getHours() + ':' +
+      dateObj.getMinutes() + ':' +
+      dateObj.getSeconds() + '.' +
+      dateObj.getMilliseconds();
+  }
+
+  /**
+   * Converts a number of milliseconds into a string representation of the time in the form
+   * "[hh:]mm:ss.mmm".
+   * @function util.millisToTimeString
+   * @param {Number} millis The number of milliseconds to convert to a string representation.
+   * @returns {String} A string representation of the number of milliseconds.
+   */
+  function millisToTimeString(millis) {
+    var hours, minutes, seconds;
+
+    hours = parseInt((millis / 3600000), 10);
+    millis %= 3600000;
+    minutes = parseInt((millis / 60000), 10);
+    millis %= 60000;
+    seconds = parseInt((millis / 1000), 10);
+    millis %= 1000;
+
+    hours =
+      hours > 9 ?
+        '' + hours + ':' :
+        hours > 0 ?
+          '0' + hours + ':' :
+          '';
+    minutes =
+      (minutes > 9 ?
+        '' + minutes :
+        '0' + minutes) + ':';
+    seconds =
+      (seconds > 9 ?
+        '' + seconds :
+        '0' + seconds) + '.';
+    millis =
+      millis > 99 ?
+        '' + millis :
+        millis > 9 ?
+          '0' + millis :
+          '00' + millis;
+
+    return hours + minutes + seconds + millis;
   }
 
   // TODO: jsdoc
@@ -137,6 +178,7 @@
     init: init,
     sendRequest: sendRequest,
     dateObjToDateTimeString: dateObjToDateTimeString,
+    millisToTimeString: millisToTimeString,
     addTapEventListener: addTapEventListener,
     XHR: null,
     listen: null

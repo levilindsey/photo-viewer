@@ -24,11 +24,11 @@
     message = '[' + severity + ']; ' +
       this.moduleName + '.' + methodName + '; ' +
       (message || '--') + '; ' +
-      getCurrentRunTime();
+      util.millisToTimeString(getCurrentRunTime());
 
     // Record each entry in a queue of fixed-size
     recentEntries.push(message);
-    if (recentEntries.length > params.LOG_RECENT_ENTRIES_LIMIT) {
+    if (recentEntries.length > params.LOG.RECENT_ENTRIES_LIMIT) {
       recentEntries.shift();
     }
 
@@ -42,9 +42,8 @@
    * @param {Date} dateObj A Date object representing the start time of the app.
    */
   function writeAppInfo(dateObj) {
-    // TODO: write a plugin to get the app's version number for each platform
-    log.i('writeAppInfo', 'Zombie Ballz! (Version ' + '?.?.?' + ')');
-    log.i('writeAppInfo', 'Copyright (c) Levi Lindsey <levi@jackieandlevi.com>. ALL RIGHTS RESERVED.');
+    log.i('writeAppInfo', params.APP.TITLE + ' (Version ' + params.APP.VERSION + ')');
+    log.i('writeAppInfo', params.APP.LICENSE);
     log.i('writeAppInfo', 'Start time=' + util.dateObjToDateTimeString(dateObj));
   }
 
@@ -59,7 +58,7 @@
    * @param {string} [message] The message for this log entry.
    */
   function v(methodName, message) {
-    if (params.LOG_VERBOSE) {
+    if (params.LOG.VERBOSE) {
       write.call(this, 'V', methodName, message);
     }
   }
@@ -72,7 +71,7 @@
    * @param {string} [message] The message for this log entry.
    */
   function d(methodName, message) {
-    if (params.LOG_DEBUG) {
+    if (params.LOG.DEBUG) {
       write.call(this, 'D', methodName, message);
     }
   }
