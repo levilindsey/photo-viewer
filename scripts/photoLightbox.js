@@ -9,12 +9,32 @@
   var ENLARGE_PERIOD = 0.8,
       REDUCE_PERIOD = 0.5;
 
-
+  var params, util, log, animate;
 
   // ------------------------------------------------------------------------------------------- //
   // Private dynamic functions
 
+  /**
+   * Transitions to the previous image. This makes a request to the client for the previous image's data.
+   */
+  function onPreviousTap() {
+    // TODO:
+  }
 
+  // TODO: jsdoc
+  function onNextTap() {
+    // TODO:
+  }
+
+  // TODO: jsdoc
+  function onCloseTap() {
+    // TODO:
+  }
+
+  // TODO: jsdoc
+  function onFullscreenTap() {
+    // TODO:
+  }
 
   // ------------------------------------------------------------------------------------------- //
   // Public dynamic functions
@@ -34,40 +54,11 @@
    * @function PhotoLightbox.initStaticFields
    */
   function initStaticFields() {
-    // TODO:
-
-    console.log('photoLightbox module initialized');
-  }
-
-
-
-  // ------------------------------------------------------------------------------------------- //
-  // Public classes
-
-  /**
-   * @constructor
-   * @global
-   * @param {string} originalSrc A URL to the original, full-size image.
-   * @param {number} originalWidth The width of the original, full-size image.
-   * @param {number} originalHeight The height of the original, full-size image.
-   * @param {string} thumbnailSrc A URL to a thumbnail version of the image.
-   * @param {number} thumbnailWidth The width of the thumbnail version of the image.
-   * @param {number} thumbnailHeight The height of the thumbnail version of the image.
-   * @param {number} thumbnailX The x-coordinate of the placement of the thumbnail image, with the
-   * origin at the top-left corner of the entire page/document.
-   * @param {number} thumbnailY The y-coordinate of the placement of the thumbnail image, with the
-   * origin at the top-left corner of the entire page/document.
-   */
-  function PhotoItem(originalSrc, originalWidth, originalHeight, thumbnailSrc, thumbnailWidth,
-                     thumbnailHeight, thumbnailX, thumbnailY) {
-    this.originalSrc = originalSrc;
-    this.originalWidth = originalWidth;
-    this.originalHeight = originalHeight;
-    this.thumbnailSrc = thumbnailSrc;
-    this.thumbnailWidth = thumbnailWidth;
-    this.thumbnailHeight = thumbnailHeight;
-    this.thumbnailX = thumbnailX;
-    this.thumbnailY = thumbnailY;
+    params = app.params;
+    util = app.util;
+    log = new app.Log('photoLightbox');
+    animate = app.animate;
+    log.d('initStaticFields', 'Module initialized');
   }
 
   // ------------------------------------------------------------------------------------------- //
@@ -86,7 +77,6 @@
   if (!window.app) window.app = {};
   window.app.PhotoLightbox = PhotoLightbox;
   PhotoLightbox.initStaticFields = initStaticFields;
-  window.app.PhotoItem = PhotoItem;
 
   console.log('photoLightbox module loaded');
 })();

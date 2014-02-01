@@ -6,7 +6,7 @@
   // ------------------------------------------------------------------------------------------- //
   // Private static variables
 
-  var animate, easingFunctions, currentlyLooping, currentAnimations, currentSynchronizations;
+  var animate, params, util, log, easingFunctions, currentlyLooping, currentAnimations, currentSynchronizations;
 
   currentAnimations = [];
   currentSynchronizations = [];
@@ -64,7 +64,7 @@
   /**
    * Updates all of the current animations.
    * @function animate~updateAnimations
-   * @param {number} currentTime The current time.
+   * @param {Number} currentTime The current time.
    */
   function updateAnimations(currentTime) {
     var i, animationFinished, animation;
@@ -92,8 +92,8 @@
    * @function animate~updateAnimation
    * @param {ObjectPropertyAnimation|NumericAttributeAnimation|ColorAttributeAnimation} animation
    * An object representing the animation.
-   * @param {number} currentTime The current time.
-   * @returns {boolean} True if the animation is finished at this time.
+   * @param {Number} currentTime The current time.
+   * @returns {Boolean} True if the animation is finished at this time.
    */
   function updateAnimation(animation, currentTime) {
     var animationFinished;
@@ -115,8 +115,8 @@
    * Updates the given object property animation.
    * @function animate~updateObjectPropertyAnimation
    * @param {ObjectPropertyAnimation} animation An object representing the animation.
-   * @param {number} currentTime The current time.
-   * @returns {boolean} True if the animation is finished at this time.
+   * @param {Number} currentTime The current time.
+   * @returns {Boolean} True if the animation is finished at this time.
    */
   function updateObjectPropertyAnimation(animation, currentTime) {
     var deltaTime, animationFinished, progress, remaining;
@@ -143,8 +143,8 @@
    * Updates the given numeric attribute animation.
    * @function animate~updateNumericAttributeAnimation
    * @param {NumericAttributeAnimation} animation An object representing the animation.
-   * @param {number} currentTime The current time.
-   * @returns {boolean} True if the animation is finished at this time.
+   * @param {Number} currentTime The current time.
+   * @returns {Boolean} True if the animation is finished at this time.
    */
   function updateNumericAttributeAnimation(animation, currentTime) {
     var deltaTime, animationFinished, progress, remaining;
@@ -172,8 +172,8 @@
    * Updates the given HSLA attribute animation.
    * @function animate~updateHSLAAttributeAnimation
    * @param {ColorAttributeAnimation} animation An object representing the animation.
-   * @param {number} currentTime The current time.
-   * @returns {boolean} True if the animation is finished at this time.
+   * @param {Number} currentTime The current time.
+   * @returns {Boolean} True if the animation is finished at this time.
    */
   function updateHSLAAttributeAnimation(animation, currentTime) {
     var deltaTime, animationFinished, h, s, l, a, progress, remaining;
@@ -203,8 +203,8 @@
    * Updates the given RGBA attribute animation.
    * @function animate~updateRGBAAttributeAnimation
    * @param {ColorAttributeAnimation} animation An object representing the animation.
-   * @param {number} currentTime The current time.
-   * @returns {boolean} True if the animation is finished at this time.
+   * @param {Number} currentTime The current time.
+   * @returns {Boolean} True if the animation is finished at this time.
    */
   function updateRGBAAttributeAnimation(animation, currentTime) {
     var deltaTime, animationFinished, r, g, b, a, progress, remaining;
@@ -233,10 +233,10 @@
   /**
    * Calculates an eased progress value.
    * @function animate~getEasedProgress
-   * @param {number} deltaTime The elapsed time since the start of the animation.
-   * @param {number} duration The duration of the animation.
+   * @param {Number} deltaTime The elapsed time since the start of the animation.
+   * @param {Number} duration The duration of the animation.
    * @param {Function} easingFunction The easing function to use.
-   * @returns {number} The eased progress value.
+   * @returns {Number} The eased progress value.
    */
   function getEasedProgress(deltaTime, duration, easingFunction) {
     return easingFunction(deltaTime / duration);
@@ -245,11 +245,11 @@
   /**
    * Interpolates the given values using the given weights.
    * @function animate~interpolate
-   * @param {number} value1 The first value.
-   * @param {number} value2 The second value.
-   * @param {number} weight1 The weight of the first value.
-   * @param {number} weight2 The weight of the second value.
-   * @returns {number} The interpolated value.
+   * @param {Number} value1 The first value.
+   * @param {Number} value2 The second value.
+   * @param {Number} weight1 The weight of the first value.
+   * @param {Number} weight2 The weight of the second value.
+   * @returns {Number} The interpolated value.
    */
   function interpolate(value1, value2, weight1, weight2) {
     return value1 * weight1 + value2 * weight2;
@@ -313,14 +313,14 @@
   /**
    * @constructor
    * @param {HTMLElement} element The element to animate.
-   * @param {string} attribute The attribute to animate.
-   * @param {number} startValue The value of the property at the start of the animation.
-   * @param {number} endValue The value of the property at the end of the animation.
-   * @param {number} startTime The time at which the animation starts.
-   * @param {number} duration The duration of the animation.
-   * @param {string} [prefix] A prefix to prepend to the numeric value.
-   * @param {string} [suffix] A suffix to append to the numeric value.
-   * @param {string} [easingFunction] The name of the easing function to use with this animation.
+   * @param {String} attribute The attribute to animate.
+   * @param {Number} startValue The value of the property at the start of the animation.
+   * @param {Number} endValue The value of the property at the end of the animation.
+   * @param {Number} startTime The time at which the animation starts.
+   * @param {Number} duration The duration of the animation.
+   * @param {String} [prefix] A prefix to prepend to the numeric value.
+   * @param {String} [suffix] A suffix to append to the numeric value.
+   * @param {String} [easingFunction] The name of the easing function to use with this animation.
    * @param {Function} [onDoneCallback] A callback function to call when this animation has
    * finished. This callback will be given as arguments a reference to the animation object, and
    * whatever argument is passed to this constructor as the identifier parameter.
@@ -348,13 +348,13 @@
   /**
    * @constructor
    * @param {HTMLElement} element The element to animate.
-   * @param {string} attribute The attribute to animate.
+   * @param {String} attribute The attribute to animate.
    * @param {HSLAColor|RGBAColor} startColor The value of the property at the start of the
    * animation.
    * @param {HSLAColor|RGBAColor} endColor The value of the property at the end of the animation.
-   * @param {number} startTime The time at which the animation starts.
-   * @param {number} duration The duration of the animation.
-   * @param {string} [easingFunction] The name of the easing function to use with this animation.
+   * @param {Number} startTime The time at which the animation starts.
+   * @param {Number} duration The duration of the animation.
+   * @param {String} [easingFunction] The name of the easing function to use with this animation.
    * @param {Function} [onDoneCallback] A callback function to call when this animation has
    * finished. This callback will be given as arguments a reference to the animation object, and
    * whatever argument is passed to this constructor as the identifier parameter.
@@ -379,12 +379,12 @@
   /**
    * @constructor
    * @param {object} object The object whose property this will animate.
-   * @param {string} property The property to animate.
-   * @param {number} startValue The value of the property at the start of the animation.
-   * @param {number} endValue The value of the property at the end of the animation.
-   * @param {number} startTime The time at which the animation starts.
-   * @param {number} duration The duration of the animation.
-   * @param {string} [easingFunction] The name of the easing function to use with this animation.
+   * @param {String} property The property to animate.
+   * @param {Number} startValue The value of the property at the start of the animation.
+   * @param {Number} endValue The value of the property at the end of the animation.
+   * @param {Number} startTime The time at which the animation starts.
+   * @param {Number} duration The duration of the animation.
+   * @param {String} [easingFunction] The name of the easing function to use with this animation.
    * @param {Function} [onDoneCallback] A callback function to call when this animation has
    * finished. This callback will be given as arguments a reference to the animation object, and
    * whatever argument is passed to this constructor as the identifier parameter.
@@ -409,12 +409,12 @@
   /**
    * @constructor
    * @param {object} object The object whose property this will animate.
-   * @param {string} property The property to animate.
+   * @param {String} property The property to animate.
    * @param {HTMLElement} element The element whose attribute will be kept in sync with the given
    * property.
-   * @param {string} attribute The attribute to keep in sync with the given property.
-   * @param {string} [prefix] A prefix to prepend to the attribute.
-   * @param {string} [suffix] A suffix to append to the attribute.
+   * @param {String} attribute The attribute to keep in sync with the given property.
+   * @param {String} [prefix] A prefix to prepend to the attribute.
+   * @param {String} [suffix] A suffix to append to the attribute.
    */
   function ObjectNumericPropertySync(object, property, element, attribute, prefix, suffix) {
     this.object = object;
@@ -428,10 +428,10 @@
   /**
    * @constructor
    * @param {object} object The object whose property this will animate.
-   * @param {string} property The property to animate.
+   * @param {String} property The property to animate.
    * @param {HTMLElement} element The element whose attribute will be kept in sync with the given
    * property.
-   * @param {string} attribute The attribute to keep in sync with the given property.
+   * @param {String} attribute The attribute to keep in sync with the given property.
    */
   function ObjectHSLAColorPropertySync(object, property, element, attribute) {
     this.object = object;
@@ -443,10 +443,10 @@
   /**
    * @constructor
    * @param {object} object The object whose property this will animate.
-   * @param {string} property The property to animate.
+   * @param {String} property The property to animate.
    * @param {HTMLElement} element The element whose attribute will be kept in sync with the given
    * property.
-   * @param {string} attribute The attribute to keep in sync with the given property.
+   * @param {String} attribute The attribute to keep in sync with the given property.
    */
   function ObjectRGBAColorPropertySync(object, property, element, attribute) {
     this.object = object;
@@ -459,17 +459,28 @@
   // Public static functions
 
   /**
+   * Initializes some static state for this module.
+   * @function animate.init
+   */
+  function init() {
+    params = app.params;
+    util = app.util;
+    log = new app.Log('animate');
+    log.d('init', 'Module initialized');
+  }
+
+  /**
    * Starts a new animation of the given numeric property for the given element.
    * @function animate.startNumericAttributeAnimation
    * @param {HTMLElement} element The element to animate.
-   * @param {string} attribute The attribute to animate.
-   * @param {number} startValue The value of the property at the start of the animation.
-   * @param {number} endValue The value of the property at the end of the animation.
-   * @param {number} startTime The time at which the animation starts.
-   * @param {number} duration The duration of the animation.
-   * @param {string} [prefix] A prefix to prepend to the numeric value.
-   * @param {string} [suffix] A suffix to append to the numeric value.
-   * @param {string} [easingFunction] The name of the easing function to use with this animation.
+   * @param {String} attribute The attribute to animate.
+   * @param {Number} startValue The value of the property at the start of the animation.
+   * @param {Number} endValue The value of the property at the end of the animation.
+   * @param {Number} startTime The time at which the animation starts.
+   * @param {Number} duration The duration of the animation.
+   * @param {String} [prefix] A prefix to prepend to the numeric value.
+   * @param {String} [suffix] A suffix to append to the numeric value.
+   * @param {String} [easingFunction] The name of the easing function to use with this animation.
    * @param {Function} [onDoneCallback] A callback function to call when this animation has
    * finished.
    * @param {*} [identifier] This will be passed as an argument to the onDoneCallback, and can
@@ -490,13 +501,13 @@
    * Starts a new animation of the given HSLA color property for the given element.
    * @function animate.startHSLAColorAttributeAnimation
    * @param {HTMLElement} element The element to animate.
-   * @param {string} attribute The attribute to animate.
+   * @param {String} attribute The attribute to animate.
    * @param {HSLAColor|RGBAColor} startColor The value of the property at the start of the
    * animation.
    * @param {HSLAColor|RGBAColor} endColor The value of the property at the end of the animation.
-   * @param {number} startTime The time at which the animation starts.
-   * @param {number} duration The duration of the animation.
-   * @param {string} [easingFunction] The name of the easing function to use with this animation.
+   * @param {Number} startTime The time at which the animation starts.
+   * @param {Number} duration The duration of the animation.
+   * @param {String} [easingFunction] The name of the easing function to use with this animation.
    * @param {Function} [onDoneCallback] A callback function to call when this animation has
    * finished.
    * @param {*} [identifier] This will be passed as an argument to the onDoneCallback, and can
@@ -517,7 +528,7 @@
    * @function animate.stopAnimation
    * @param {ObjectPropertyAnimation|NumericAttributeAnimation|ColorAttributeAnimation} animation
    * The object representing the animation to stop.
-   * @returns {boolean} True if the given animation was found and stopped.
+   * @returns {Boolean} True if the given animation was found and stopped.
    */
   function stopAnimation(animation) {
     var i, count;
@@ -534,12 +545,12 @@
    * Starts a new animation of the given numeric property for the given element.
    * @function animate.startNumericAttributeAnimation
    * @param {object} object The object whose property this will animate.
-   * @param {string} property The property to animate.
-   * @param {number} startValue The value of the property at the start of the animation.
-   * @param {number} endValue The value of the property at the end of the animation.
-   * @param {number} startTime The time at which the animation starts.
-   * @param {number} duration The duration of the animation.
-   * @param {string} [easingFunction] The name of the easing function to use with this animation.
+   * @param {String} property The property to animate.
+   * @param {Number} startValue The value of the property at the start of the animation.
+   * @param {Number} endValue The value of the property at the end of the animation.
+   * @param {Number} startTime The time at which the animation starts.
+   * @param {Number} duration The duration of the animation.
+   * @param {String} [easingFunction] The name of the easing function to use with this animation.
    * @param {Function} [onDoneCallback] A callback function to call when this animation has
    * finished.
    * @param {*} [identifier] This will be passed as an argument to the onDoneCallback, and can
@@ -562,13 +573,13 @@
    * animating independently and simultaneously--e.g., the r, g, and b components of a color value.
    * @function animate.startSyncingObjectNumericProperty
    * @param {object} object The object whose property is, supposedly, changing.
-   * @param {string} property The property that is, supposedly, changing.
+   * @param {String} property The property that is, supposedly, changing.
    * @param {HTMLElement} element The element whose attribute needs to be kept synchronized with
    * the given property.
-   * @param {string} attribute The attribute that needs to be kept synchronized with the given
+   * @param {String} attribute The attribute that needs to be kept synchronized with the given
    * property.
-   * @param {string} [prefix] A prefix to prepend to the attribute.
-   * @param {string} [suffix] A suffix to append to the attribute.
+   * @param {String} [prefix] A prefix to prepend to the attribute.
+   * @param {String} [suffix] A suffix to append to the attribute.
    * @returns {ObjectNumericPropertySync} An object representing the synchronization. This can
    * be passed to the stopSyncingObjectProperty function to stop the synchronization.
    */
@@ -587,10 +598,10 @@
    * animating independently and simultaneously--e.g., the r, g, and b components of a color value.
    * @function animate.startSyncingObjectHSLAColorProperty
    * @param {object} object The object whose property is, supposedly, changing.
-   * @param {string} property The property that is, supposedly, changing.
+   * @param {String} property The property that is, supposedly, changing.
    * @param {HTMLElement} element The element whose attribute needs to be kept synchronized with
    * the given property.
-   * @param {string} attribute The attribute that needs to be kept synchronized with the given
+   * @param {String} attribute The attribute that needs to be kept synchronized with the given
    * property.
    * @returns {ObjectHSLAColorPropertySync} An object representing the synchronization. This can
    * be passed to the stopSyncingObjectProperty function to stop the synchronization.
@@ -608,10 +619,10 @@
    * animating independently and simultaneously--e.g., the r, g, and b components of a color value.
    * @function animate.startSyncingObjectRGBAColorProperty
    * @param {object} object The object whose property is, supposedly, changing.
-   * @param {string} property The property that is, supposedly, changing.
+   * @param {String} property The property that is, supposedly, changing.
    * @param {HTMLElement} element The element whose attribute needs to be kept synchronized with
    * the given property.
-   * @param {string} attribute The attribute that needs to be kept synchronized with the given
+   * @param {String} attribute The attribute that needs to be kept synchronized with the given
    * property.
    * @returns {ObjectRGBAColorPropertySync} An object representing the synchronization. This can
    * be passed to the stopSyncingObjectProperty function to stop the synchronization.
@@ -627,7 +638,7 @@
    * @function animate.stopSyncingObjectProperty
    * @param {ObjectNumericPropertySync|ObjectHSLAColorPropertySync|ObjectRGBAColorPropertySync} synchronization
    * The object representing the synchronization to stop.
-   * @returns {boolean} True if the given synchronization was found and stopped.
+   * @returns {Boolean} True if the given synchronization was found and stopped.
    */
   function stopSyncingObjectProperty(synchronization) {
     var i, count;
@@ -643,7 +654,7 @@
   /**
    * Gets whether there are any current animations in progress.
    * @function animate.currentlyAnimating
-   * @returns {boolean} True if there are current animations in progress.
+   * @returns {Boolean} True if there are current animations in progress.
    */
   function currentlyAnimating() {
     return currentAnimations.length > 0;
@@ -667,7 +678,7 @@
    * Creates a legal CSS string representation for the given HSLA color.
    * @function animate.hslaColorToString
    * @param {HSLAColor} color The HSLA color to get the string representation of.
-   * @returns {string} The string representation of the given HSLA color.
+   * @returns {String} The string representation of the given HSLA color.
    */
   function hslaColorToString(color) {
     return 'hsla(' + color.h + ',' + color.s + '%,' + color.l + '%,' + color.a + ')';
@@ -677,7 +688,7 @@
    * Creates a legal CSS string representation for the given RGBA color.
    * @function animate.rgbaColorToString
    * @param {RGBAColor} color The RGBA color to get the string representation of.
-   * @returns {string} The string representation of the given RGBA color.
+   * @returns {String} The string representation of the given RGBA color.
    */
   function rgbaColorToString(color) {
     return 'rgba(' + color.r + ',' + color.g + ',' + color.b + ',' + color.a + ')';
@@ -688,10 +699,10 @@
 
   /**
    * @constructor
-   * @param {number} h Hue value (from 0 to 360).
-   * @param {number} s Saturation value (from 0 to 100).
-   * @param {number} l Lightness value (from 0 to 100).
-   * @param {number} [a=1] Alpha (opacity) value (from 0 to 1).
+   * @param {Number} h Hue value (from 0 to 360).
+   * @param {Number} s Saturation value (from 0 to 100).
+   * @param {Number} l Lightness value (from 0 to 100).
+   * @param {Number} [a=1] Alpha (opacity) value (from 0 to 1).
    */
   function HSLAColor(h, s, l, a) {
     this.h = h;
@@ -702,10 +713,10 @@
 
   /**
    * @constructor
-   * @param {number} r Red color component (from 0 to 255).
-   * @param {number} g Green color component (from 0 to 255).
-   * @param {number} b Blue color component (from 0 to 255).
-   * @param {number} [a=1] Alpha (opacity) value (from 0 to 1).
+   * @param {Number} r Red color component (from 0 to 255).
+   * @param {Number} g Green color component (from 0 to 255).
+   * @param {Number} b Blue color component (from 0 to 255).
+   * @param {Number} [a=1] Alpha (opacity) value (from 0 to 1).
    */
   function RGBAColor(r, g, b, a) {
     this.r = r;
@@ -722,6 +733,7 @@
    * @global
    */
   animate = {
+    init: init,
     startNumericAttributeAnimation: startNumericAttributeAnimation,
     startColorAttributeAnimation: startColorAttributeAnimation,
     startObjectPropertyAnimation: startObjectPropertyAnimation,

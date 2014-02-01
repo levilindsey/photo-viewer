@@ -6,7 +6,7 @@
   // ------------------------------------------------------------------------------------------- //
   // Private static variables
 
-
+  var params, util, log, animate;
 
   // ------------------------------------------------------------------------------------------- //
   // Private dynamic functions
@@ -31,9 +31,11 @@
    * @function PhotoGrid.initStaticFields
    */
   function initStaticFields() {
-    // TODO:
-
-    console.log('photoGrid module initialized');
+    params = app.params;
+    util = app.util;
+    log = new app.Log('photoGrid');
+    animate = app.animate;
+    log.d('initStaticFields', 'Module initialized');
   }
 
   // ------------------------------------------------------------------------------------------- //

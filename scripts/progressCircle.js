@@ -26,7 +26,7 @@
       RADIUS_PULSE_HALF_PERIOD = RADIUS_PULSE_PERIOD * 0.5,
       BRIGHTNESS_PULSE_HALF_PERIOD = BRIGHTNESS_PULSE_PERIOD * 0.5;
 
-  var animate;
+  var params, util, log, animate;
 
   // ------------------------------------------------------------------------------------------- //
   // Private static functions
@@ -66,11 +66,11 @@
    * @function progressCircle~createDots
    * @param {HTMLElement} svgElement The SVG container element to add the DOM elements of these
    * dots to.
-   * @param {number} dotCount The number of dots to create for this progress circle.
-   * @param {number} left The left-side x-coordinate of the progress circle.
-   * @param {number} top The top-side y-coordinate of the progress circle.
-   * @param {number} diameter The diameter of the overall progress circle.
-   * @param {number} dotRadius The radius to give the individual dots.
+   * @param {Number} dotCount The number of dots to create for this progress circle.
+   * @param {Number} left The left-side x-coordinate of the progress circle.
+   * @param {Number} top The top-side y-coordinate of the progress circle.
+   * @param {Number} diameter The diameter of the overall progress circle.
+   * @param {Number} dotRadius The radius to give the individual dots.
    * @returns {Array.<ProgressDot>} The dots that were just created.
    */
   function createDots(svgElement, dotCount, left, top, diameter, dotRadius) {
@@ -109,9 +109,9 @@
    * Start the animations for the given dot.
    * @function progressCircle~startAnimationsForDot
    * @param {ProgressDot} dot The dot to animate.
-   * @param {number} startTime The start time of these animations.
-   * @param {number} progressCircleCenterX The x-coordinate of the center of the parent progress circle.
-   * @param {number} progressCircleCenterY The y-coordinate of the center of the parent progress circle.
+   * @param {Number} startTime The start time of these animations.
+   * @param {Number} progressCircleCenterX The x-coordinate of the center of the parent progress circle.
+   * @param {Number} progressCircleCenterY The y-coordinate of the center of the parent progress circle.
    */
   function startAnimationsForDot(dot, startTime, progressCircleCenterX, progressCircleCenterY) {
     // Constant attributes
@@ -252,15 +252,15 @@
    * @param {HTMLElement} svgElement The SVG container element to add the DOM element of this dot
    * to.
    * @param {HSLAColor|RGBAColor} color The color of the dot.
-   * @param {number} dotBaseCenterX The center x-coordinate of the dot before any transformations
+   * @param {Number} dotBaseCenterX The center x-coordinate of the dot before any transformations
    * have occurred.
-   * @param {number} dotBaseCenterY The center y-coordinate of the dot before any transformations
+   * @param {Number} dotBaseCenterY The center y-coordinate of the dot before any transformations
    * have occurred.
-   * @param {number} dotInnerPulseCenterY The center y-coordinate of the dot after the shrinking
+   * @param {Number} dotInnerPulseCenterY The center y-coordinate of the dot after the shrinking
    * pulse animation has occurred.
-   * @param {number} dotRadius The radius of the dot.
-   * @param {number} revolutionAngleRad The initial rotation angle of the dot.
-   * @param {number} progressCircleCenterY The y-coordinate of the center of the parent progress
+   * @param {Number} dotRadius The radius of the dot.
+   * @param {Number} revolutionAngleRad The initial rotation angle of the dot.
+   * @param {Number} progressCircleCenterY The y-coordinate of the center of the parent progress
    * circle.
    */
   function ProgressDot(svgElement, color, dotBaseCenterX, dotBaseCenterY, dotInnerPulseCenterY,
@@ -295,8 +295,11 @@
    * @function ProgressCircle.initStaticFields
    */
   function initStaticFields() {
+    params = app.params;
+    util = app.util;
+    log = new app.Log('progressCircle');
     animate = app.animate;
-    console.log('progressCircle module initialized');
+    log.d('initStaticFields', 'Module initialized');
   }
 
   // ------------------------------------------------------------------------------------------- //
@@ -309,20 +312,62 @@
    * @global
    * @param {HTMLElement} svgElement The SVG container element to add the elements of this
    * progress circle to.
-   * @param {number} left The left-side x-coordinate of the progress circle.
-   * @param {number} top The top-side y-coordinate of the progress circle.
-   * @param {number} diameter The diameter of the overall progress circle.
-   * @param {number} dotRadius The radius to give the individual dots.
+   * @param {Number} left The left-side x-coordinate of the progress circle.
+   * @param {Number} top The top-side y-coordinate of the progress circle.
+   * @param {Number} diameter The diameter of the overall progress circle.
+   * @param {Number} dotRadius The radius to give the individual dots.
    */
-  function ProgressCircle(svgElement, left, top, diameter, dotRadius) {
+  function SVGProgressCircle(svgElement, left, top, diameter, dotRadius) {
     this.dots = createDots(svgElement, DOT_COUNT, left, top, diameter, dotRadius);
     this.close = close;
   }
 
+  // TODO: jsdoc
+  function CSSProgressCircle() {
+    // TODO: something like this...? but with six colorful dots that shift colors
+//  .spinner {
+//      height:60px;
+//      width:60px;
+//      margin:0px auto;
+//      position:relative;
+//      -webkit-animation: rotation .6s infinite linear;
+//      -moz-animation: rotation .6s infinite linear;
+//      -o-animation: rotation .6s infinite linear;
+//      animation: rotation .6s infinite linear;
+//      border-left:6px solid rgba(0,174,239,.15);
+//      border-right:6px solid rgba(0,174,239,.15);
+//      border-bottom:6px solid rgba(0,174,239,.15);
+//      border-top:6px solid rgba(0,174,239,.8);
+//      border-radius:100%;
+//    }
+//
+//    @-webkit-keyframes rotation {
+//      from {-webkit-transform: rotate(0deg);}
+//      to {-webkit-transform: rotate(359deg);}
+//    }
+//
+//    @-moz-keyframes rotation {
+//      from {-moz-transform: rotate(0deg);}
+//      to {-moz-transform: rotate(359deg);}
+//    }
+//
+//    @-o-keyframes rotation {
+//      from {-o-transform: rotate(0deg);}
+//      to {-o-transform: rotate(359deg);}
+//    }
+//
+//    @keyframes rotation {
+//      from {transform: rotate(0deg);}
+//      to {transform: rotate(359deg);}
+//    }
+  }
+
   // Expose this module
   if (!window.app) window.app = {};
-  window.app.ProgressCircle = ProgressCircle;
-  ProgressCircle.initStaticFields = initStaticFields;
+  window.app.SVGProgressCircle = SVGProgressCircle;
+  SVGProgressCircle.initStaticFields = initStaticFields;
+  window.app.CSSProgressCircle = CSSProgressCircle;
+  CSSProgressCircle.initStaticFields = initStaticFields;
 
   console.log('progressCircle module loaded');
 })();
