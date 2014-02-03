@@ -5,7 +5,7 @@
 (function() {
 
   var params, util, log, animate, SVGProgressCircle, CSSProgressCircle, PhotoItem, PhotoGroup,
-    photoMetadata, PhotoLightbox, DropdownPhotoGrid;
+    photoMetadata, PhotoLightbox, DropdownPhotoGrid, photoLightbox, photoGrids;
 
   // TODO: jsdoc
   function init() {
@@ -14,7 +14,7 @@
     app.Log.initStaticFields();
     log = new app.Log('index');
 
-    log.i('init');
+    log.d('init');
 
     util.init();
 
@@ -34,7 +34,7 @@
 
     animate.init();
     SVGProgressCircle.initStaticFields();
-    CSSProgressCircle.initStaticFields();
+    //CSSProgressCircle.initStaticFields(); // TODO: ...
     PhotoItem.initStaticFields();
     PhotoGroup.initStaticFields();
     photoMetadata.init();
@@ -43,7 +43,11 @@
 
     log.i('reset', 'All modules initialized');
 
+    photoGrids = [];
+    photoLightbox = new PhotoLightbox();
+
     photoMetadata.downloadAndParsePhotoMetadata(params.PHOTO_METADATA.URL, onParsePhotoMetadataSuccess, onParsePhotoMetadataError);
+    cacheSpriteSheet();
   }
 
   // TODO: jsdoc
@@ -66,7 +70,7 @@
     svg.style.width = '100%';
     svg.style.height = '100%';
     svg.style.zIndex = '2147483647';
-    body.appendChild(svg);
+    //body.appendChild(svg);
 
     left = 100;
     top = 100;
@@ -84,8 +88,12 @@
    */
   function cacheSpriteSheet() {
     var image = new Image();
-    util.listen(image, 'load', function() { log.i('cacheSpriteSheet', 'success'); });
-    util.listen(image, 'error', function() { log.e('cacheSpriteSheet', 'error'); });
+    util.listen(image, 'load', function() {
+      log.i('cacheSpriteSheet', 'success');
+    });
+    util.listen(image, 'error', function() {
+      log.e('cacheSpriteSheet', 'error');
+    });
     image.src = params.SPRITES.SRC;
   }
 
@@ -97,7 +105,7 @@
 
     ///////////////////////////////////////////////////////////
     // TODO: replace this with grid module
-    var width = 210, height = 160, colCount = 6, x, y;
+    var width = 122, height = 94, colCount = 6, x, y;
     ///////////////////////////////////////////////////////////
 
     photoGroups.forEach(function(photoGroup) {
@@ -121,15 +129,14 @@
     ///////////////////////////////////////////////////////////
     // TODO: replace this with grid module
     var pageCoords;
-    photoGroup.addPhotoItemTapEventListeners('thumbnail', onPhotoItemTap);
     if (photoGroup.title === 'J+L') {
       photo.thumbnail.image.style.position = 'absolute';
       photo.thumbnail.image.style.left = photo.thumbnail.x + 'px';
       photo.thumbnail.image.style.top = photo.thumbnail.y + 'px';
       document.getElementsByTagName('body')[0].appendChild(photo.thumbnail.image);
-      pageCoords = util.getPageCoordinates(photo.thumbnail.image);
-      photo.thumbnail.x = pageCoords.x;
-      photo.thumbnail.y = pageCoords.y;
+//      pageCoords = util.getPageCoordinates(photo.thumbnail.image);
+//      photo.thumbnail.x = pageCoords.x;
+//      photo.thumbnail.y = pageCoords.y;
     }
     ///////////////////////////////////////////////////////////
   }
@@ -137,6 +144,7 @@
   // TODO: jsdoc
   function onPhotoGroupTotalSuccess(photoGroup) {
     log.i('onPhotoGroupTotalSuccess', 'All photos loaded for group ' + photoGroup.title);
+    photoGroup.addPhotoItemTapEventListeners('thumbnail', onPhotoItemTap);
     // TODO:
   }
 
@@ -153,32 +161,16 @@
   }
 
   // TODO: jsdoc
-  function onPhotoItemTap(event, photo) {
-    log.i('onPhotoItemTap', 'PhotoItem=' + photo.thumbnail.source);
+  function onPhotoItemTap(event, photoGroup, index) {
+    log.i('onPhotoItemTap', 'PhotoItem=' + photoGroup.photos[index].thumbnail.source);
     // TODO:
-    alert("Hey!! Watch who you're poking!");
+    photoLightbox.open(photoGroup, index);
     util.stopPropogation(event);
   }
 
 // TODO: PLAN OF ATTACK
-//  - simple grid of thumbnails
-//  - then click on one to enlarge it into a lightbox
-//    - this should animate the large image from the small position to the new large position
-//    - there should be a progress circle--for the loading of the large image--that I display either over the small image (when first opening the lightbox) or over the large image (when switching to previous or next)
-//    - will need to store the photos on another server
-//      - GoDaddy? Gandi? AWS?
-//      - take this opportunity to straighten out my GoDaddy woes
 //  - will need to have two folders
-//    - the main one has the actual original images, the other has the thumbnails
-//    - the thumbnail folder must have the same name as the main folder
-//    - the thumbnail folder must have a tiny copy of each of the images in the main folder, each with the exact same name, but with a suffix of "-thumbnail"
-//    - will need to create a script to automatically generate the thumbnails
 //    - document this (in addition to how to set up the other parameters of the viewer (like full/main image size, or whether the full image should be full screen, and small/grid/thumbnail image size)
-//  - will need all images to be pre-rotated
-//  - must set up CORS
-//  - add the ability to group the photos
-//    - this will require the server to hold a different pair of folders for each group
-//    - the groups dynamically and smoothly enlarge/shrink as the user changes group selections
 //  - place this app at jackieandlevi.com/wedding/photos
 //    - add a link on the home page
 //    - add a link on my projects page

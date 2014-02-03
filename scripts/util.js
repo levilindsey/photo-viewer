@@ -126,6 +126,17 @@
   }
 
   // TODO: jsdoc
+  function setUpPreventDefault() {
+    util.preventDefault = function(event) {
+      if (event.preventDefault) {
+        event.preventDefault();
+      } else {
+        event.returnValue = false;
+      }
+    };
+  }
+
+  // TODO: jsdoc
   function setUpListenForTransitionEnd() {
     var body, transitions, transition, transitionEndEventName;
 
@@ -200,6 +211,7 @@
     setUpRequestFullScreen();
     setUpCancelFullScreen();
     setUpStopPropogation();
+    setUpPreventDefault();
     setUpListenForTransitionEnd();
 
     log.d('init', 'Module initialized');
@@ -307,15 +319,26 @@
   }
 
   // TODO: jsdoc
-  function addTapEventListener(element, callback) {
+  function addTapEventListener(element, callback, preventDefault) {
+    var preventionCallback;
+    if (preventDefault) {
+      preventionCallback = function(event) {
+        util.preventDefault(event);
+      };
+      util.listen(element, 'mousedown', preventionCallback);
+      util.listen(element, 'touchstart', preventionCallback);
+    }
     util.listen(element, 'mouseup', callback);
     util.listen(element, 'touchend', callback);
+    return preventionCallback;
   }
 
   // TODO: jsdoc
-  function removeTapEventListener(element, callback) {
+  function removeTapEventListener(element, callback, preventionCallback) {
     util.stopListening(element, 'mouseup', callback);
     util.stopListening(element, 'touchend', callback);
+    util.stopListening(element, 'mousedown', preventionCallback);
+    util.stopListening(element, 'touchstart', preventionCallback);
   }
 
   // TODO: jsdoc
@@ -464,6 +487,7 @@
     requestFullscreen: null,
     cancelFullscreen: null,
     stopPropogation: null,
+    preventDefault: null,
     listenForTransitionEnd: null,
     stopListeningForTransitionEnd: null
   };

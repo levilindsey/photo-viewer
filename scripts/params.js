@@ -23,7 +23,7 @@
 
   moduleParams.URL = 'http://ukulelefury.com/weddingphotos/metadata.json';
 
-  // --- Lightbox parameters --- //
+  // --- Photo lightbox parameters --- //
 
   moduleParams = {};
   params.LIGHTBOX = moduleParams;
@@ -32,6 +32,15 @@
   moduleParams.WIDTH = 640;
   moduleParams.HEIGHT = 490;
   moduleParams.POINTER_MOVE_BUTTON_FADE_DELAY = 700; // milliseconds
+
+  // --- Dropdown photo grid parameters --- //
+
+  moduleParams = {};
+  params.GRID = moduleParams;
+
+  // Max image size is 112x84, but margin size is 20
+  moduleParams.THUMBNAIL_WIDTH = 132;
+  moduleParams.THUMBNAIL_HEIGHT = 104;
 
   // --- Progress circle parameters --- //
 

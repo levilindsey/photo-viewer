@@ -57,7 +57,9 @@
    */
   function addTapEventListener(targetSize, tapHandler) {
     var photo = this;
-    util.addTapEventListener(photo[targetSize].image, function onTap(event) { tapHandler(event, photo); });
+    util.addTapEventListener(photo[targetSize].image, function(event) {
+      tapHandler(event, photo);
+    }, true);
   }
 
   // ------------------------------------------------------------------------------------------- //
@@ -83,6 +85,7 @@
   /**
    * @constructor
    * @global
+   * @param {Number} index The index of this photo item within its containing photo group.
    * @param {String} fullSource A URL to the original, full-size image.
    * @param {Number} fullWidth The width of the original, full-size image.
    * @param {Number} fullHeight The height of the original, full-size image.
@@ -97,8 +100,10 @@
    * @param {Number} thumbnailY The y-coordinate of the placement of the thumbnail image, with the
    * origin at the top-left corner of the entire page/document.
    */
-  function PhotoItem(fullSource, fullWidth, fullHeight, smallSource, smallWidth, smallHeight,
-                     thumbnailSource, thumbnailWidth, thumbnailHeight, thumbnailX, thumbnailY) {
+  function PhotoItem(index, fullSource, fullWidth, fullHeight, smallSource, smallWidth,
+                     smallHeight, thumbnailSource, thumbnailWidth, thumbnailHeight, thumbnailX,
+                     thumbnailY) {
+    this.index = index;
     this.full = {
       image: null,
       isCached: false,

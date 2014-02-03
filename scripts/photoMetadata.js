@@ -40,25 +40,22 @@
     photos = [];
 
     for (i = 0, count = groupedPhotoItemMetadata.length; i < count; i++) {
-      photos.push(parsePhotoItem(groupedPhotoItemMetadata[i]));
+      photos.push(parsePhotoItem(groupedPhotoItemMetadata[i], i));
     }
 
     return new PhotoGroup(title, photos);
   }
 
   // TODO: jsdoc
-  function parsePhotoItem(photoItemMetadata) {
+  function parsePhotoItem(photoItemMetadata, index) {
     var full, small, thumb;
 
     full = photoItemMetadata.full;
     small = photoItemMetadata.small || full;
     thumb = photoItemMetadata.thumb || small;
 
-    return new PhotoItem(
-      full.src, full.w, full.h,
-      small.src, small.w, small.h,
-      thumb.src, thumb.w, thumb.h,
-      Number.NaN, Number.NaN);
+    return new PhotoItem(index, full.src, full.w, full.h, small.src, small.w, small.h, thumb.src,
+        thumb.w, thumb.h, Number.NaN, Number.NaN);
   }
 
   // ------------------------------------------------------------------------------------------- //

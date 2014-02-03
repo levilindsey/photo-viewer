@@ -24,17 +24,19 @@
         nextButton, newImageTransitionEndEventListener;
 
     photoLightbox = this;
-
     body = document.getElementsByTagName('body')[0];
 
-    lightbox = util.createElement('div', body, null, ['lightbox','hidden']);
-    if (width && height) {
-      lightbox.style.width = width + 'px';
-      lightbox.style.height = height + 'px';
+    if (!width || !height) {
+      width = params.LIGHTBOX.WIDTH;
+      height = params.LIGHTBOX.HEIGHT;
     }
+
+    lightbox = util.createElement('div', body, null, ['lightbox','hidden']);
+    lightbox.style.width = width + 'px';
+    lightbox.style.height = height + 'px';
     util.addTapEventListener(lightbox, function(event) {
       onNextButtonTap.call(photoLightbox, event);
-    });
+    }, true);
     util.addPointerMoveEventListener(lightbox, function(event) {
       onLightboxPointerMove.call(photoLightbox, event);
     });
@@ -58,31 +60,31 @@
         util.createElement('div', lightbox, null, ['spriteButton','closeButton','hidden']);
     util.addTapEventListener(closeButton, function(event) {
       onCloseButtonTap.call(photoLightbox, event);
-    });
+    }, true);
 
     reduceFromFullButton =
         util.createElement('div', lightbox, null, ['spriteButton','reduceFromFullButton','hidden']);
     reduceFromFullButton.style.display = 'none';
     util.addTapEventListener(reduceFromFullButton, function(event) {
       onFullscreenButtonTap.call(photoLightbox, event);
-    });
+    }, true);
 
     expandToFullButton =
         util.createElement('div', lightbox, null, ['spriteButton','expandToFullButton','hidden']);
     util.addTapEventListener(expandToFullButton, function(event) {
       onFullscreenButtonTap.call(photoLightbox, event);
-    });
+    }, true);
 
     previousButton =
         util.createElement('div', lightbox, null, ['spriteButton','previousButton','hidden']);
     util.addTapEventListener(previousButton, function(event) {
       onPreviousButtonTap.call(photoLightbox, event);
-    });
+    }, true);
 
     nextButton = util.createElement('div', lightbox, null, ['spriteButton','nextButton','hidden']);
     util.addTapEventListener(nextButton, function(event) {
       onNextButtonTap.call(photoLightbox, event);
-    });
+    }, true);
 
     photoLightbox.elements = {
       lightbox: lightbox,
@@ -416,6 +418,35 @@
     setElementVisibility(photoLightbox.elements.nextButton, visible);
   }
 
+  // TODO: jsdoc
+  function recenterAndResize() {
+    var photoLightbox, boundingBox;
+    photoLightbox = this;
+    // Only change the lightbox dimensions if we are not in fullscreen mode and the lightbox is
+    // visible
+    if (!photoLightbox.inFullscreenMode &&
+        photoLightbox.elements.lightbox.style.display !== 'none' &&
+        util.containsClass(photoLightbox.elements.lightbox, 'visible')) {
+      boundingBox = getCenteredBoundingBox();
+      photoLightbox.elements.lightbox.style.left = boundingBox.x + 'px';
+      photoLightbox.elements.lightbox.style.top = boundingBox.y + 'px';
+      photoLightbox.elements.lightbox.style.width = boundingBox.w + 'px';
+      photoLightbox.elements.lightbox.style.height = boundingBox.h + 'px';
+    }
+  }
+
+  // TODO: jsdoc
+  function setLightboxButtonsDisplay(areDisplayed) {
+    var photoLightbox, display;
+    photoLightbox = this;
+    display = areDisplayed ? 'block' : 'none';
+    photoLightbox.elements.closeButton.style.display = display;
+    photoLightbox.elements.reduceFromFullButton.style.display = display;
+    photoLightbox.elements.expandToFullButton.style.display = display;
+    photoLightbox.elements.previousButton.style.display = display;
+    photoLightbox.elements.nextButton.style.display = display;
+  }
+
   // ------------------------------------------------------------------------------------------- //
   // Public dynamic functions
 
@@ -452,7 +483,7 @@
     bodyTapEventListener = function(event) { onCloseButtonTap(event, photoLightbox); };
     photoLightbox.bodyTapEventListener = bodyTapEventListener;
     body = document.getElementsByTagName('body')[0];
-    util.addTapEventListener(body, bodyTapEventListener);
+    photoLightbox.bodyTapPreventionCallback = util.addTapEventListener(body, bodyTapEventListener, true);
   }
 
   // TODO: jsdoc
@@ -487,37 +518,10 @@
 
     // We don't need to listen for when the viewer taps outside of the lightbox anymore
     body = document.getElementsByTagName('body')[0];
-    util.removeTapEventListener(body, photoLightbox.bodyTapEventListener);
+    util.removeTapEventListener(body, photoLightbox.bodyTapEventListener,
+        photoLightbox.bodyTapPreventionCallback);
     photoLightbox.bodyTapEventListener = null;
-  }
-
-  // TODO: jsdoc
-  function recenterAndResize() {
-    var photoLightbox, boundingBox;
-    photoLightbox = this;
-    // Only change the lightbox dimensions if we are not in fullscreen mode and the lightbox is
-    // visible
-    if (!photoLightbox.inFullscreenMode &&
-        photoLightbox.elements.lightbox.style.display !== 'none' &&
-        util.containsClass(photoLightbox.elements.lightbox, 'visible')) {
-      boundingBox = getCenteredBoundingBox();
-      photoLightbox.elements.lightbox.style.left = boundingBox.x + 'px';
-      photoLightbox.elements.lightbox.style.top = boundingBox.y + 'px';
-      photoLightbox.elements.lightbox.style.width = boundingBox.w + 'px';
-      photoLightbox.elements.lightbox.style.height = boundingBox.h + 'px';
-    }
-  }
-
-  // TODO: jsdoc
-  function setLightboxButtonsDisplay(areDisplayed) {
-    var photoLightbox, display;
-    photoLightbox = this;
-    display = areDisplayed ? 'block' : 'none';
-    photoLightbox.elements.closeButton.style.display = display;
-    photoLightbox.elements.reduceFromFullButton.style.display = display;
-    photoLightbox.elements.expandToFullButton.style.display = display;
-    photoLightbox.elements.previousButton.style.display = display;
-    photoLightbox.elements.nextButton.style.display = display;
+    photoLightbox.bodyTapPreventionCallback = null;
   }
 
   // ------------------------------------------------------------------------------------------- //
@@ -598,9 +602,11 @@
     this.photoGroup = null;
     this.inFullscreenMode = false;
     this.bodyTapEventListener = null;
+    this.bodyTapPreventionCallback = null;
     this.newImageTransitionEndEventListener = null;
     this.pointerMoveTimeout = null;
-    this.recenterAndResize = recenterAndResize;
+    this.open = open;
+    this.close = close;
 
     createElements.call(this, width, height);
 

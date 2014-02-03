@@ -18,52 +18,31 @@
 
   // TODO: jsdoc
   function cacheImages(targetSize, onSingleSuccess, onTotalSuccess, onTotalError) {
-    var images, image, cachedCount, failedPhotos, photoGroup;
-
-    photoGroup = this;
-    cachedCount = 0;
-    images = [];
-    failedPhotos = [];
-
-    photoGroup.photos.forEach(function(photo) {
-      image = photo.cacheImage(targetSize, onImageLoaded, onImageFailed);
-      images.push(image);
-    });
-
-    // TODO: jsdoc
-    function onImageLoaded(photo) {
-      onSingleSuccess(photoGroup, photo);
-      cachedCount++;
-      if (cachedCount === photoGroup.photos.length) {
-        onTotalSuccess(photoGroup);
-      } else if (failedPhotos.length + cachedCount === photoGroup.photos.length) {
-        onTotalError(photoGroup, failedPhotos);
-      }
-    }
-
-    // TODO: jsdoc
-    function onImageFailed(photo) {
-      failedPhotos.push(photo);
-      if (failedPhotos.length + cachedCount === photoGroup.photos.length) {
-        onTotalError(photoGroup, failedPhotos);
-      }
-    }
+    loadOrCacheIMages.call(this, targetSize, onSingleSuccess, onTotalSuccess, onTotalError, true);
   }
 
   // TODO: jsdoc
   function loadImages(targetSize, onSingleSuccess, onTotalSuccess, onTotalError) {
-    var loadedCount, failedPhotos, photoGroup;
+    loadOrCacheIMages.call(this, targetSize, onSingleSuccess, onTotalSuccess, onTotalError, false);
+  }
+
+  // TODO: jsdoc
+  function loadOrCacheIMages(targetSize, onSingleSuccess, onTotalSuccess, onTotalError,
+                             onlyCache) {
+    var loadedCount, failedPhotos, photoGroup, photoFunction;
 
     photoGroup = this;
     loadedCount = 0;
     failedPhotos = [];
 
+    photoFunction = onlyCache ? 'cacheImage' : 'loadImage';
+
     photoGroup.photos.forEach(function(photo) {
-      photo.loadImage(targetSize, onImageLoaded, onImageFailed);
+      photo[photoFunction](targetSize, onImageLoadSuccess, onImageLoadError);
     });
 
     // TODO: jsdoc
-    function onImageLoaded(photo) {
+    function onImageLoadSuccess(photo) {
       onSingleSuccess(photoGroup, photo);
       if (++loadedCount === photoGroup.photos.length) {
         onTotalSuccess(photoGroup);
@@ -73,7 +52,7 @@
     }
 
     // TODO: jsdoc
-    function onImageFailed(photo) {
+    function onImageLoadError(photo) {
       failedPhotos.push(photo);
       if (failedPhotos.length + loadedCount === photoGroup.photos.length) {
         onTotalError(photoGroup, failedPhotos);
@@ -83,8 +62,11 @@
 
   // TODO: jsdoc
   function addPhotoItemTapEventListeners(targetSize, tapHandler) {
-    this.photos.forEach(function(photo) {
-      photo.addTapEventListener(targetSize, tapHandler);
+    var photoGroup = this;
+    photoGroup.photos.forEach(function(photo) {
+      photo.addTapEventListener(targetSize, function(event) {
+        tapHandler(event, photoGroup, photo.index);
+      });
     });
   }
 
