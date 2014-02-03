@@ -1,6 +1,6 @@
 /**
- * This module defines a constructor for PhotoGrid objects.
- * @module photoGrid
+ * This module defines a constructor for DropdownPhotoGrid objects.
+ * @module dropdownPhotoGrid
  */
 (function() {
   // ------------------------------------------------------------------------------------------- //
@@ -28,12 +28,12 @@
 
   /**
    * Initializes some static state for this module.
-   * @function PhotoGrid.initStaticFields
+   * @function DropdownPhotoGrid.initStaticFields
    */
   function initStaticFields() {
     params = app.params;
     util = app.util;
-    log = new app.Log('photoGrid');
+    log = new app.Log('dropdownPhotoGrid');
     animate = app.animate;
     log.d('initStaticFields', 'Module initialized');
   }
@@ -46,14 +46,14 @@
    * @global
    * @param {} ...
    */
-  function PhotoGrid() {
+  function DropdownPhotoGrid() {
 
   }
 
   // Expose this module
   if (!window.app) window.app = {};
-  window.app.PhotoGrid = PhotoGrid;
-  PhotoGrid.initStaticFields = initStaticFields;
+  window.app.DropdownPhotoGrid = DropdownPhotoGrid;
+  DropdownPhotoGrid.initStaticFields = initStaticFields;
 
-  console.log('photoGrid module loaded');
+  console.log('dropdownPhotoGrid module loaded');
 })();

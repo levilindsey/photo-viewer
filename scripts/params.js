@@ -28,8 +28,10 @@
   moduleParams = {};
   params.LIGHTBOX = moduleParams;
 
-  moduleParams.ENLARGE_PERIOD = 800; // milliseconds
-  moduleParams.REDUCE_PERIOD = 500; // milliseconds
+  // Max image size is 600x450, but padding size is 20
+  moduleParams.WIDTH = 640;
+  moduleParams.HEIGHT = 490;
+  moduleParams.POINTER_MOVE_BUTTON_FADE_DELAY = 700; // milliseconds
 
   // --- Progress circle parameters --- //
 
@@ -63,6 +65,13 @@
   moduleParams.RECENT_ENTRIES_LIMIT = 80;
   moduleParams.DEBUG = true;
   moduleParams.VERBOSE = true;
+
+  // --- Sprite parameters --- //
+
+  moduleParams = {};
+  params.SPRITES = moduleParams;
+
+  moduleParams.SRC = '../images/spritesheet.png';
 
   // --- Miscellaneous parameters --- //
 

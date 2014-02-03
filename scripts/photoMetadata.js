@@ -48,14 +48,14 @@
 
   // TODO: jsdoc
   function parsePhotoItem(photoItemMetadata) {
-    var orig, small, thumb;
+    var full, small, thumb;
 
-    orig = photoItemMetadata.orig;
-    small = photoItemMetadata.small || orig;
+    full = photoItemMetadata.full;
+    small = photoItemMetadata.small || full;
     thumb = photoItemMetadata.thumb || small;
 
     return new PhotoItem(
-      orig.src, orig.w, orig.h,
+      full.src, full.w, full.h,
       small.src, small.w, small.h,
       thumb.src, thumb.w, thumb.h,
       Number.NaN, Number.NaN);

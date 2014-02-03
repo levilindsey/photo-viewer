@@ -1,10 +1,11 @@
 /**
  * This static module drives the PhotoViewer app.
- * @module app
+ * @module index
  */
 (function() {
 
-  var params, util, log, animate, SVGProgressCircle, CSSProgressCircle, PhotoItem, PhotoGroup, photoMetadata, PhotoLightbox, PhotoGrid;
+  var params, util, log, animate, SVGProgressCircle, CSSProgressCircle, PhotoItem, PhotoGroup,
+    photoMetadata, PhotoLightbox, DropdownPhotoGrid;
 
   // TODO: jsdoc
   function init() {
@@ -29,7 +30,7 @@
     PhotoGroup = app.PhotoGroup;
     photoMetadata = app.photoMetadata;
     PhotoLightbox = app.PhotoLightbox;
-    PhotoGrid = app.PhotoGrid;
+    DropdownPhotoGrid = app.DropdownPhotoGrid;
 
     animate.init();
     SVGProgressCircle.initStaticFields();
@@ -38,7 +39,7 @@
     PhotoGroup.initStaticFields();
     photoMetadata.init();
     PhotoLightbox.initStaticFields();
-    PhotoGrid.initStaticFields();
+    DropdownPhotoGrid.initStaticFields();
 
     log.i('reset', 'All modules initialized');
 
@@ -77,11 +78,21 @@
     }, 1000);
   }
 
+  /**
+   * Caches the master sprite sheet.
+   * @function index~cacheSpriteSheet
+   */
+  function cacheSpriteSheet() {
+    var image = new Image();
+    util.listen(image, 'load', function() { log.i('cacheSpriteSheet', 'success'); });
+    util.listen(image, 'error', function() { log.e('cacheSpriteSheet', 'error'); });
+    image.src = params.SPRITES.SRC;
+  }
+
   // TODO: jsdoc
   function onParsePhotoMetadataSuccess(photoGroups) {
-    log.i('Photo metadata successfully loaded and parsed');
+    log.i('onParsePhotoMetadataSuccess', 'Photo metadata successfully loaded and parsed');
 
-    var photoGroup;
     // TODO: now, cache the thumbnails for the first group that is displayed (and then, after that is done, cache the other groups' thumbnails)
 
     ///////////////////////////////////////////////////////////
@@ -109,38 +120,44 @@
   function onPhotoGroupSingleSuccess(photoGroup, photo) {
     ///////////////////////////////////////////////////////////
     // TODO: replace this with grid module
+    var pageCoords;
     photoGroup.addPhotoItemTapEventListeners('thumbnail', onPhotoItemTap);
     if (photoGroup.title === 'J+L') {
       photo.thumbnail.image.style.position = 'absolute';
       photo.thumbnail.image.style.left = photo.thumbnail.x + 'px';
       photo.thumbnail.image.style.top = photo.thumbnail.y + 'px';
       document.getElementsByTagName('body')[0].appendChild(photo.thumbnail.image);
+      pageCoords = util.getPageCoordinates(photo.thumbnail.image);
+      photo.thumbnail.x = pageCoords.x;
+      photo.thumbnail.y = pageCoords.y;
     }
     ///////////////////////////////////////////////////////////
   }
 
   // TODO: jsdoc
   function onPhotoGroupTotalSuccess(photoGroup) {
-    log.i('All photos loaded for group ' + photoGroup.title);
+    log.i('onPhotoGroupTotalSuccess', 'All photos loaded for group ' + photoGroup.title);
     // TODO:
   }
 
   // TODO: jsdoc
   function onPhotoGroupTotalError(photoGroup, failedPhotos) {
-    log.e('Unable to load ' + failedPhotos.length + ' photos for group ' + photoGroup.title);
+    log.e('onPhotoGroupTotalError', 'Unable to load ' + failedPhotos.length + ' photos for group ' + photoGroup.title);
     // TODO:
   }
 
   // TODO: jsdoc
   function onParsePhotoMetadataError(errorMessage) {
-    log.e('Unable to load/parse metadata: ' + errorMessage);
+    log.e('onParsePhotoMetadataError', 'Unable to load/parse metadata: ' + errorMessage);
     // TODO:
   }
 
   // TODO: jsdoc
-  function onPhotoItemTap(photo) {
+  function onPhotoItemTap(event, photo) {
+    log.i('onPhotoItemTap', 'PhotoItem=' + photo.thumbnail.source);
     // TODO:
     alert("Hey!! Watch who you're poking!");
+    util.stopPropogation(event);
   }
 
 // TODO: PLAN OF ATTACK
@@ -172,7 +189,7 @@
 
   if (!window.app) window.app = {};
 
-  console.log('app module loaded');
+  console.log('index module loaded');
 
   init();
 })();
