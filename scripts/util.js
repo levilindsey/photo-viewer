@@ -208,6 +208,7 @@
 
     setUpXHR();
     setUpListen();
+    setUpStopListening();
     setUpRequestFullScreen();
     setUpCancelFullScreen();
     setUpStopPropogation();
@@ -460,6 +461,22 @@
     return { w: w, h: h };
   }
 
+  /**
+   * Removes the given child element from the given parent element if the child does indeed belong
+   * to the parent.
+   * @function util.removeChildIfPresent
+   * @param {HTMLElement} parent The parent to remove the child from.
+   * @param {HTMLElement} child The child to remove.
+   * @returns {Boolean} True if the child did indeed belong to the parent.
+   */
+  function removeChildIfPresent(parent, child) {
+    if (child.parentNode === parent) {
+      parent.removeChild(child);
+      return true;
+    }
+    return false
+  }
+
   // ------------------------------------------------------------------------------------------- //
   // Expose this module
 
@@ -481,6 +498,7 @@
     toggleClass: toggleClass,
     getPageCoordinates: getPageCoordinates,
     getViewportSize: getViewportSize,
+    removeChildIfPresent: removeChildIfPresent,
     XHR: null,
     listen: null,
     stopListening: null,

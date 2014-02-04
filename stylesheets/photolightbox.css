@@ -1,7 +1,7 @@
 
 .body {
   position: relative;
-  margin: 0px;
+  margin: 0;
   background-color: #202020;
   width: 100%;
   height: 100%;
@@ -10,39 +10,48 @@
 .lightbox {
   display: none;
   position: absolute;
-  background-color: #707070;
+  background-color: #202020;
   z-index: 32010;
+  overflow: hidden;
 }
 
 .lightbox.visible {
   min-width: 80px;
   min-height: 80px;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  -ms-border-radius: 3px;
-  -o-border-radius: 3px;
-  border-radius: 3px;
-  box-shadow: -8px 8px 8px 3px #000000;/*TODO: tweak this*/
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -o-border-radius: 10px;
+  border-radius: 10px;
+  box-shadow: -8px 8px 48px 16px #000000;/*TODO: tweak this*/
   -webkit-transition:
     visibility 0s linear 0s,
+    left 0.3s ease 0s,
+    top 0.3s ease 0s,
     width 0.3s ease 0s,
     height 0.3s ease 0s,
     box-shadow 0.3s ease 0s,
     -webkit-border-radius 0.3s ease 0s;
   -moz-transition:
     visibility 0s linear 0s,
+    left 0.3s ease 0s,
+    top 0.3s ease 0s,
     width 0.3s ease 0s,
     height 0.3s ease 0s,
     box-shadow 0.3s ease 0s,
     -moz-border-radius 0.3s ease 0s;
   -o-transition:
     visibility 0s linear 0s,
+    left 0.3s ease 0s,
+    top 0.3s ease 0s,
     width 0.3s ease 0s,
     height 0.3s ease 0s,
     box-shadow 0.3s ease 0s,
     -o-border-radius 0.3s ease 0s;
   transition:
     visibility 0s linear 0s,
+    left 0.3s ease 0s,
+    top 0.3s ease 0s,
     width 0.3s ease 0s,
     height 0.3s ease 0s,
     box-shadow 0.3s ease 0s,
@@ -50,34 +59,42 @@
 }
 
 .lightbox.hidden {
-  min-width: 0px;
-  min-height: 0px;
-  -webkit-border-radius: 0px;
-  -moz-border-radius: 0px;
-  -ms-border-radius: 0px;
-  -o-border-radius: 0px;
-  border-radius: 0px;
-  box-shadow: 0px 0px 0px 0px #000000;
+  min-width: 0;
+  min-height: 0;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  -ms-border-radius: 0;
+  -o-border-radius: 0;
+  border-radius: 0;
+  box-shadow: 0 0 0 0 #000000;
   -webkit-transition:
     visibility 0s linear 0.2s,
+    left 0.2s ease 0s,
+    top 0.2s ease 0s,
     width 0.2s ease 0s,
     height 0.2s ease 0s,
     box-shadow 0.2s ease 0s,
     -webkit-border-radius 0.2s ease 0s;
   -moz-transition:
     visibility 0s linear 0.2s,
+    left 0.2s ease 0s,
+    top 0.2s ease 0s,
     width 0.2s ease 0s,
     height 0.2s ease 0s,
     box-shadow 0.2s ease 0s,
     -moz-border-radius 0.2s ease 0s;
   -o-transition:
     visibility 0s linear 0.2s,
+    left 0.2s ease 0s,
+    top 0.2s ease 0s,
     width 0.2s ease 0s,
     height 0.2s ease 0s,
     box-shadow 0.2s ease 0s,
     -o-border-radius 0.2s ease 0s;
   transition:
     visibility 0s linear 0.2s,
+    left 0.2s ease 0s,
+    top 0.2s ease 0s,
     width 0.2s ease 0s,
     height 0.2s ease 0s,
     box-shadow 0.2s ease 0s,
@@ -135,8 +152,7 @@
   position: absolute;
   top: 0; left: 0;
   z-index: 32000;
-  background-color: #080808;
-  opacity: 0.8;
+  background-color: #030303;
   width: 100%;
   height: 100%;
 }
@@ -146,7 +162,7 @@
   -moz-transition: visibility 0s linear 0s, opacity 0.3s ease 0s;
   -o-transition: visibility 0s linear 0s, opacity 0.3s ease 0s;
   transition: visibility 0s linear 0s, opacity 0.3s ease 0s;
-  opacity: 1;
+  opacity: 0.8;
   visibility: visible;
 }
 
@@ -163,6 +179,7 @@
   background: transparent url('../images/spritesheet.png') no-repeat;
   position: absolute;
   z-index: 32030;
+  cursor: pointer;
 }
 
 .spriteButton.visible {
@@ -186,76 +203,86 @@
 .closeButton {
   background-position: 0 0;
   margin: auto;
-  right: 10px;
-  top: 10px;
+  right: 20px;
+  top: 20px;
+  width: 50px;
+  height: 50px;
 }
 
 .closeButton:hover {
-  background-position: 51px 0;
+  background-position: -51px 0;
 }
 
 .closeButton:active {
-  background-position: 102px 0;
+  background-position: -102px 0;
 }
 
 .reduceFromFullButton {
-  background-position: 0 51px;
+  background-position: 0 -51px;
   margin: auto;
-  right: 70px;
-  top: 10px;
+  right: 80px;
+  top: 20px;
+  width: 50px;
+  height: 50px;
 }
 
 .reduceFromFullButton:hover {
-  background-position: 51px 51px;
+  background-position: -51px -51px;
 }
 
 .reduceFromFullButton:active {
-  background-position: 102px 51px;
+  background-position: -102px -51px;
 }
 
 .expandToFullButton {
-  background-position: 0 102px;
+  background-position: 0 -102px;
   margin: auto;
-  right: 70px;
-  top: 10px;
+  right: 80px;
+  top: 20px;
+  width: 50px;
+  height: 50px;
 }
 
 .expandToFullButton:hover {
-  background-position: 51px 102px;
+  background-position: -51px -102px;
 }
 
 .expandToFullButton:active {
-  background-position: 102px 102px;
+  background-position: -102px -102px;
 }
 
 .previousButton {
-  background-position: 0 153px;
+  background-position: 0 -153px;
   margin: auto;
-  left: 10px;
+  left: 20px;
   top: 0; bottom: 0;
-  padding: 60px 70px 60px 10px;
+  width: 50px;
+  height: 100px;
+  /*padding: 60px 70px 60px 10px;*/
 }
 
 .previousButton:hover {
-  background-position: 51px 153px;
+  background-position: -51px -153px;
 }
 
 .previousButton:active {
-  background-position: 102px 153px;
+  background-position: -102px -153px;
 }
 
 .nextButton {
-  background-position: 0 254px;
+  background-position: 0 -254px;
   margin: auto;
-  right: -10px;
+  right: 20px;
   top: 0; bottom: 0;
-  padding: 60px 10px 60px 70px;
+  width: 50px;
+  height: 100px;
+  /*padding: 60px 10px 60px 70px;*/
 }
 
 .nextButton:hover {
-  background-position: 51px 254px;
+  background-position: -51px -254px;
 }
 
 .nextButton:active {
-  background-position: 102px 254px;
+  background-position: -102px -254px;
 }

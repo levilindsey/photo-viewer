@@ -158,8 +158,9 @@
     }
 
     // Start a new pointer move timer
-    photoLightbox.pointerMoveTimeout =
-        setTimeout(onLightboxPointerMoveTimeout, params.LIGHTBOX.POINTER_MOVE_BUTTON_FADE_DELAY);
+    photoLightbox.pointerMoveTimeout = setTimeout(function() {
+      onLightboxPointerMoveTimeout.call(photoLightbox);
+    }, params.LIGHTBOX.POINTER_MOVE_BUTTON_FADE_DELAY);
   }
 
   // TODO: jsdoc
@@ -185,8 +186,8 @@
         photoLightbox.newImageTransitionEndEventListener);
 
     // Remove the old small and main images from the DOM
-    photoLightbox.elements.lightbox.removeChild(photoLightbox.elements.oldSmallImage);
-    photoLightbox.elements.lightbox.removeChild(photoLightbox.elements.oldMainImage);
+    util.removeChildIfPresent(photoLightbox.elements.lightbox, photoLightbox.elements.oldSmallImage);
+    util.removeChildIfPresent(photoLightbox.elements.lightbox, photoLightbox.elements.oldMainImage);
 
     // Switch the previous new image elements to now be old image elements for this transition
     photoLightbox.elements.oldSmallImage = photoLightbox.elements.newSmallImage;
@@ -353,8 +354,8 @@
     photoLightbox = this;
 
     // Remove the old small and main images from the DOM
-    photoLightbox.elements.lightbox.removeChild(photoLightbox.elements.oldSmallImage);
-    photoLightbox.elements.lightbox.removeChild(photoLightbox.elements.oldMainImage);
+    util.removeChildIfPresent(photoLightbox.elements.lightbox, photoLightbox.elements.oldSmallImage);
+    util.removeChildIfPresent(photoLightbox.elements.lightbox, photoLightbox.elements.oldMainImage);
   }
 
   // TODO: jsdoc
@@ -455,6 +456,8 @@
     var photoLightbox, photoItem, body, bodyTapEventListener;
 
     photoLightbox = this;
+    photoLightbox.photoGroup = photoGroup;
+    photoLightbox.currentIndex = index;
     photoItem = photoLightbox.photoGroup.photos[photoLightbox.currentIndex];
 
     // Remove the visible/hidden classes from the lightbox, so the next property changes can
@@ -480,7 +483,9 @@
     setElementVisibility(photoLightbox.elements.backgroundHaze, true);
 
     // The lightbox is closed when the viewer taps outside of it
-    bodyTapEventListener = function(event) { onCloseButtonTap(event, photoLightbox); };
+    bodyTapEventListener = function(event) {
+      onCloseButtonTap.call(photoLightbox, event);
+    };
     photoLightbox.bodyTapEventListener = bodyTapEventListener;
     body = document.getElementsByTagName('body')[0];
     photoLightbox.bodyTapPreventionCallback = util.addTapEventListener(body, bodyTapEventListener, true);
