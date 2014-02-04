@@ -19,135 +19,88 @@ body {
   visibility: visible;
   min-width: 80px;
   min-height: 80px;
+  box-shadow: -8px 8px 48px 16px #000000;
   -webkit-border-radius: 10px;
   -moz-border-radius: 10px;
   -ms-border-radius: 10px;
   -o-border-radius: 10px;
   border-radius: 10px;
-  box-shadow: -8px 8px 48px 16px #000000;/*TODO: tweak this*/
   -webkit-transition:
     visibility 0s linear 0s,
-    left 1.0s ease 0s,
-    top 1.0s ease 0s,
-    width 1.0s ease 0s,
-    height 1.0s ease 0s,
-    box-shadow 1.0s ease 0s,
-    -webkit-border-radius 1.0s ease 0s;
+    left 0.6s ease 0s,
+    top 0.6s ease 0s,
+    width 0.6s ease 0s,
+    height 0.6s ease 0s,
+    box-shadow 0.6s ease 0s,
+    -webkit-border-radius 0.6s ease 0s;
   -moz-transition:
     visibility 0s linear 0s,
-    left 1.0s ease 0s,
-    top 1.0s ease 0s,
-    width 1.0s ease 0s,
-    height 1.0s ease 0s,
-    box-shadow 1.0s ease 0s,
-    -moz-border-radius 1.0s ease 0s;
+    left 0.6s ease 0s,
+    top 0.6s ease 0s,
+    width 0.6s ease 0s,
+    height 0.6s ease 0s,
+    box-shadow 0.6s ease 0s,
+    -moz-border-radius 0.6s ease 0s;
   -o-transition:
     visibility 0s linear 0s,
-    left 1.0s ease 0s,
-    top 1.0s ease 0s,
-    width 1.0s ease 0s,
-    height 1.0s ease 0s,
-    box-shadow 1.0s ease 0s,
-    -o-border-radius 1.0s ease 0s;
+    left 0.6s ease 0s,
+    top 0.6s ease 0s,
+    width 0.6s ease 0s,
+    height 0.6s ease 0s,
+    box-shadow 0.6s ease 0s,
+    -o-border-radius 0.6s ease 0s;
   transition:
     visibility 0s linear 0s,
-    left 1.0s ease 0s,
-    top 1.0s ease 0s,
-    width 1.0s ease 0s,
-    height 1.0s ease 0s,
-    box-shadow 1.0s ease 0s,
-    border-radius 1.0s ease 0s;
+    left 0.6s ease 0s,
+    top 0.6s ease 0s,
+    width 0.6s ease 0s,
+    height 0.6s ease 0s,
+    box-shadow 0.6s ease 0s,
+    border-radius 0.6s ease 0s;
 }
 
 .lightbox.hidden {
   visibility: hidden;
   min-width: 0;
   min-height: 0;
+  box-shadow: 0 0 0 0 #000000;
   -webkit-border-radius: 0;
   -moz-border-radius: 0;
   -ms-border-radius: 0;
   -o-border-radius: 0;
   border-radius: 0;
-  box-shadow: 0 0 0 0 #000000;
   -webkit-transition:
-    visibility 0s linear 0.2s,
-    left 0.2s ease 0s,
-    top 0.2s ease 0s,
-    width 0.2s ease 0s,
-    height 0.2s ease 0s,
-    box-shadow 0.2s ease 0s,
-    -webkit-border-radius 0.2s ease 0s;
+    visibility 0s linear 0.4s,
+    left 0.4s ease 0s,
+    top 0.4s ease 0s,
+    width 0.4s ease 0s,
+    height 0.4s ease 0s,
+    box-shadow 0.4s ease 0s,
+    -webkit-border-radius 0.4s ease 0s;
   -moz-transition:
-    visibility 0s linear 0.2s,
-    left 0.2s ease 0s,
-    top 0.2s ease 0s,
-    width 0.2s ease 0s,
-    height 0.2s ease 0s,
-    box-shadow 0.2s ease 0s,
-    -moz-border-radius 0.2s ease 0s;
+    visibility 0s linear 0.4s,
+    left 0.4s ease 0s,
+    top 0.4s ease 0s,
+    width 0.4s ease 0s,
+    height 0.4s ease 0s,
+    box-shadow 0.4s ease 0s,
+    -moz-border-radius 0.4s ease 0s;
   -o-transition:
-    visibility 0s linear 0.2s,
-    left 0.2s ease 0s,
-    top 0.2s ease 0s,
-    width 0.2s ease 0s,
-    height 0.2s ease 0s,
-    box-shadow 0.2s ease 0s,
-    -o-border-radius 0.2s ease 0s;
+    visibility 0s linear 0.4s,
+    left 0.4s ease 0s,
+    top 0.4s ease 0s,
+    width 0.4s ease 0s,
+    height 0.4s ease 0s,
+    box-shadow 0.4s ease 0s,
+    -o-border-radius 0.4s ease 0s;
   transition:
-    visibility 0s linear 0.2s,
-    left 0.2s ease 0s,
-    top 0.2s ease 0s,
-    width 0.2s ease 0s,
-    height 0.2s ease 0s,
-    box-shadow 0.2s ease 0s,
-    border-radius 0.2s ease 0s;
-}
-
-.lightbox>img {
-  display: block;
-  position: absolute;
-  margin: auto;
-  top: 0; right: 0; bottom: 0; left: 0;
-  background-color: #707070;
-  z-index: 32020;
-}
-
-/* TODO: condense these old/new/Main/Small-Image rules into simply two (.xxx.hidden and .xxx.visible) and add an over-arching lightboxImage class */
-
-.oldMainImage.hidden {
-  -webkit-transition: visibility 0s linear 0.2s, opacity 0.2s ease 0s;
-  -moz-transition: visibility 0s linear 0.2s, opacity 0.2s ease 0s;
-  -o-transition: visibility 0s linear 0.2s, opacity 0.2s ease 0s;
-  transition: visibility 0s linear 0.2s, opacity 0.2s ease 0s;
-  opacity: 0;
-  visibility: hidden;
-}
-
-.newMainImage.visible {
-  -webkit-transition: visibility 0s linear 0s, opacity 0.2s ease 0s;
-  -moz-transition: visibility 0s linear 0s, opacity 0.2s ease 0s;
-  -o-transition: visibility 0s linear 0s, opacity 0.2s ease 0s;
-  transition: visibility 0s linear 0s, opacity 0.2s ease 0s;
-  opacity: 1;
-  visibility: visible;
-}
-
-.oldSmallImage.hidden {
-  -webkit-transition: visibility 0s linear 0.2s, opacity 0.2s ease 0s;
-  -moz-transition: visibility 0s linear 0.2s, opacity 0.2s ease 0s;
-  -o-transition: visibility 0s linear 0.2s, opacity 0.2s ease 0s;
-  transition: visibility 0s linear 0.2s, opacity 0.2s ease 0s;
-  opacity: 0;
-  visibility: hidden;
-}
-
-.newSmallImage.visible {
-  -webkit-transition: visibility 0s linear 0s, opacity 0.2s ease 0s;
-  -moz-transition: visibility 0s linear 0s, opacity 0.2s ease 0s;
-  -o-transition: visibility 0s linear 0s, opacity 0.2s ease 0s;
-  transition: visibility 0s linear 0s, opacity 0.2s ease 0s;
-  opacity: 1;
-  visibility: visible;
+    visibility 0s linear 0.4s,
+    left 0.4s ease 0s,
+    top 0.4s ease 0s,
+    width 0.4s ease 0s,
+    height 0.4s ease 0s,
+    box-shadow 0.4s ease 0s,
+    border-radius 0.4s ease 0s;
 }
 
 .backgroundHaze {
@@ -157,24 +110,78 @@ body {
   background-color: #030303;
   width: 100%;
   height: 100%;
+  opacity: 0;
 }
 
 .backgroundHaze.visible {
-  -webkit-transition: visibility 0s linear 0s, opacity 0.3s ease 0s;
-  -moz-transition: visibility 0s linear 0s, opacity 0.3s ease 0s;
-  -o-transition: visibility 0s linear 0s, opacity 0.3s ease 0s;
-  transition: visibility 0s linear 0s, opacity 0.3s ease 0s;
   opacity: 0.8;
   visibility: visible;
+  -webkit-transition: visibility 0s linear 0s, opacity 0.6s ease 0s;
+  -moz-transition: visibility 0s linear 0s, opacity 0.6s ease 0s;
+  -o-transition: visibility 0s linear 0s, opacity 0.6s ease 0s;
+  transition: visibility 0s linear 0s, opacity 0.6s ease 0s;
 }
 
 .backgroundHaze.hidden {
-  -webkit-transition: visibility 0s linear 0.2s, opacity 0.2s ease 0s;
-  -moz-transition: visibility 0s linear 0.2s, opacity 0.2s ease 0s;
-  -o-transition: visibility 0s linear 0.2s, opacity 0.2s ease 0s;
-  transition: visibility 0s linear 0.2s, opacity 0.2s ease 0s;
   opacity: 0;
   visibility: hidden;
+  -webkit-transition: visibility 0s linear 0.4s, opacity 0.4s ease 0s;
+  -moz-transition: visibility 0s linear 0.4s, opacity 0.4s ease 0s;
+  -o-transition: visibility 0s linear 0.4s, opacity 0.4s ease 0s;
+  transition: visibility 0s linear 0.4s, opacity 0.4s ease 0s;
+}
+
+.lightbox>img {
+  display: block;
+  position: absolute;
+  margin: auto;
+  top: 0; right: 0; bottom: 0; left: 0;
+  background-color: #707070;
+  z-index: 32020;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.lightbox>img.visible {
+  opacity: 1;
+  visibility: visible;
+  -webkit-transition: visibility 0s linear 0s, opacity 0.6s ease 0s;
+  -moz-transition: visibility 0s linear 0s, opacity 0.6s ease 0s;
+  -o-transition: visibility 0s linear 0s, opacity 0.6s ease 0s;
+  transition: visibility 0s linear 0s, opacity 0.6s ease 0s;
+}
+
+.lightbox>img.hidden {
+  opacity: 0;
+  visibility: hidden;
+  -webkit-transition: visibility 0s linear 0.6s, opacity 0.6s ease 0s;
+  -moz-transition: visibility 0s linear 0.6s, opacity 0.6s ease 0s;
+  -o-transition: visibility 0s linear 0.6s, opacity 0.6s ease 0s;
+  transition: visibility 0s linear 0.6s, opacity 0.6s ease 0s;
+}
+
+.oldMainImage.visible, .newMainImage.visible {
+  opacity: 1;
+}
+
+.oldSmallImage.visible, .newSmallImage.visible {
+  opacity: 0.15;
+}
+
+.newMainImage {
+  z-index: 32024;
+}
+
+.oldMainImage {
+  z-index: 32023;
+}
+
+.newSmallImage {
+  z-index: 32022;
+}
+
+.oldSmallImage {
+  z-index: 32021;
 }
 
 .spriteButton {
@@ -185,21 +192,21 @@ body {
 }
 
 .spriteButton.visible {
+  opacity: 1;
+  visibility: visible;
   -webkit-transition: visibility 0s linear 0s, opacity 0.2s ease 0s;
   -moz-transition: visibility 0s linear 0s, opacity 0.2s ease 0s;
   -o-transition: visibility 0s linear 0s, opacity 0.2s ease 0s;
   transition: visibility 0s linear 0s, opacity 0.2s ease 0s;
-  opacity: 1;
-  visibility: visible;
 }
 
 .spriteButton.hidden {
+  opacity: 0;
+  visibility: hidden;
   -webkit-transition: visibility 0s linear 0.7s, opacity 0.7s ease 0s;
   -moz-transition: visibility 0s linear 0.7s, opacity 0.7s ease 0s;
   -o-transition: visibility 0s linear 0.7s, opacity 0.7s ease 0s;
   transition: visibility 0s linear 0.7s, opacity 0.7s ease 0s;
-  opacity: 0;
-  visibility: hidden;
 }
 
 .closeButton {

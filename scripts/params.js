@@ -87,6 +87,7 @@
 
   // --- Miscellaneous parameters --- //
 
+  params.ADD_CSS_TRANSITION_DELAY = 10;
   params.SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
   params.TWO_PI = Math.PI * 2;
   params.HALF_PI = Math.PI * 0.5;

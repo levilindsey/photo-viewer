@@ -197,15 +197,15 @@
     util.removeChildIfPresent(photoLightbox.elements.lightbox, photoLightbox.elements.oldSmallImage);
     util.removeChildIfPresent(photoLightbox.elements.lightbox, photoLightbox.elements.oldMainImage);
 
+    // Remove the visibility classes from the old small and main images
+    util.toggleClass(photoLightbox.elements.oldSmallImage, 'hidden', false);
+    util.toggleClass(photoLightbox.elements.oldMainImage, 'visible', false);
+
     // Switch the previous new image elements to now be old image elements for this transition
     photoLightbox.elements.oldSmallImage = photoLightbox.elements.newSmallImage;
-    switchImageClassToOldOrNew(photoLightbox.elements.oldSmallImage, false, false);
     photoLightbox.elements.oldMainImage = photoLightbox.elements.newMainImage;
+    switchImageClassToOldOrNew(photoLightbox.elements.oldSmallImage, false, false);
     switchImageClassToOldOrNew(photoLightbox.elements.oldMainImage, true, false);
-
-    // Start listening for the end of any transition that will run for the new main image
-    util.listenForTransitionEnd(photoLightbox.elements.newMainImage,
-        photoLightbox.newImageTransitionEndEventListener);
 
     // Set up the new image sources
     if (photoLightbox.inFullscreenMode) {
@@ -220,9 +220,6 @@
       } else {
         smallTargetSize = 'thumbnail';
       }
-
-      loadPhotoImage(photoLightbox, true, mainTargetSize, photoItem);
-      loadPhotoImage(photoLightbox, false, smallTargetSize, photoItem);
     } else {
       // Determine the new target small and main size
       if (photoItem.full.isCached) {
@@ -237,21 +234,19 @@
         mainTargetSize = 'small';
         smallTargetSize = 'thumbnail';
       }
-
-      loadPhotoImage(photoLightbox, true, mainTargetSize, photoItem);
-      loadPhotoImage(photoLightbox, false, smallTargetSize, photoItem);
     }
+
+    loadPhotoImage(photoLightbox, true, mainTargetSize, photoItem);
 
     if (mainImageIsNotYetCached) {
       // Show the progress circle
+      loadPhotoImage(photoLightbox, false, smallTargetSize, photoItem);
       photoLightbox.progressCircle.open();
     }
 
-    // Fade out the old image, and fade in the temporary, small version of the image
-    setElementVisibility(photoLightbox.elements.newSmallImage, false);
-    setElementVisibility(photoLightbox.elements.newMainImage, false);
-    setElementVisibility(photoLightbox.elements.oldSmallImage, false);
-    setElementVisibility(photoLightbox.elements.oldMainImage, false);
+    // Fade out the old image
+    setElementVisibility(photoLightbox.elements.oldSmallImage, false, false);
+    setElementVisibility(photoLightbox.elements.oldMainImage, false, false);
 
     // TODO: jsdoc
     function loadPhotoImage(photoLightbox, isMainImage, targetSize, photoItem) {
@@ -302,14 +297,26 @@
       if (isMainImage) {
         // Assign the freshly loaded photo item image as the lightbox's main image
         photoLightbox.elements.newMainImage = photoItem[targetSize].image;
-        switchImageClassToOldOrNew(photoLightbox.elements.newMainImage, true, true);
+
+        setElementVisibility(photoLightbox.elements.newMainImage, false, false);
+
+        // Start listening for the end of any transition that will run for the new main image
+        util.listenForTransitionEnd(photoLightbox.elements.newMainImage,
+            photoLightbox.newImageTransitionEndEventListener);
 
         // Add the new main image to the DOM
         photoLightbox.elements.lightbox.appendChild(photoLightbox.elements.newMainImage);
 
-        // Display this new image
-        setElementVisibility(photoLightbox.elements.newSmallImage, false);
-        setElementVisibility(photoLightbox.elements.newMainImage, true);
+        // Set up the class and transitions for the new image
+        switchImageClassToOldOrNew(photoLightbox.elements.newMainImage, true, true);
+
+        // Hide the small image
+        setElementVisibility(photoLightbox.elements.newSmallImage, false, false);
+
+        // Display this new image; there needs to be a slight delay after adding the element to
+        // the DOM, and before adding its CSS transitions; otherwise, the transitions will not
+        // work properly
+        setElementVisibility(photoLightbox.elements.newMainImage, true, true, null);
 
         // Start caching the neighboring images
         previousIndex = getPreviousPhotoItemIndex(photoLightbox);
@@ -323,14 +330,21 @@
       } else {
         // Assign the freshly loaded photo item image as the lightbox's small image
         photoLightbox.elements.newSmallImage = photoItem[targetSize].image;
-        switchImageClassToOldOrNew(photoLightbox.elements.newSmallImage, false, true);
+
+        setElementVisibility(photoLightbox.elements.newSmallImage, false, false);
 
         // Add the new small image to the DOM
         photoLightbox.elements.lightbox.appendChild(photoLightbox.elements.newSmallImage);
 
+        // Set up the class and transitions for the new image
+        switchImageClassToOldOrNew(photoLightbox.elements.newSmallImage, false, true);
+
         // Display this new image, but only if the main image has not already loaded
-        if (!util.containsClass(photoLightbox.elements.newMainImage, 'visible')) {
-          setElementVisibility(photoLightbox.elements.newSmallImage, true);
+        if (!photoItem.full.isCached &&
+            (!photoItem.small.isCached || photoLightbox.inFullscreenMode)) {
+          // There needs to be a slight delay after adding the element to the DOM, and before
+          // adding its CSS transitions; otherwise, the transitions will not work properly
+          setElementVisibility(photoLightbox.elements.newSmallImage, true, true, null);
         }
       }
     }
@@ -380,6 +394,10 @@
         photoLightbox.elements.oldSmallImage);
     util.removeChildIfPresent(photoLightbox.elements.lightbox,
         photoLightbox.elements.oldMainImage);
+
+    // Remove the visibility classes from the old small and main images
+    util.toggleClass(photoLightbox.elements.oldSmallImage, 'hidden', false);
+    util.toggleClass(photoLightbox.elements.oldMainImage, 'visible', false);
   }
 
   // TODO: jsdoc
@@ -391,7 +409,7 @@
     photoLightbox = this;
 
     // Determine whether the lightbox just appeared or disappeared
-    if (util.containsClass(photoLightbox.elements.lightbox, 'visible')) {
+    if (!util.containsClass(photoLightbox.elements.lightbox, 'hidden')) {
       // --- The lightbox just appeared --- //
 
       // Hide the overlay buttons
@@ -399,7 +417,9 @@
 
       if (!photoLightbox.buttonsHaveBeenVisible) {
         // Have the overlay buttons briefly show at the start
-        onLightboxPointerMove.call(photoLightbox);
+        setTimeout(function() {
+          onLightboxPointerMove.call(photoLightbox);
+        }, params.ADD_CSS_TRANSITION_DELAY);
       }
 
       // If we are still loading the main image, show the progress circle
@@ -439,11 +459,11 @@
   // TODO: jsdoc
   function setOverlayButtonsVisibility(visible) {
     var photoLightbox = this;
-    setElementVisibility(photoLightbox.elements.closeButton, visible);
-    setElementVisibility(photoLightbox.elements.reduceFromFullButton, visible);
-    setElementVisibility(photoLightbox.elements.expandToFullButton, visible);
-    setElementVisibility(photoLightbox.elements.previousButton, visible);
-    setElementVisibility(photoLightbox.elements.nextButton, visible);
+    setElementVisibility(photoLightbox.elements.closeButton, visible, false);
+    setElementVisibility(photoLightbox.elements.reduceFromFullButton, visible, false);
+    setElementVisibility(photoLightbox.elements.expandToFullButton, visible, false);
+    setElementVisibility(photoLightbox.elements.previousButton, visible, false);
+    setElementVisibility(photoLightbox.elements.nextButton, visible, false);
   }
 
   // TODO: jsdoc
@@ -454,7 +474,7 @@
     // visible
     if (!photoLightbox.inFullscreenMode &&
         photoLightbox.elements.lightbox.style.display !== 'none' &&
-        util.containsClass(photoLightbox.elements.lightbox, 'visible')) {
+        !util.containsClass(photoLightbox.elements.lightbox, 'hidden')) {
       boundingBox = getCenteredBoundingBox();
       photoLightbox.elements.lightbox.style.left = boundingBox.x + 'px';
       photoLightbox.elements.lightbox.style.top = boundingBox.y + 'px';
@@ -486,6 +506,7 @@
     photoLightbox.photoGroup = photoGroup;
     photoLightbox.currentIndex = index;
     photoItem = photoLightbox.photoGroup.photos[photoLightbox.currentIndex];
+    photoLightbox.buttonsHaveBeenVisible = false;
 
     // Remove the visible/hidden classes from the lightbox, so the next property changes can
     // happen instantly, without its CSS transitions getting in the way
@@ -500,14 +521,14 @@
 
     // Make the lightbox visible and start its CSS transitions
     photoLightbox.elements.lightbox.style.display = 'block';
-    setElementVisibility(photoLightbox.elements.lightbox, true);
-
-    // Have the lightbox transition to its larger, centered dimensions
-    recenterAndResize.call(photoLightbox);
+    setElementVisibility(photoLightbox.elements.lightbox, true, true, function() {
+      // Have the lightbox transition to its larger, centered dimensions
+      recenterAndResize.call(photoLightbox);
+    });
 
     // Make the background haze visible and start its CSS transitions
     photoLightbox.elements.backgroundHaze.style.display = 'block';
-    setElementVisibility(photoLightbox.elements.backgroundHaze, true);
+    setElementVisibility(photoLightbox.elements.backgroundHaze, true, true, null);
 
     // The lightbox is closed when the viewer taps outside of it
     bodyTapEventListener = function(event) {
@@ -540,7 +561,7 @@
     setLightboxButtonsDisplay.call(photoLightbox, false);
 
     // Start the lightbox's transition to being hidden
-    setElementVisibility(photoLightbox.elements.lightbox, false);
+    setElementVisibility(photoLightbox.elements.lightbox, false, false);
 
     // Have the lightbox transition to match the dimensions of the thumbnail
     photoLightbox.elements.lightbox.style.left = photoItem.thumbnail.x + 'px';
@@ -549,7 +570,7 @@
     photoLightbox.elements.lightbox.style.height = photoItem.thumbnail.height + 'px';
 
     // Start the background haze's transition to being hidden
-    setElementVisibility(photoLightbox.elements.backgroundHaze, false);
+    setElementVisibility(photoLightbox.elements.backgroundHaze, false, false);
 
     // We don't need to listen for when the viewer taps outside of the lightbox anymore
     body = document.getElementsByTagName('body')[0];
@@ -562,13 +583,47 @@
   // ------------------------------------------------------------------------------------------- //
   // Private static functions
 
-  // TODO: jsdoc
-  function setElementVisibility(element, visible) {
+  /**
+   * Adds or removes the hidden and visible classes from the given element, in order for it to be
+   * visible or hidden, as specified. These two classes have corresponding CSS rules regarding
+   * visibility and transitions.
+   * @function photoLightbox~setElementVisibility
+   * @param {HTMLElement} element The element to show or hide.
+   * @param {Boolean} visible If true, then the element will be made visible.
+   * @param {Boolean} [delay] If true, then there will be a slight delay before the element's
+   * classes are changed. This is important, because if a CSS transition is added to an element
+   * immediately after changing the element's display, or adding it to the DOM, then there will be
+   * problems with the transition.
+   * @param {Function} [callback] This function will be called after the delay.
+   */
+  function setElementVisibility(element, visible, delay, callback) {
     util.toggleClass(element, 'hidden', !visible);
-    util.toggleClass(element, 'visible', visible);
+
+    if (delay) {
+      setTimeout(function() {
+        setVisibility();
+        if (callback) {
+          callback();
+        }
+      }, params.ADD_CSS_TRANSITION_DELAY);
+    } else {
+      setVisibility();
+    }
+
+    function setVisibility() {
+      util.toggleClass(element, 'visible', visible);
+    }
   }
 
-  // TODO: jsdoc
+  /**
+   * Switches the given element's classes according to whether this is a main image and whether
+   * this is a new image. These classes have corresponding CSS rules regarding visibility and
+   * transitions.
+   * @function photoLightbox~switchImageClassToOldOrNew
+   * @param {HTMLElement} element The image element whose classes will be switched.
+   * @param {Boolean} isMainImage True if the element is a main image.
+   * @param {Boolean} switchToNew True if the element is a new image.
+   */
   function switchImageClassToOldOrNew(element, isMainImage, switchToNew) {
     var newClass, oldClass;
     if (isMainImage) {
