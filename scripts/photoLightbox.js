@@ -6,7 +6,7 @@
   // ------------------------------------------------------------------------------------------- //
   // Private static variables
 
-  var params, util, log, animate;
+  var params, util, log, animate, SVGProgressCircle;
 
   // ------------------------------------------------------------------------------------------- //
   // Private dynamic functions
@@ -21,7 +21,7 @@
   function createElements(width, height) {
     var photoLightbox, body, lightbox, oldMainImage, newMainImage, newSmallImage, oldSmallImage,
         backgroundHaze, closeButton, reduceFromFullButton, expandToFullButton, previousButton,
-        nextButton, newImageTransitionEndEventListener;
+        nextButton, newImageTransitionEndEventListener, svg;
 
     photoLightbox = this;
     body = document.getElementsByTagName('body')[0];
@@ -86,6 +86,11 @@
       onNextButtonTap.call(photoLightbox, event);
     }, true);
 
+    svg = document.createElementNS(params.SVG_NAMESPACE, 'svg');
+    svg.style.width = params.LIGHTBOX.PROGRESS_CIRCLE_DIAMETER + 'px';
+    svg.style.height = params.LIGHTBOX.PROGRESS_CIRCLE_DIAMETER + 'px';
+    lightbox.appendChild(svg);
+
     photoLightbox.elements = {
       lightbox: lightbox,
       oldMainImage: oldMainImage,
@@ -97,7 +102,8 @@
       reduceFromFullButton: reduceFromFullButton,
       expandToFullButton: expandToFullButton,
       previousButton: previousButton,
-      nextButton: nextButton
+      nextButton: nextButton,
+      svg: svg
     };
   }
 
@@ -147,13 +153,15 @@
 
   // TODO: jsdoc
   function onLightboxPointerMove() {
-    //log.v('onLightboxPointerMove');
     var photoLightbox = this;
 
     // Stop any previous pointer move timer
     if (photoLightbox.pointerMoveTimeout) {
+      //log.v('onLightboxPointerMove', 'Refreshing pointer move timeout');
       clearTimeout(photoLightbox.pointerMoveTimeout);
     } else {
+      log.i('onLightboxPointerMove', 'Showing overlay buttons, and starting new pointer move timeout');
+      photoLightbox.buttonsHaveBeenVisible = true;
       setOverlayButtonsVisibility.call(photoLightbox, true);
     }
 
@@ -167,7 +175,7 @@
   function onLightboxPointerMoveTimeout() {
     log.i('onLightboxPointerMoveTimeout');
     var photoLightbox = this;
-    setOverlayButtonsVisibility.call(photoLightbox, true);
+    setOverlayButtonsVisibility.call(photoLightbox, false);
     photoLightbox.pointerMoveTimeout = null;
   }
 
@@ -236,7 +244,7 @@
 
     if (mainImageIsNotYetCached) {
       // Show the progress circle
-      //**;// TODO: !!!
+      photoLightbox.progressCircle.open();
     }
 
     // Fade out the old image, and fade in the temporary, small version of the image
@@ -257,7 +265,8 @@
 
   // TODO: jsdoc
   function onPhotoImageLoadSuccess(isMainImage, targetSize, photoItem) {
-    log.i('onPhotoImageLoadSuccess', targetSize === 'full' ? photoItem.full.source : photoItem.small.source);
+    log.i('onPhotoImageLoadSuccess',
+        targetSize === 'full' ? photoItem.full.source : photoItem.small.source);
     var photoLightbox, stillOnSameImage, previousIndex, nextIndex;
 
     photoLightbox = this;
@@ -268,16 +277,23 @@
       log.w('onPhotoImageLoadSuccess', 'Not displaying photo, because it is no longer current');
     } else {
       // Check which image just loaded
-      if (photoLightbox.inFullscreenMode && targetSize === 'full') {
-        stillOnSameImage = true;
-      } else if (!photoLightbox.inFullscreenMode && targetSize === 'small') {
-        stillOnSameImage = true;
+      if (isMainImage) {
+        // We only want to display the main image version that is appropriate for the current
+        // fullscreen mode
+        if (photoLightbox.inFullscreenMode && targetSize === 'full') {
+          stillOnSameImage = true;
+        } else if (!photoLightbox.inFullscreenMode && targetSize === 'small') {
+          stillOnSameImage = true;
+        } else {
+          // Do NOT display this image if the viewer has toggled fullscreens
+          log.w('onPhotoImageLoadSuccess',
+              'Not displaying photo, because viewer toggled fullscreen while it was loading: isMainImage=' +
+                  isMainImage + ', inFullscreenMode=' + photoLightbox.inFullscreenMode +
+                  ', targetSize=' + targetSize);
+        }
       } else {
-        // Do NOT display this image if the viewer has toggled fullscreens
-        log.w('onPhotoImageLoadSuccess',
-            'Not displaying photo, because viewer toggled fullscreen while it was loading: isMainImage=' +
-                isMainImage + ', inFullscreenMode=' + photoLightbox.inFullscreenMode +
-                ', targetSize=' + targetSize);
+        // Display whatever image is first available for the temporary, small, background image
+        stillOnSameImage = true;
       }
     }
 
@@ -298,11 +314,12 @@
         // Start caching the neighboring images
         previousIndex = getPreviousPhotoItemIndex(photoLightbox);
         nextIndex = getNextPhotoItemIndex(photoLightbox);
-        cacheNeighborImage(photoLightbox, targetSize, photoLightbox.photoGroup.photos[previousIndex]);
+        cacheNeighborImage(photoLightbox, targetSize,
+            photoLightbox.photoGroup.photos[previousIndex]);
         cacheNeighborImage(photoLightbox, targetSize, photoLightbox.photoGroup.photos[nextIndex]);
 
         // Hide the progress circle
-        //**;// TODO: !!!
+        photoLightbox.progressCircle.close();
       } else {
         // Assign the freshly loaded photo item image as the lightbox's small image
         photoLightbox.elements.newSmallImage = photoItem[targetSize].image;
@@ -311,8 +328,10 @@
         // Add the new small image to the DOM
         photoLightbox.elements.lightbox.appendChild(photoLightbox.elements.newSmallImage);
 
-        // Display this new image
-        setElementVisibility(photoLightbox.elements.newSmallImage, true);
+        // Display this new image, but only if the main image has not already loaded
+        if (!util.containsClass(photoLightbox.elements.newMainImage, 'visible')) {
+          setElementVisibility(photoLightbox.elements.newSmallImage, true);
+        }
       }
     }
 
@@ -328,7 +347,8 @@
 
   // TODO: jsdoc
   function onPhotoImageLoadError(isMainImage, targetSize, photoItem) {
-    log.e('onPhotoImageLoadError', targetSize === 'full' ? photoItem.full.source : photoItem.small.source);
+    log.e('onPhotoImageLoadError',
+        targetSize === 'full' ? photoItem.full.source : photoItem.small.source);
     var photoLightbox;
 
     photoLightbox = this;
@@ -338,29 +358,34 @@
 
   // TODO: jsdoc
   function onNeighborPhotoCacheSuccess(targetSize, photoItem) {
-    log.v('onNeighborPhotoCacheSuccess', targetSize === 'full' ? photoItem.full.source : photoItem.small.source);
+    log.v('onNeighborPhotoCacheSuccess',
+        targetSize === 'full' ? photoItem.full.source : photoItem.small.source);
   }
 
   // TODO: jsdoc
   function onNeighborPhotoCacheError(targetSize, photoItem) {
-    log.e('onNeighborPhotoCacheError', targetSize === 'full' ? photoItem.full.source : photoItem.small.source);
+    log.e('onNeighborPhotoCacheError',
+        targetSize === 'full' ? photoItem.full.source : photoItem.small.source);
   }
 
   // TODO: jsdoc
   function onNewImageTransitionEnd(event) {
-    log.d('onNewImageTransitionEnd');
+    log.d('onNewImageTransitionEnd', 'property=' + event.propertyName);
     var photoLightbox;
 
     photoLightbox = this;
 
     // Remove the old small and main images from the DOM
-    util.removeChildIfPresent(photoLightbox.elements.lightbox, photoLightbox.elements.oldSmallImage);
-    util.removeChildIfPresent(photoLightbox.elements.lightbox, photoLightbox.elements.oldMainImage);
+    util.removeChildIfPresent(photoLightbox.elements.lightbox,
+        photoLightbox.elements.oldSmallImage);
+    util.removeChildIfPresent(photoLightbox.elements.lightbox,
+        photoLightbox.elements.oldMainImage);
   }
 
   // TODO: jsdoc
   function onLightboxTransitionEnd(event) {
-    log.d('onLightboxTransitionEnd');
+    // TODO: somehow, this function gets called after each of the overlay buttons finish transitioning. why??
+    log.d('onLightboxTransitionEnd', 'property=' + event.propertyName);
     var photoLightbox;
 
     photoLightbox = this;
@@ -372,12 +397,14 @@
       // Hide the overlay buttons
       setLightboxButtonsDisplay.call(photoLightbox, true);
 
-      // Have the overlay buttons briefly show at the start
-      onLightboxPointerMove.call(photoLightbox);
+      if (!photoLightbox.buttonsHaveBeenVisible) {
+        // Have the overlay buttons briefly show at the start
+        onLightboxPointerMove.call(photoLightbox);
+      }
 
       // If we are still loading the main image, show the progress circle
       if (util.containsClass(photoLightbox.elements.newMainImage, 'hidden')) {
-        //**; // TODO: !!!
+        photoLightbox.progressCircle.open();
       }
     } else {
       // --- The lightbox just disappeared --- //
@@ -489,6 +516,9 @@
     photoLightbox.bodyTapEventListener = bodyTapEventListener;
     body = document.getElementsByTagName('body')[0];
     photoLightbox.bodyTapPreventionCallback = util.addTapEventListener(body, bodyTapEventListener, true);
+
+    // Show the first photo
+    setPhoto.call(photoLightbox, photoLightbox.currentIndex);
   }
 
   // TODO: jsdoc
@@ -504,7 +534,7 @@
     }
 
     // If the progress circle is running, hide it
-    //**; // TODO: !!!
+    photoLightbox.progressCircle.close();
 
     // Hide the overlay buttons
     setLightboxButtonsDisplay.call(photoLightbox, false);
@@ -589,6 +619,7 @@
     util = app.util;
     log = new app.Log('photoLightbox');
     animate = app.animate;
+    SVGProgressCircle = app.SVGProgressCircle;
     log.d('initStaticFields', 'Module initialized');
   }
 
@@ -610,10 +641,14 @@
     this.bodyTapPreventionCallback = null;
     this.newImageTransitionEndEventListener = null;
     this.pointerMoveTimeout = null;
+    this.buttonsHaveBeenVisible = false;
     this.open = open;
     this.close = close;
 
     createElements.call(this, width, height);
+
+    this.progressCircle = new SVGProgressCircle(this.elements.svg, 0, 0,
+        params.LIGHTBOX.PROGRESS_CIRCLE_DIAMETER, params.LIGHTBOX.PROGRESS_CIRCLE_DOT_RADIUS);
 
     // Re-position the lightbox when the window re-sizes
     util.listen(window, 'resize', function() {

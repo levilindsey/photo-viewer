@@ -55,31 +55,6 @@
     log.i('onDocumentLoad');
 
     reset();
-
-    // TODO: remove the following
-    var progressCircle, body, svg, left, top, diameter, dotRadius;
-
-    body = document.getElementsByTagName('body')[0];
-    body.style.width = '100%';
-    body.style.height = '100%';
-    body.style.margin = '0px';
-    body.style.backgroundColor = '#202020';
-
-    svg = document.createElementNS(params.SVG_NAMESPACE, 'svg');
-    svg.style.position = 'absolute';
-    svg.style.width = '100%';
-    svg.style.height = '100%';
-    svg.style.zIndex = '2147483647';
-    //body.appendChild(svg);
-
-    left = 100;
-    top = 100;
-    diameter = 300;
-    dotRadius = 10;
-    progressCircle = new SVGProgressCircle(svg, left, top, diameter, dotRadius);
-    setTimeout(function() {
-      progressCircle.close();
-    }, 1000);
   }
 
   /**

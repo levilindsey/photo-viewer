@@ -33,6 +33,9 @@
   moduleParams.HEIGHT = 470;
   moduleParams.POINTER_MOVE_BUTTON_FADE_DELAY = 700; // milliseconds
 
+  moduleParams.PROGRESS_CIRCLE_DIAMETER = 290;
+  moduleParams.PROGRESS_CIRCLE_DOT_RADIUS = 10;
+
   // --- Dropdown photo grid parameters --- //
 
   moduleParams = {};

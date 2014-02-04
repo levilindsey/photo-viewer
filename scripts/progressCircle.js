@@ -12,35 +12,6 @@
   // Private static functions
 
   /**
-   * Starts the closing animation of the progress circle.
-   * @function ProgressCircle#close
-   */
-  function close() {
-    var startTime = Date.now();
-
-    this.dots.forEach(function(dot) {
-      var a;
-
-      // Stop the original animations that conflict with the closing animations
-      animate.stopAnimation(dot.animations.dotRevolution);
-      animate.stopAnimation(dot.animations.radiusHalfPulseY);
-
-      // Spin the dots faster for closing
-      a = dot.animations.dotRevolution;
-      dot.animations.dotRevolution = animate.startNumericAttributeAnimation(a.element,
-        a.attribute, a.currentValue, a.currentValue + params.PROGRESS_CIRCLE.WIND_DOWN_REVOLUTION_DEG,
-        startTime, params.PROGRESS_CIRCLE.WIND_DOWN_PERIOD, a.prefix, a.suffix, 'linear', null, dot);
-
-      // Draw the balls inward and fade them away
-      dot.animations.windDownShrink = animate.startNumericAttributeAnimation(dot.element,
-        'cy', dot.animations.radiusHalfPulseY.currentValue, dot.progressCircleCenterY, startTime,
-        params.PROGRESS_CIRCLE.WIND_DOWN_PERIOD, null, null, 'linear', onWindDownAnimationDone, dot);
-      dot.animations.windDownFade = animate.startNumericAttributeAnimation(dot.element, 'opacity',
-        1, 0, startTime, params.PROGRESS_CIRCLE.WIND_DOWN_PERIOD, null, null, 'linear', null, dot);
-    });
-  }
-
-  /**
    * Creates all of the individual dots, which comprise this progress circle, and starts their
    * animations.
    * @function progressCircle~createDots
@@ -271,6 +242,58 @@
   // Public static functions
 
   /**
+   * Starts the animation of the progress circle.
+   * @function ProgressCircle#open
+   */
+  function open() {
+    // TODO: refactor this so that it doesn't re-create the elements each time?
+    if (!this.dots) {
+      this.dots = createDots(this.svgElement, params.PROGRESS_CIRCLE.DOT_COUNT, this.left, this.top,
+          this.diameter, this.dotRadius);
+    }
+  }
+
+  /**
+   * Starts the closing animation of the progress circle.
+   * @function ProgressCircle#close
+   */
+  function close() {
+    var startTime = Date.now();
+
+    if (this.dots) {
+      this.dots.forEach(function(dot) {
+        var a;
+
+        // Stop the original animations that conflict with the closing animations
+        animate.stopAnimation(dot.animations.dotRevolution);
+        animate.stopAnimation(dot.animations.radiusHalfPulseY);
+
+        // Spin the dots faster for closing
+        a = dot.animations.dotRevolution;
+        dot.animations.dotRevolution = animate.startNumericAttributeAnimation(a.element,
+            a.attribute, a.currentValue, a.currentValue +
+                params.PROGRESS_CIRCLE.WIND_DOWN_REVOLUTION_DEG,
+            startTime, params.PROGRESS_CIRCLE.WIND_DOWN_PERIOD, a.prefix, a.suffix, 'linear',
+            null, dot);
+
+        // Draw the balls inward and fade them away
+        dot.animations.windDownShrink = animate.startNumericAttributeAnimation(dot.element,
+            'cy', dot.animations.radiusHalfPulseY.currentValue, dot.progressCircleCenterY,
+            startTime, params.PROGRESS_CIRCLE.WIND_DOWN_PERIOD, null, null, 'linear',
+            onWindDownAnimationDone, dot);
+        dot.animations.windDownFade = animate.startNumericAttributeAnimation(dot.element,
+            'opacity', 1, 0, startTime, params.PROGRESS_CIRCLE.WIND_DOWN_PERIOD, null, null,
+            'linear', null, dot);
+      });
+
+      this.dots = null;
+    }
+  }
+
+  // ------------------------------------------------------------------------------------------- //
+  // Public static functions
+
+  /**
    * Initializes some static state for this module.
    * @function ProgressCircle.initStaticFields
    */
@@ -286,8 +309,6 @@
   // Expose this module's constructor
 
   /**
-   * When the constructor is used to create a progress circle, the component elements are
-   * automatically created and added to the DOM, and the animations are automatically started.
    * @constructor
    * @global
    * @param {HTMLElement} svgElement The SVG container element to add the elements of this
@@ -298,7 +319,13 @@
    * @param {Number} dotRadius The radius to give the individual dots.
    */
   function SVGProgressCircle(svgElement, left, top, diameter, dotRadius) {
-    this.dots = createDots(svgElement, params.PROGRESS_CIRCLE.DOT_COUNT, left, top, diameter, dotRadius);
+    this.svgElement = svgElement;
+    this.left = left;
+    this.top = top;
+    this.diameter = diameter;
+    this.dotRadius = dotRadius;
+    this.dots = null;
+    this.open = open;
     this.close = close;
   }
 

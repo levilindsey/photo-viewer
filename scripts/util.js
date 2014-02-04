@@ -173,28 +173,6 @@
     }
   }
 
-  /**
-   * Adds the given class to the given element.
-   * @function util~addClass
-   * @param {HTMLElement} element The element to add the class to.
-   * @param {String} className The class to add.
-   */
-  function addClass(element, className) {
-    element.className += ' ' + className;
-  }
-
-  /**
-   * Removes the given class from the given element.
-   * @function util~removeClass
-   * @param {HTMLElement} element The element to remove the class from.
-   * @param {String} className The class to remove.
-   */
-  function removeClass(element, className) {
-    element.className = element.className.split(' ').filter(function(value) {
-      return value !== className;
-    }).join(' ');
-  }
-
   // ------------------------------------------------------------------------------------------- //
   // Public static functions
 
@@ -373,7 +351,9 @@
       element.id = id;
     }
     if (classes) {
-      classes.forEach(function(className) { addClass(element, className)});
+      classes.forEach(function(className) {
+        addClass(element, className)
+      });
     }
     return element;
   }
@@ -477,6 +457,28 @@
     return false
   }
 
+  /**
+   * Adds the given class to the given element.
+   * @function util.addClass
+   * @param {HTMLElement} element The element to add the class to.
+   * @param {String} className The class to add.
+   */
+  function addClass(element, className) {
+    element.className += ' ' + className;
+  }
+
+  /**
+   * Removes the given class from the given element.
+   * @function util.removeClass
+   * @param {HTMLElement} element The element to remove the class from.
+   * @param {String} className The class to remove.
+   */
+  function removeClass(element, className) {
+    element.className = element.className.split(' ').filter(function(value) {
+      return value !== className;
+    }).join(' ');
+  }
+
   // ------------------------------------------------------------------------------------------- //
   // Expose this module
 
@@ -499,6 +501,8 @@
     getPageCoordinates: getPageCoordinates,
     getViewportSize: getViewportSize,
     removeChildIfPresent: removeChildIfPresent,
+    addClass: addClass,
+    removeClass: removeClass,
     XHR: null,
     listen: null,
     stopListening: null,
