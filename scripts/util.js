@@ -81,7 +81,7 @@
         element.webkitRequestFullScreen();
       };
     } else {
-      util.listen = function(element) {
+      util.requestFullscreen = function(element) {
         log.e('This browser does not support fullscreen mode.');
       };
       log.w('This browser does not support fullscreen mode.');
@@ -92,22 +92,22 @@
   function setUpCancelFullScreen() {
     if (document.cancelFullScreen) {
       util.cancelFullscreen = function() {
-        element.cancelFullScreen();
+        document.cancelFullScreen();
       };
     } else if (document.mozCancelFullScreen) {
       util.cancelFullscreen = function() {
-        element.mozCancelFullScreen();
+        document.mozCancelFullScreen();
       };
     } else if (document.webkitCancelFullScreen) {
       util.cancelFullscreen = function() {
-        element.webkitCancelFullScreen();
+        document.webkitCancelFullScreen();
       };
     } else if (document.webkitExitFullScreen) {
       util.cancelFullscreen = function() {
-        element.webkitExitFullScreen();
+        document.webkitExitFullScreen();
       };
     } else {
-      util.listen = function(element) {
+      util.cancelFullscreen = function() {
         log.e('This browser does not support fullscreen mode.');
       };
       log.w('This browser does not support fullscreen mode.');
@@ -173,6 +173,25 @@
     }
   }
 
+  // TODO: jsdoc
+  function setUpGetScrollTop() {
+    var body;
+    if (typeof pageYOffset !== 'undefined') {
+      util.getScrollTop = function() {
+        return pageYOffset;
+      };
+    } else if (document.documentElement) {
+      util.getScrollTop = function() {
+        return document.documentElement.scrollTop;
+      };
+    } else {
+      body = document.getElementsByTagName('body')[0];
+      util.getScrollTop = function() {
+        return body.scrollTop;
+      };
+    }
+  }
+
   // ------------------------------------------------------------------------------------------- //
   // Public static functions
 
@@ -192,6 +211,7 @@
     setUpStopPropogation();
     setUpPreventDefault();
     setUpListenForTransitionEnd();
+    setUpGetScrollTop();
 
     log.d('init', 'Module initialized');
   }
@@ -511,7 +531,8 @@
     stopPropogation: null,
     preventDefault: null,
     listenForTransitionEnd: null,
-    stopListeningForTransitionEnd: null
+    stopListeningForTransitionEnd: null,
+    getScrollTop: null
   };
 
   // Expose this module

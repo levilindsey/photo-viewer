@@ -212,88 +212,89 @@ body {
 .closeButton {
   background-position: 0 0;
   margin: auto;
-  right: 20px;
+  left: 20px;
   top: 20px;
-  width: 50px;
-  height: 50px;
+  width: 34px;
+  height: 34px;
 }
 
 .closeButton:hover {
-  background-position: -51px 0;
+  background-position: -35px 0;
 }
 
 .closeButton:active {
-  background-position: -102px 0;
+  background-position: -70px 0;
 }
 
 .reduceFromFullButton {
-  background-position: 0 -51px;
+  display: none;
+  background-position: 0 -35px;
   margin: auto;
-  right: 80px;
+  right: 20px;
   top: 20px;
-  width: 50px;
-  height: 50px;
+  width: 34px;
+  height: 34px;
 }
 
 .reduceFromFullButton:hover {
-  background-position: -51px -51px;
+  background-position: -35px -35px;
 }
 
 .reduceFromFullButton:active {
-  background-position: -102px -51px;
+  background-position: -70px -35px;
 }
 
 .expandToFullButton {
-  background-position: 0 -102px;
+  background-position: 0 -70px;
   margin: auto;
-  right: 80px;
+  right: 20px;
   top: 20px;
-  width: 50px;
-  height: 50px;
+  width: 34px;
+  height: 34px;
 }
 
 .expandToFullButton:hover {
-  background-position: -51px -102px;
+  background-position: -35px -70px;
 }
 
 .expandToFullButton:active {
-  background-position: -102px -102px;
+  background-position: -70px -70px;
 }
 
 .previousButton {
-  background-position: 0 -153px;
+  background-position: 0 -105px;
   margin: auto;
   left: 20px;
   top: 0; bottom: 0;
-  width: 50px;
+  width: 34px;
   height: 100px;
   /*padding: 60px 70px 60px 10px;*/
 }
 
 .previousButton:hover {
-  background-position: -51px -153px;
+  background-position: -35px -105px;
 }
 
 .previousButton:active {
-  background-position: -102px -153px;
+  background-position: -70px -105px;
 }
 
 .nextButton {
-  background-position: 0 -254px;
+  background-position: 0 -206px;
   margin: auto;
   right: 20px;
   top: 0; bottom: 0;
-  width: 50px;
+  width: 34px;
   height: 100px;
   /*padding: 60px 10px 60px 70px;*/
 }
 
 .nextButton:hover {
-  background-position: -51px -254px;
+  background-position: -35px -206px;
 }
 
 .nextButton:active {
-  background-position: -102px -254px;
+  background-position: -70px -206px;
 }
 
 .lightbox svg {

@@ -489,10 +489,21 @@
     photoLightbox = this;
     display = areDisplayed ? 'block' : 'none';
     photoLightbox.elements.closeButton.style.display = display;
-    photoLightbox.elements.reduceFromFullButton.style.display = display;
-    photoLightbox.elements.expandToFullButton.style.display = display;
     photoLightbox.elements.previousButton.style.display = display;
     photoLightbox.elements.nextButton.style.display = display;
+    if (!areDisplayed) {
+      photoLightbox.elements.reduceFromFullButton.style.display = display;
+      photoLightbox.elements.expandToFullButton.style.display = display;
+    } else {
+      // Don't ever display both the reduce and expand buttons simultaneously
+      if (photoLightbox.inFullscreenMode) {
+        photoLightbox.elements.reduceFromFullButton.style.display = 'block';
+        photoLightbox.elements.expandToFullButton.style.display = 'none';
+      } else {
+        photoLightbox.elements.reduceFromFullButton.style.display = 'none';
+        photoLightbox.elements.expandToFullButton.style.display = 'block';
+      }
+    }
   }
 
   // ------------------------------------------------------------------------------------------- //
@@ -507,6 +518,7 @@
     photoLightbox.currentIndex = index;
     photoItem = photoLightbox.photoGroup.photos[photoLightbox.currentIndex];
     photoLightbox.buttonsHaveBeenVisible = false;
+    body = document.getElementsByTagName('body')[0];
 
     // Remove the visible/hidden classes from the lightbox, so the next property changes can
     // happen instantly, without its CSS transitions getting in the way
@@ -515,7 +527,7 @@
 
     // Start the lightbox animation with its dimensions matching the thumbnail
     photoLightbox.elements.lightbox.style.left = photoItem.thumbnail.x + 'px';
-    photoLightbox.elements.lightbox.style.top = photoItem.thumbnail.y + 'px';
+    photoLightbox.elements.lightbox.style.top = photoItem.thumbnail.y - util.getScrollTop() + 'px';
     photoLightbox.elements.lightbox.style.width = photoItem.thumbnail.width + 'px';
     photoLightbox.elements.lightbox.style.height = photoItem.thumbnail.height + 'px';
 
@@ -535,7 +547,6 @@
       onCloseButtonTap.call(photoLightbox, event);
     };
     photoLightbox.bodyTapEventListener = bodyTapEventListener;
-    body = document.getElementsByTagName('body')[0];
     photoLightbox.bodyTapPreventionCallback = util.addTapEventListener(body, bodyTapEventListener, true);
 
     // Show the first photo
@@ -548,6 +559,7 @@
 
     photoLightbox = this;
     photoItem = photoLightbox.photoGroup.photos[photoLightbox.currentIndex];
+    body = document.getElementsByTagName('body')[0];
 
     // Make sure we close from not fullscreen mode
     if (photoLightbox.inFullscreenMode) {
@@ -565,7 +577,7 @@
 
     // Have the lightbox transition to match the dimensions of the thumbnail
     photoLightbox.elements.lightbox.style.left = photoItem.thumbnail.x + 'px';
-    photoLightbox.elements.lightbox.style.top = photoItem.thumbnail.y + 'px';
+    photoLightbox.elements.lightbox.style.top = photoItem.thumbnail.y - util.getScrollTop() + 'px';
     photoLightbox.elements.lightbox.style.width = photoItem.thumbnail.width + 'px';
     photoLightbox.elements.lightbox.style.height = photoItem.thumbnail.height + 'px';
 
@@ -573,7 +585,6 @@
     setElementVisibility(photoLightbox.elements.backgroundHaze, false, false);
 
     // We don't need to listen for when the viewer taps outside of the lightbox anymore
-    body = document.getElementsByTagName('body')[0];
     util.removeTapEventListener(body, photoLightbox.bodyTapEventListener,
         photoLightbox.bodyTapPreventionCallback);
     photoLightbox.bodyTapEventListener = null;
@@ -688,26 +699,28 @@
    * @param {Number} [height] The height of this lightbox when not in full-screen mode.
    */
   function PhotoLightbox(width, height) {
-    this.elements = null;
-    this.currentIndex = Number.NaN;
-    this.photoGroup = null;
-    this.inFullscreenMode = false;
-    this.bodyTapEventListener = null;
-    this.bodyTapPreventionCallback = null;
-    this.newImageTransitionEndEventListener = null;
-    this.pointerMoveTimeout = null;
-    this.buttonsHaveBeenVisible = false;
-    this.open = open;
-    this.close = close;
+    var photoLightbox = this;
 
-    createElements.call(this, width, height);
+    photoLightbox.elements = null;
+    photoLightbox.currentIndex = Number.NaN;
+    photoLightbox.photoGroup = null;
+    photoLightbox.inFullscreenMode = false;
+    photoLightbox.bodyTapEventListener = null;
+    photoLightbox.bodyTapPreventionCallback = null;
+    photoLightbox.newImageTransitionEndEventListener = null;
+    photoLightbox.pointerMoveTimeout = null;
+    photoLightbox.buttonsHaveBeenVisible = false;
+    photoLightbox.open = open;
+    photoLightbox.close = close;
 
-    this.progressCircle = new SVGProgressCircle(this.elements.svg, 0, 0,
+    createElements.call(photoLightbox, width, height);
+
+    photoLightbox.progressCircle = new SVGProgressCircle(photoLightbox.elements.svg, 0, 0,
         params.LIGHTBOX.PROGRESS_CIRCLE_DIAMETER, params.LIGHTBOX.PROGRESS_CIRCLE_DOT_RADIUS);
 
     // Re-position the lightbox when the window re-sizes
     util.listen(window, 'resize', function() {
-      recenterAndResize.call(this);
+      recenterAndResize.call(photoLightbox);
     });
   }
 
