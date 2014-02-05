@@ -75,6 +75,10 @@
       onFullscreenButtonTap.call(photoLightbox, event);
     }, true);
 
+    util.addOnEndFullScreen(function() {
+      onFullScreenChange.call(photoLightbox, false);
+    });
+
     previousButton =
         util.createElement('div', lightbox, null, ['spriteButton','previousButton','hidden']);
     util.addTapEventListener(previousButton, function(event) {
@@ -144,9 +148,9 @@
     log.i('onFullscreenButtonTap');
     var photoLightbox = this;
     if (photoLightbox.inFullscreenMode) {
-      reduceFromFullscreen.call(photoLightbox);
+      reduceFromFullScreen.call(photoLightbox);
     } else {
-      expandToFullscreen.call(photoLightbox);
+      expandToFullScreen.call(photoLightbox);
     }
     util.stopPropogation(event);
   }
@@ -275,9 +279,7 @@
       if (isMainImage) {
         // We only want to display the main image version that is appropriate for the current
         // fullscreen mode
-        if (photoLightbox.inFullscreenMode && targetSize === 'full') {
-          stillOnSameImage = true;
-        } else if (!photoLightbox.inFullscreenMode && targetSize === 'small') {
+        if (!photoLightbox.inFullscreenMode || targetSize === 'full') {
           stillOnSameImage = true;
         } else {
           // Do NOT display this image if the viewer has toggled fullscreens
@@ -298,6 +300,19 @@
         // Assign the freshly loaded photo item image as the lightbox's main image
         photoLightbox.elements.newMainImage = photoItem[targetSize].image;
 
+        // Remove any pre-existing classes from the new image
+        util.clearClasses(photoLightbox.elements.newMainImage);
+
+        // Set the initial dimensions of the new image to match that of the old image, so that we
+        // can slide the images to enlarged/shrunken states
+        if (photoLightbox.elements.oldMainImage) {
+          photoLightbox.elements.newMainImage.style.width =
+              photoLightbox.elements.oldMainImage.style.width;
+          photoLightbox.elements.newMainImage.style.height =
+              photoLightbox.elements.oldMainImage.style.height;
+        }
+
+        // Start the new image as hidden, so we can fade it in
         setElementVisibility(photoLightbox.elements.newMainImage, false, false);
 
         // Start listening for the end of any transition that will run for the new main image
@@ -316,7 +331,11 @@
         // Display this new image; there needs to be a slight delay after adding the element to
         // the DOM, and before adding its CSS transitions; otherwise, the transitions will not
         // work properly
-        setElementVisibility(photoLightbox.elements.newMainImage, true, true, null);
+        setElementVisibility(photoLightbox.elements.newMainImage, true, true, function() {
+          // Set up the dimensions of the new image
+          resizeMainImage(photoLightbox.elements.newMainImage, photoItem.small.width,
+              photoItem.small.height, photoLightbox.inFullscreenMode);
+        });
 
         // Start caching the neighboring images
         previousIndex = getPreviousPhotoItemIndex(photoLightbox);
@@ -436,22 +455,43 @@
   }
 
   // TODO: jsdoc
-  function expandToFullscreen() {
+  function expandToFullScreen() {
     var photoLightbox = this;
     photoLightbox.inFullscreenMode = true;
-    photoLightbox.elements.reduceFromFullButton.style.display = 'block';
-    photoLightbox.elements.expandToFullButton.style.display = 'none';
+    adjustForFullScreenChange.call(photoLightbox);
     util.requestFullscreen(photoLightbox.elements.lightbox);
-    setPhoto.call(photoLightbox, photoLightbox.currentIndex);
   }
 
   // TODO: jsdoc
-  function reduceFromFullscreen() {
+  function reduceFromFullScreen() {
     var photoLightbox = this;
     photoLightbox.inFullscreenMode = false;
-    photoLightbox.elements.expandToFullButton.style.display = 'block';
-    photoLightbox.elements.reduceFromFullButton.style.display = 'none';
-    util.cancelFullscreen();
+    adjustForFullScreenChange.call(photoLightbox);
+    util.cancelFullScreen();
+  }
+
+  // TODO: jsdoc
+  function onFullScreenChange(expandedToFullScreen) {
+    log.i('onFullScreenChange', 'expandedToFullScreen=' + expandedToFullScreen);
+    var photoLightbox = this;
+    if (expandedToFullScreen !== photoLightbox.inFullscreenMode) {
+      photoLightbox.inFullscreenMode = expandedToFullScreen;
+      adjustForFullScreenChange.call(photoLightbox);
+    }
+  }
+
+  // TODO: jsdoc
+  function adjustForFullScreenChange() {
+    var photoLightbox = this;
+    if (photoLightbox.inFullscreenMode) {
+      photoLightbox.elements.reduceFromFullButton.style.display = 'block';
+      photoLightbox.elements.expandToFullButton.style.display = 'none';
+      util.toggleClass(photoLightbox.elements.lightbox, 'fullScreen', true);
+    } else {
+      photoLightbox.elements.expandToFullButton.style.display = 'block';
+      photoLightbox.elements.reduceFromFullButton.style.display = 'none';
+      util.toggleClass(photoLightbox.elements.lightbox, 'fullScreen', false);
+    }
     recenterAndResize.call(photoLightbox);
     setPhoto.call(photoLightbox, photoLightbox.currentIndex);
   }
@@ -470,16 +510,22 @@
   function recenterAndResize() {
     var photoLightbox, boundingBox;
     photoLightbox = this;
-    // Only change the lightbox dimensions if we are not in fullscreen mode and the lightbox is
-    // visible
-    if (!photoLightbox.inFullscreenMode &&
-        photoLightbox.elements.lightbox.style.display !== 'none' &&
+
+    // Only change the lightbox dimensions if the lightbox is visible
+    if (photoLightbox.elements.lightbox.style.display !== 'none' &&
         !util.containsClass(photoLightbox.elements.lightbox, 'hidden')) {
-      boundingBox = getCenteredBoundingBox();
-      photoLightbox.elements.lightbox.style.left = boundingBox.x + 'px';
-      photoLightbox.elements.lightbox.style.top = boundingBox.y + 'px';
-      photoLightbox.elements.lightbox.style.width = boundingBox.w + 'px';
-      photoLightbox.elements.lightbox.style.height = boundingBox.h + 'px';
+      if (photoLightbox.inFullscreenMode) {
+        photoLightbox.elements.lightbox.style.left = '0';
+        photoLightbox.elements.lightbox.style.top = '0';
+        photoLightbox.elements.lightbox.style.width = '100%';
+        photoLightbox.elements.lightbox.style.height = '100%';
+      } else {
+        boundingBox = getCenteredBoundingBox();
+        photoLightbox.elements.lightbox.style.left = boundingBox.x + 'px';
+        photoLightbox.elements.lightbox.style.top = boundingBox.y + 'px';
+        photoLightbox.elements.lightbox.style.width = boundingBox.w + 'px';
+        photoLightbox.elements.lightbox.style.height = boundingBox.h + 'px';
+      }
     }
   }
 
@@ -563,7 +609,7 @@
 
     // Make sure we close from not fullscreen mode
     if (photoLightbox.inFullscreenMode) {
-      reduceFromFullscreen.call(photoLightbox);
+      reduceFromFullScreen.call(photoLightbox);
     }
 
     // If the progress circle is running, hide it
@@ -613,9 +659,6 @@
     if (delay) {
       setTimeout(function() {
         setVisibility();
-        if (callback) {
-          callback();
-        }
       }, params.ADD_CSS_TRANSITION_DELAY);
     } else {
       setVisibility();
@@ -623,6 +666,9 @@
 
     function setVisibility() {
       util.toggleClass(element, 'visible', visible);
+      if (callback) {
+        callback();
+      }
     }
   }
 
@@ -671,6 +717,32 @@
       w: w,
       h: h
     };
+  }
+
+  // TODO: jsdoc
+  function resizeMainImage(element, smallWidth, smallHeight, isFullScreen) {
+    var photoAspectRatio, screenAspectRatio, scaledWidth, scaledHeight;
+
+    photoAspectRatio = smallWidth / smallHeight;
+
+    if (isFullScreen) {
+      screenAspectRatio = screen.width / screen.height;
+
+      // Stretch the photo uniformly to fit within the screen
+      if (photoAspectRatio > screenAspectRatio) {
+        scaledWidth = screen.width;
+        scaledHeight = screen.width / photoAspectRatio;
+      } else {
+        scaledWidth = screen.height * photoAspectRatio;
+        scaledHeight = screen.height;
+      }
+    } else {
+      scaledWidth = smallWidth;
+      scaledHeight = smallHeight;
+    }
+
+    element.style.width = scaledWidth + 'px';
+    element.style.height = scaledHeight + 'px';
   }
 
   // ------------------------------------------------------------------------------------------- //

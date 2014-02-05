@@ -91,6 +91,7 @@
   params.SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
   params.TWO_PI = Math.PI * 2;
   params.HALF_PI = Math.PI * 0.5;
+  params.STANDARD_ASPECT_RATIO = 4 / 3;
 
   // --- Expose this module --- //
 

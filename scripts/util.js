@@ -68,10 +68,6 @@
       util.requestFullscreen = function(element) {
         element.requestFullscreen();
       };
-    } else if (body.webkitEnterFullScreen) {
-      util.requestFullscreen = function(element) {
-        element.webkitEnterFullScreen();
-      };
     } else if (body.mozRequestFullScreen) {
       util.requestFullscreen = function(element) {
         element.mozRequestFullScreen();
@@ -79,6 +75,10 @@
     } else if (body.webkitRequestFullScreen) {
       util.requestFullscreen = function(element) {
         element.webkitRequestFullScreen();
+      };
+    } else if (body.msRequestFullScreen) {
+      util.requestFullscreen = function(element) {
+        element.msRequestFullScreen();
       };
     } else {
       util.requestFullscreen = function(element) {
@@ -91,26 +91,60 @@
   // TODO: jsdoc
   function setUpCancelFullScreen() {
     if (document.cancelFullScreen) {
-      util.cancelFullscreen = function() {
+      util.cancelFullScreen = function() {
         document.cancelFullScreen();
       };
     } else if (document.mozCancelFullScreen) {
-      util.cancelFullscreen = function() {
+      util.cancelFullScreen = function() {
         document.mozCancelFullScreen();
       };
     } else if (document.webkitCancelFullScreen) {
-      util.cancelFullscreen = function() {
+      util.cancelFullScreen = function() {
         document.webkitCancelFullScreen();
       };
     } else if (document.webkitExitFullScreen) {
-      util.cancelFullscreen = function() {
+      util.cancelFullScreen = function() {
         document.webkitExitFullScreen();
       };
     } else {
-      util.cancelFullscreen = function() {
+      util.cancelFullScreen = function() {
         log.e('This browser does not support fullscreen mode.');
       };
       log.w('This browser does not support fullscreen mode.');
+    }
+  }
+
+  // TODO: jsdoc
+  function setUpAddOnEndFullScreen() {
+    if (typeof document.webkitCancelFullScreen !== 'undefined') {
+      util.addOnEndFullScreen = function(handler) {
+        util.listen(document, 'webkitfullscreenchange', function() {
+          if (!document.webkitIsFullScreen) {
+            handler();
+          }
+        });
+      }
+    } else if (typeof document.mozCancelFullScreen !== 'undefined') {
+      util.addOnEndFullScreen = function(handler) {
+        util.listen(document, 'mozfullscreenchange', function() {
+          if (!document.mozFullScreen) {
+            handler();
+          }
+        });
+      }
+    } else if (typeof document.cancelFullScreen !== 'undefined') {
+      util.addOnEndFullScreen = function(handler) {
+        util.listen(document, 'fullscreenchange', function() {
+          if (!document.fullScreen) {
+            handler();
+          }
+        });
+      }
+    } else {
+      util.addOnEndFullScreen = function(handler) {
+        log.e('This browser does not support the fullscreenchange event.');
+      }
+      log.w('This browser does not support the fullscreenchange event.');
     }
   }
 
@@ -212,6 +246,7 @@
     setUpPreventDefault();
     setUpListenForTransitionEnd();
     setUpGetScrollTop();
+    setUpAddOnEndFullScreen();
 
     log.d('init', 'Module initialized');
   }
@@ -499,6 +534,11 @@
     }).join(' ');
   }
 
+  // TODO: jsdoc
+  function clearClasses(element) {
+    element.className = '';
+  }
+
   // ------------------------------------------------------------------------------------------- //
   // Expose this module
 
@@ -523,16 +563,18 @@
     removeChildIfPresent: removeChildIfPresent,
     addClass: addClass,
     removeClass: removeClass,
+    clearClasses: clearClasses,
     XHR: null,
     listen: null,
     stopListening: null,
     requestFullscreen: null,
-    cancelFullscreen: null,
+    cancelFullScreen: null,
     stopPropogation: null,
     preventDefault: null,
     listenForTransitionEnd: null,
     stopListeningForTransitionEnd: null,
-    getScrollTop: null
+    getScrollTop: null,
+    addOnEndFullScreen: null
   };
 
   // Expose this module
