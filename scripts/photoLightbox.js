@@ -36,7 +36,7 @@
     lightbox.style.height = height + 'px';
     util.addTapEventListener(lightbox, function(event) {
       onNextButtonTap.call(photoLightbox, event);
-    }, true);
+    }, false);
     util.addPointerMoveEventListener(lightbox, function(event) {
       onLightboxPointerMove.call(photoLightbox, event);
     });
@@ -60,20 +60,20 @@
         ['spriteButton','closeButton','hidden']);
     util.addTapEventListener(closeButton, function(event) {
       onCloseButtonTap.call(photoLightbox, event);
-    }, true);
+    }, false);
 
     reduceFromFullButton = util.createElement('div', lightbox, null,
         ['spriteButton','reduceFromFullButton','hidden']);
     reduceFromFullButton.style.display = 'none';
     util.addTapEventListener(reduceFromFullButton, function(event) {
       onFullscreenButtonTap.call(photoLightbox, event);
-    }, true);
+    }, false);
 
     expandToFullButton = util.createElement('div', lightbox, null,
         ['spriteButton','expandToFullButton','hidden']);
     util.addTapEventListener(expandToFullButton, function(event) {
       onFullscreenButtonTap.call(photoLightbox, event);
-    }, true);
+    }, false);
 
     util.addOnEndFullScreen(function() {
       onFullScreenChange.call(photoLightbox, false);
@@ -83,13 +83,13 @@
         ['spriteButton','previousButton','hidden']);
     util.addTapEventListener(previousButton, function(event) {
       onPreviousButtonTap.call(photoLightbox, event);
-    }, true);
+    }, false);
 
     nextButton = util.createElement('div', lightbox, null,
         ['spriteButton','nextButton','hidden']);
     util.addTapEventListener(nextButton, function(event) {
       onNextButtonTap.call(photoLightbox, event);
-    }, true);
+    }, false);
 
     util.listenToMultipleForMultiple([closeButton,reduceFromFullButton,expandToFullButton,
       previousButton,nextButton], ['mouseover','mousemove','touchmove'], function(event) {
@@ -207,9 +207,12 @@
     var photoLightbox = this;
     log.d('onLightboxPointerMoveTimeout', 'mouseIsOverOverlayButton=' +
         photoLightbox.mouseIsOverOverlayButton);
-    if (!photoLightbox.mouseIsOverOverlayButton) {
-      setOverlayButtonsVisibility.call(photoLightbox, false);
-      photoLightbox.pointerMoveTimeout = null;
+    // Don't hide the buttons on a mobile device
+    if (!util.isMobileBrowser) {
+      if (!photoLightbox.mouseIsOverOverlayButton) {
+        setOverlayButtonsVisibility.call(photoLightbox, false);
+        photoLightbox.pointerMoveTimeout = null;
+      }
     }
   }
 
@@ -562,19 +565,21 @@
 
   // TODO: jsdoc
   function recenterAndResize() {
-    var photoLightbox, boundingBox;
+    var photoLightbox, boundingBox, viewportSize;
     photoLightbox = this;
 
     // Only change the lightbox dimensions if the lightbox is visible
     if (photoLightbox.elements.lightbox.style.display !== 'none' &&
         !util.containsClass(photoLightbox.elements.lightbox, 'hidden')) {
-      if (photoLightbox.inFullscreenMode) {
+      boundingBox = getCenteredBoundingBox();
+      viewportSize = util.getViewportSize();
+      if (photoLightbox.inFullscreenMode ||
+          boundingBox.w > viewportSize.w || boundingBox.h > viewportSize.h) {
         photoLightbox.elements.lightbox.style.left = '0';
         photoLightbox.elements.lightbox.style.top = '0';
         photoLightbox.elements.lightbox.style.width = '100%';
         photoLightbox.elements.lightbox.style.height = '100%';
       } else {
-        boundingBox = getCenteredBoundingBox();
         photoLightbox.elements.lightbox.style.left = boundingBox.x + 'px';
         photoLightbox.elements.lightbox.style.top = boundingBox.y + 'px';
         photoLightbox.elements.lightbox.style.width = boundingBox.w + 'px';
@@ -648,7 +653,8 @@
       onCloseButtonTap.call(photoLightbox, event);
     };
     photoLightbox.bodyTapEventListener = bodyTapEventListener;
-    photoLightbox.bodyTapPreventionCallback = util.addTapEventListener(body, bodyTapEventListener, true);
+    photoLightbox.bodyTapPreventionCallback =
+        util.addTapEventListener(body, bodyTapEventListener, false);
 
     // Show the first photo
     setPhoto.call(photoLightbox, photoLightbox.currentIndex);

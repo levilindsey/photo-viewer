@@ -59,7 +59,7 @@
     var photo = this;
     util.addTapEventListener(photo[targetSize].image, function(event) {
       tapHandler(event, photo);
-    }, true);
+    }, false);
   }
 
   // ------------------------------------------------------------------------------------------- //
