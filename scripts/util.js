@@ -183,8 +183,8 @@
       'WebkitTransition': 'webkitTransitionEnd'
     };
 
-    for (transition in transitions){
-      if (body.style[transition] !== undefined) {
+    for (transition in transitions) {
+      if (body.style[transition] !== 'undefined') {
         transitionEndEventName = transitions[transition];
       }
     }
@@ -387,6 +387,15 @@
     util.stopListening(element, 'touchmove', callback);
   }
 
+  // TODO: jsdoc
+  function listenToMultipleForMultiple(elements, events, callback) {
+    elements.forEach(function(element) {
+      events.forEach(function(event) {
+        util.listen(element, event, callback);
+      });
+    });
+  }
+
   /**
    * Creates a DOM element with the given tag name, appends it to the given parent element, and
    * gives it the given id and classes.
@@ -555,6 +564,7 @@
     removeTapEventListener: removeTapEventListener,
     addPointerMoveEventListener: addPointerMoveEventListener,
     removePointerMoveEventListener: removePointerMoveEventListener,
+    listenToMultipleForMultiple: listenToMultipleForMultiple,
     createElement: createElement,
     containsClass: containsClass,
     toggleClass: toggleClass,

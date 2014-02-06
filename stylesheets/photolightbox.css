@@ -13,6 +13,7 @@ body {
   background-color: #202020;
   z-index: 32010;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .lightbox.visible {
@@ -103,6 +104,14 @@ body {
     border-radius 0.4s ease 0s;
 }
 
+.lightbox.fullScreen {
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  -ms-border-radius: 0;
+  -o-border-radius: 0;
+  border-radius: 0;
+}
+
 .backgroundHaze {
   position: fixed;
   top: 0; left: 0;
@@ -131,7 +140,7 @@ body {
   transition: visibility 0s linear 0.4s, opacity 0.4s ease 0s;
 }
 
-.lightbox>img {
+.newMainImage, .newSmallImage, .oldMainImage, .oldSmallImage {
   display: block;
   position: absolute;
   margin: auto;
@@ -142,13 +151,7 @@ body {
   visibility: hidden;
 }
 
-.lightbox.visible.fullScreen>img {
-  max-width: 100%;
-  max-height: 100%;
-}
-
-.lightbox>img.visible {
-  opacity: 1;
+.newMainImage.visible, .newSmallImage.visible, .oldMainImage.visible, .oldSmallImage.visible {
   visibility: visible;
   -webkit-transition: visibility 0s linear 0s, opacity 0.6s ease 0s;
   -moz-transition: visibility 0s linear 0s, opacity 0.6s ease 0s;
@@ -156,7 +159,7 @@ body {
   transition: visibility 0s linear 0s, opacity 0.6s ease 0s;
 }
 
-.lightbox>img.hidden {
+.newMainImage.hidden, .newSmallImage.hidden, .oldMainImage.hidden, .oldSmallImage.hidden {
   opacity: 0;
   visibility: hidden;
   -webkit-transition: visibility 0s linear 0.6s, opacity 0.6s ease 0s;
@@ -307,4 +310,5 @@ body {
   top: 0; right: 0; bottom: 0; left: 0;
   margin: auto;
   z-index: 32040;
+  cursor: pointer;
 }

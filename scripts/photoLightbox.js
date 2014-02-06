@@ -56,21 +56,21 @@
 
     backgroundHaze = util.createElement('div', body, null, ['backgroundHaze','hidden']);
 
-    closeButton =
-        util.createElement('div', lightbox, null, ['spriteButton','closeButton','hidden']);
+    closeButton = util.createElement('div', lightbox, null,
+        ['spriteButton','closeButton','hidden']);
     util.addTapEventListener(closeButton, function(event) {
       onCloseButtonTap.call(photoLightbox, event);
     }, true);
 
-    reduceFromFullButton =
-        util.createElement('div', lightbox, null, ['spriteButton','reduceFromFullButton','hidden']);
+    reduceFromFullButton = util.createElement('div', lightbox, null,
+        ['spriteButton','reduceFromFullButton','hidden']);
     reduceFromFullButton.style.display = 'none';
     util.addTapEventListener(reduceFromFullButton, function(event) {
       onFullscreenButtonTap.call(photoLightbox, event);
     }, true);
 
-    expandToFullButton =
-        util.createElement('div', lightbox, null, ['spriteButton','expandToFullButton','hidden']);
+    expandToFullButton = util.createElement('div', lightbox, null,
+        ['spriteButton','expandToFullButton','hidden']);
     util.addTapEventListener(expandToFullButton, function(event) {
       onFullscreenButtonTap.call(photoLightbox, event);
     }, true);
@@ -79,16 +79,27 @@
       onFullScreenChange.call(photoLightbox, false);
     });
 
-    previousButton =
-        util.createElement('div', lightbox, null, ['spriteButton','previousButton','hidden']);
+    previousButton = util.createElement('div', lightbox, null,
+        ['spriteButton','previousButton','hidden']);
     util.addTapEventListener(previousButton, function(event) {
       onPreviousButtonTap.call(photoLightbox, event);
     }, true);
 
-    nextButton = util.createElement('div', lightbox, null, ['spriteButton','nextButton','hidden']);
+    nextButton = util.createElement('div', lightbox, null,
+        ['spriteButton','nextButton','hidden']);
     util.addTapEventListener(nextButton, function(event) {
       onNextButtonTap.call(photoLightbox, event);
     }, true);
+
+    util.listenToMultipleForMultiple([closeButton,reduceFromFullButton,expandToFullButton,
+      previousButton,nextButton], ['mouseover','mousemove','touchmove'], function(event) {
+      onOverlayButtonHover.call(photoLightbox, event);
+    });
+
+    util.listenToMultipleForMultiple([closeButton,reduceFromFullButton,expandToFullButton,
+      previousButton,nextButton], ['mouseout','touchend','touchcancel'], function(event) {
+      onOverlayButtonHoverEnd.call(photoLightbox, event);
+    });
 
     svg = document.createElementNS(params.SVG_NAMESPACE, 'svg');
     svg.style.width = params.LIGHTBOX.PROGRESS_CIRCLE_DIAMETER + 'px';
@@ -156,6 +167,22 @@
   }
 
   // TODO: jsdoc
+  function onOverlayButtonHover() {
+    //log.v('onOverlayButtonHover');
+    var photoLightbox = this;
+
+    photoLightbox.mouseIsOverOverlayButton = true;
+  }
+
+  // TODO: jsdoc
+  function onOverlayButtonHoverEnd() {
+    //log.v('onOverlayButtonHoverEnd');
+    var photoLightbox = this;
+
+    photoLightbox.mouseIsOverOverlayButton = false;
+  }
+
+  // TODO: jsdoc
   function onLightboxPointerMove() {
     var photoLightbox = this;
 
@@ -164,7 +191,7 @@
       //log.v('onLightboxPointerMove', 'Refreshing pointer move timeout');
       clearTimeout(photoLightbox.pointerMoveTimeout);
     } else {
-      log.i('onLightboxPointerMove', 'Showing overlay buttons, and starting new pointer move timeout');
+      log.d('onLightboxPointerMove', 'Showing overlay buttons, and starting new pointer move timeout');
       photoLightbox.buttonsHaveBeenVisible = true;
       setOverlayButtonsVisibility.call(photoLightbox, true);
     }
@@ -177,10 +204,13 @@
 
   // TODO: jsdoc
   function onLightboxPointerMoveTimeout() {
-    log.i('onLightboxPointerMoveTimeout');
     var photoLightbox = this;
-    setOverlayButtonsVisibility.call(photoLightbox, false);
-    photoLightbox.pointerMoveTimeout = null;
+    log.d('onLightboxPointerMoveTimeout', 'mouseIsOverOverlayButton=' +
+        photoLightbox.mouseIsOverOverlayButton);
+    if (!photoLightbox.mouseIsOverOverlayButton) {
+      setOverlayButtonsVisibility.call(photoLightbox, false);
+      photoLightbox.pointerMoveTimeout = null;
+    }
   }
 
   // TODO: jsdoc
@@ -254,6 +284,8 @@
 
     // TODO: jsdoc
     function loadPhotoImage(photoLightbox, isMainImage, targetSize, photoItem) {
+      log.d('setPhoto.loadPhotoImage', 'Sending image load request: ' +
+          photoItem[targetSize].source);
       photoItem.loadImage(targetSize, function(photoItem) {
         onPhotoImageLoadSuccess.call(photoLightbox, isMainImage, targetSize, photoItem);
       }, function(photoItem) {
@@ -370,6 +402,8 @@
 
     // TODO: jsdoc
     function cacheNeighborImage(photoLightbox, targetSize, photoItem) {
+      log.v('onPhotoImageLoadSuccess.cacheNeighborImage', 'Sending image cache request: ' +
+          photoItem[targetSize].source);
       photoItem.cacheImage(targetSize, function(photoItem) {
         onNeighborPhotoCacheSuccess.call(photoLightbox, targetSize, photoItem);
       }, function(photoItem) {
@@ -421,36 +455,38 @@
 
   // TODO: jsdoc
   function onLightboxTransitionEnd(event) {
-    // TODO: somehow, this function gets called after each of the overlay buttons finish transitioning. why??
-    log.d('onLightboxTransitionEnd', 'property=' + event.propertyName);
-    var photoLightbox;
+    var photoLightbox = this;
 
-    photoLightbox = this;
+    // This event bubbles up from each descendant of the lightbox
+    if (event.target === photoLightbox.elements.lightbox) {
+      log.d('onLightboxTransitionEnd', 'property=' + event.propertyName);
 
-    // Determine whether the lightbox just appeared or disappeared
-    if (!util.containsClass(photoLightbox.elements.lightbox, 'hidden')) {
-      // --- The lightbox just appeared --- //
+      // Determine whether the lightbox just appeared or disappeared
+      if (!util.containsClass(photoLightbox.elements.lightbox, 'hidden')) {
+        // --- The lightbox just appeared --- //
 
-      // Hide the overlay buttons
-      setLightboxButtonsDisplay.call(photoLightbox, true);
+        // Hide the overlay buttons
+        setLightboxButtonsDisplay.call(photoLightbox, true);
 
-      if (!photoLightbox.buttonsHaveBeenVisible) {
-        // Have the overlay buttons briefly show at the start
-        setTimeout(function() {
-          onLightboxPointerMove.call(photoLightbox);
-        }, params.ADD_CSS_TRANSITION_DELAY);
+        // TODO: this is a hack; fix the root problem of why this function gets called at times other than when we open or close the lightbox
+        if (!photoLightbox.buttonsHaveBeenVisible) {
+          // Have the overlay buttons briefly show at the start
+          setTimeout(function() {
+            onLightboxPointerMove.call(photoLightbox);
+          }, params.ADD_CSS_TRANSITION_DELAY);
+        }
+
+        // If we are still loading the main image, show the progress circle
+        if (util.containsClass(photoLightbox.elements.newMainImage, 'hidden')) {
+          photoLightbox.progressCircle.open();
+        }
+      } else {
+        // --- The lightbox just disappeared --- //
+
+        // Hide the lightbox and the background haze
+        photoLightbox.elements.lightbox.style.display = 'none';
+        photoLightbox.elements.backgroundHaze.style.display = 'none';
       }
-
-      // If we are still loading the main image, show the progress circle
-      if (util.containsClass(photoLightbox.elements.newMainImage, 'hidden')) {
-        photoLightbox.progressCircle.open();
-      }
-    } else {
-      // --- The lightbox just disappeared --- //
-
-      // Hide the lightbox and the background haze
-      photoLightbox.elements.lightbox.style.display = 'none';
-      photoLightbox.elements.backgroundHaze.style.display = 'none';
     }
   }
 
@@ -782,6 +818,7 @@
     photoLightbox.newImageTransitionEndEventListener = null;
     photoLightbox.pointerMoveTimeout = null;
     photoLightbox.buttonsHaveBeenVisible = false;
+    photoLightbox.mouseIsOverOverlayButton = false;
     photoLightbox.open = open;
     photoLightbox.close = close;
 

@@ -5,7 +5,7 @@ img {
 }
 
 /* TODO: make this only for images that are children of the grid */
-img:hover {
+body>img:hover {
   /*box-shadow: 0px 0px 10000px 50px hsla(0, 0%, 10%, 0.9);*//*TODO: tweak this*/
   cursor: pointer;
   z-index: 11;
