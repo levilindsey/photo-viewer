@@ -329,55 +329,70 @@
     if (stillOnSameImage) {
       // Check whether we are displaying the main image or the small image
       if (isMainImage) {
-        // Assign the freshly loaded photo item image as the lightbox's main image
-        photoLightbox.elements.newMainImage = photoItem[targetSize].image;
+        // Don't switch the images around while the lightbox is closing
+        if (!photoLightbox.closing) {
+          // Assign the freshly loaded photo item image as the lightbox's main image
+          photoLightbox.elements.newMainImage = photoItem[targetSize].image;
 
-        // Remove any pre-existing classes from the new image
-        util.clearClasses(photoLightbox.elements.newMainImage);
+          // Remove any pre-existing classes from the new image
+          util.clearClasses(photoLightbox.elements.newMainImage);
 
-        // Set the initial dimensions of the new image to match that of the old image, so that we
-        // can slide the images to enlarged/shrunken states
-        if (photoLightbox.elements.oldMainImage) {
-          photoLightbox.elements.newMainImage.style.width =
-              photoLightbox.elements.oldMainImage.style.width;
-          photoLightbox.elements.newMainImage.style.height =
-              photoLightbox.elements.oldMainImage.style.height;
+          if (photoLightbox.opening) {
+            // Set the initial dimensions of the new image to match that of the lightbox, so that we
+            // can slide the image dimensions with the lightbox dimensions
+            photoLightbox.elements.newMainImage.style.width =
+                util.getMidTransitionValue(photoLightbox.elements.lightbox, 'width');
+            photoLightbox.elements.newMainImage.style.height =
+                util.getMidTransitionValue(photoLightbox.elements.lightbox, 'height');
+
+            photoLightbox.opening = false;
+          } else {
+            // TODO: fix this for real (as is, it matches the dimensions of an image that may have completely different aspect ratio...)
+            // Set the initial dimensions of the new image to match that of the old image, so that
+            // we can slide the image to enlarged/shrunken states
+//            if (photoLightbox.elements.oldMainImage) {
+//              photoLightbox.elements.newMainImage.style.width =
+//                  photoLightbox.elements.oldMainImage.style.width;
+//              photoLightbox.elements.newMainImage.style.height =
+//                  photoLightbox.elements.oldMainImage.style.height;
+//            }
+          }
+
+          // Start the new image as hidden, so we can fade it in
+          setElementVisibility(photoLightbox.elements.newMainImage, false, false);
+
+          // Start listening for the end of any transition that will run for the new main image
+          util.listenForTransitionEnd(photoLightbox.elements.newMainImage,
+              photoLightbox.newImageTransitionEndEventListener);
+
+          // Add the new main image to the DOM
+          photoLightbox.elements.lightbox.appendChild(photoLightbox.elements.newMainImage);
+
+          // Set up the class and transitions for the new image
+          switchImageClassToOldOrNew(photoLightbox.elements.newMainImage, true, true);
+
+          // Hide the small image
+          setElementVisibility(photoLightbox.elements.newSmallImage, false, false);
+
+          // Display this new image; there needs to be a slight delay after adding the element to
+          // the DOM, and before adding its CSS transitions; otherwise, the transitions will not
+          // work properly
+          setElementVisibility(photoLightbox.elements.newMainImage, true, true, function() {
+            // Set up the dimensions of the new image
+            resizeMainImage(photoLightbox.elements.newMainImage, photoItem.small.width,
+                photoItem.small.height, photoLightbox.inFullscreenMode);
+          });
+
+          // Start caching the neighboring images
+          previousIndex = getPreviousPhotoItemIndex(photoLightbox);
+          nextIndex = getNextPhotoItemIndex(photoLightbox);
+          cacheNeighborImage(photoLightbox, targetSize,
+              photoLightbox.photoGroup.photos[previousIndex]);
+          cacheNeighborImage(photoLightbox, targetSize, photoLightbox.photoGroup.photos[nextIndex]);
+
+          // Hide the progress circle
+          photoLightbox.progressCircle.close();
         }
-
-        // Start the new image as hidden, so we can fade it in
-        setElementVisibility(photoLightbox.elements.newMainImage, false, false);
-
-        // Start listening for the end of any transition that will run for the new main image
-        util.listenForTransitionEnd(photoLightbox.elements.newMainImage,
-            photoLightbox.newImageTransitionEndEventListener);
-
-        // Add the new main image to the DOM
-        photoLightbox.elements.lightbox.appendChild(photoLightbox.elements.newMainImage);
-
-        // Set up the class and transitions for the new image
-        switchImageClassToOldOrNew(photoLightbox.elements.newMainImage, true, true);
-
-        // Hide the small image
-        setElementVisibility(photoLightbox.elements.newSmallImage, false, false);
-
-        // Display this new image; there needs to be a slight delay after adding the element to
-        // the DOM, and before adding its CSS transitions; otherwise, the transitions will not
-        // work properly
-        setElementVisibility(photoLightbox.elements.newMainImage, true, true, function() {
-          // Set up the dimensions of the new image
-          resizeMainImage(photoLightbox.elements.newMainImage, photoItem.small.width,
-              photoItem.small.height, photoLightbox.inFullscreenMode);
-        });
-
-        // Start caching the neighboring images
-        previousIndex = getPreviousPhotoItemIndex(photoLightbox);
-        nextIndex = getNextPhotoItemIndex(photoLightbox);
-        cacheNeighborImage(photoLightbox, targetSize,
-            photoLightbox.photoGroup.photos[previousIndex]);
-        cacheNeighborImage(photoLightbox, targetSize, photoLightbox.photoGroup.photos[nextIndex]);
-
-        // Hide the progress circle
-        photoLightbox.progressCircle.close();
       } else {
         // Assign the freshly loaded photo item image as the lightbox's small image
         photoLightbox.elements.newSmallImage = photoItem[targetSize].image;
@@ -460,6 +475,9 @@
     // This event bubbles up from each descendant of the lightbox
     if (event.target === photoLightbox.elements.lightbox) {
       log.d('onLightboxTransitionEnd', 'property=' + event.propertyName);
+
+      photoLightbox.opening = false;
+      photoLightbox.closing = false;
 
       // Determine whether the lightbox just appeared or disappeared
       if (!util.containsClass(photoLightbox.elements.lightbox, 'hidden')) {
@@ -599,8 +617,9 @@
     photoLightbox.photoGroup = photoGroup;
     photoLightbox.currentIndex = index;
     photoItem = photoLightbox.photoGroup.photos[photoLightbox.currentIndex];
-    photoLightbox.buttonsHaveBeenVisible = false;
     body = document.getElementsByTagName('body')[0];
+    photoLightbox.buttonsHaveBeenVisible = false;
+    photoLightbox.opening = true;
 
     // Remove the visible/hidden classes from the lightbox, so the next property changes can
     // happen instantly, without its CSS transitions getting in the way
@@ -641,6 +660,7 @@
 
     photoLightbox = this;
     photoItem = photoLightbox.photoGroup.photos[photoLightbox.currentIndex];
+    photoLightbox.closing = true;
     body = document.getElementsByTagName('body')[0];
 
     // Make sure we close from not fullscreen mode
@@ -662,6 +682,10 @@
     photoLightbox.elements.lightbox.style.top = photoItem.thumbnail.y - util.getScrollTop() + 'px';
     photoLightbox.elements.lightbox.style.width = photoItem.thumbnail.width + 'px';
     photoLightbox.elements.lightbox.style.height = photoItem.thumbnail.height + 'px';
+
+    // Have the image dimensions also transition with those of the lightbox
+    photoLightbox.elements.newMainImage.style.width = photoItem.thumbnail.width + 'px';
+    photoLightbox.elements.newMainImage.style.height = photoItem.thumbnail.height + 'px';
 
     // Start the background haze's transition to being hidden
     setElementVisibility(photoLightbox.elements.backgroundHaze, false, false);
@@ -819,6 +843,8 @@
     photoLightbox.pointerMoveTimeout = null;
     photoLightbox.buttonsHaveBeenVisible = false;
     photoLightbox.mouseIsOverOverlayButton = false;
+    photoLightbox.opening = false;
+    photoLightbox.closing = false;
     photoLightbox.open = open;
     photoLightbox.close = close;
 

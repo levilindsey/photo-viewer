@@ -226,6 +226,31 @@
     }
   }
 
+  // TODO: jsdoc
+  function setUpGetMidTransitionValue() {
+    var body = document.getElementsByTagName('body')[0];
+    if (window.getComputedStyle) {
+      util.getMidTransitionValue = function(element, property) {
+        return getComputedStyle(element).getPropertyValue(property);
+      };
+    } else if (body.currentStyle) {
+      util.getMidTransitionValue = function(element, property) {
+        try {
+          return element.currentStyle[property];
+        } catch (e) {
+          log.w('Element ' + element + ' does not have intermediate property ' + property)
+          return '';
+        }
+      };
+    } else {
+      util.getMidTransitionValue = function(element, property) {
+        log.e('This browser dose not support getComputedStyle.');
+        return '';
+      };
+      log.w('This browser dose not support getComputedStyle.');
+    }
+  }
+
   // ------------------------------------------------------------------------------------------- //
   // Public static functions
 
@@ -247,6 +272,7 @@
     setUpListenForTransitionEnd();
     setUpGetScrollTop();
     setUpAddOnEndFullScreen();
+    setUpGetMidTransitionValue();
 
     log.d('init', 'Module initialized');
   }
@@ -584,7 +610,8 @@
     listenForTransitionEnd: null,
     stopListeningForTransitionEnd: null,
     getScrollTop: null,
-    addOnEndFullScreen: null
+    addOnEndFullScreen: null,
+    getMidTransitionValue: null
   };
 
   // Expose this module

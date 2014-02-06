@@ -28,36 +28,36 @@ body {
   border-radius: 10px;
   -webkit-transition:
     visibility 0s linear 0s,
-    left 0.6s ease 0s,
-    top 0.6s ease 0s,
-    width 0.6s ease 0s,
-    height 0.6s ease 0s,
-    box-shadow 0.6s ease 0s,
-    -webkit-border-radius 0.6s ease 0s;
+    left 0.62s ease 0s,
+    top 0.62s ease 0s,
+    width 0.62s ease 0s,
+    height 0.62s ease 0s,
+    box-shadow 0.62s ease 0s,
+    -webkit-border-radius 0.62s ease 0s;
   -moz-transition:
     visibility 0s linear 0s,
-    left 0.6s ease 0s,
-    top 0.6s ease 0s,
-    width 0.6s ease 0s,
-    height 0.6s ease 0s,
-    box-shadow 0.6s ease 0s,
-    -moz-border-radius 0.6s ease 0s;
+    left 0.62s ease 0s,
+    top 0.62s ease 0s,
+    width 0.62s ease 0s,
+    height 0.62s ease 0s,
+    box-shadow 0.62s ease 0s,
+    -moz-border-radius 0.62s ease 0s;
   -o-transition:
     visibility 0s linear 0s,
-    left 0.6s ease 0s,
-    top 0.6s ease 0s,
-    width 0.6s ease 0s,
-    height 0.6s ease 0s,
-    box-shadow 0.6s ease 0s,
-    -o-border-radius 0.6s ease 0s;
+    left 0.62s ease 0s,
+    top 0.62s ease 0s,
+    width 0.62s ease 0s,
+    height 0.62s ease 0s,
+    box-shadow 0.62s ease 0s,
+    -o-border-radius 0.62s ease 0s;
   transition:
     visibility 0s linear 0s,
-    left 0.6s ease 0s,
-    top 0.6s ease 0s,
-    width 0.6s ease 0s,
-    height 0.6s ease 0s,
-    box-shadow 0.6s ease 0s,
-    border-radius 0.6s ease 0s;
+    left 0.62s ease 0s,
+    top 0.62s ease 0s,
+    width 0.62s ease 0s,
+    height 0.62s ease 0s,
+    box-shadow 0.62s ease 0s,
+    border-radius 0.62s ease 0s;
 }
 
 .lightbox.hidden {
@@ -71,37 +71,37 @@ body {
   -o-border-radius: 0;
   border-radius: 0;
   -webkit-transition:
-    visibility 0s linear 0.4s,
-    left 0.4s ease 0s,
-    top 0.4s ease 0s,
-    width 0.4s ease 0s,
-    height 0.4s ease 0s,
-    box-shadow 0.4s ease 0s,
-    -webkit-border-radius 0.4s ease 0s;
+    visibility 0s linear 0.41s,
+    left 0.41s ease 0s,
+    top 0.41s ease 0s,
+    width 0.41s ease 0s,
+    height 0.41s ease 0s,
+    box-shadow 0.41s ease 0s,
+    -webkit-border-radius 0.41s ease 0s;
   -moz-transition:
-    visibility 0s linear 0.4s,
-    left 0.4s ease 0s,
-    top 0.4s ease 0s,
-    width 0.4s ease 0s,
-    height 0.4s ease 0s,
-    box-shadow 0.4s ease 0s,
-    -moz-border-radius 0.4s ease 0s;
+    visibility 0s linear 0.41s,
+    left 0.41s ease 0s,
+    top 0.41s ease 0s,
+    width 0.41s ease 0s,
+    height 0.41s ease 0s,
+    box-shadow 0.41s ease 0s,
+    -moz-border-radius 0.41s ease 0s;
   -o-transition:
-    visibility 0s linear 0.4s,
-    left 0.4s ease 0s,
-    top 0.4s ease 0s,
-    width 0.4s ease 0s,
-    height 0.4s ease 0s,
-    box-shadow 0.4s ease 0s,
-    -o-border-radius 0.4s ease 0s;
+    visibility 0s linear 0.41s,
+    left 0.41s ease 0s,
+    top 0.41s ease 0s,
+    width 0.41s ease 0s,
+    height 0.41s ease 0s,
+    box-shadow 0.41s ease 0s,
+    -o-border-radius 0.41s ease 0s;
   transition:
-    visibility 0s linear 0.4s,
-    left 0.4s ease 0s,
-    top 0.4s ease 0s,
-    width 0.4s ease 0s,
-    height 0.4s ease 0s,
-    box-shadow 0.4s ease 0s,
-    border-radius 0.4s ease 0s;
+    visibility 0s linear 0.41s,
+    left 0.41s ease 0s,
+    top 0.41s ease 0s,
+    width 0.41s ease 0s,
+    height 0.41s ease 0s,
+    box-shadow 0.41s ease 0s,
+    border-radius 0.41s ease 0s;
 }
 
 .lightbox.fullScreen {
@@ -125,19 +125,19 @@ body {
 .backgroundHaze.visible {
   opacity: 0.8;
   visibility: visible;
-  -webkit-transition: visibility 0s linear 0s, opacity 0.6s ease 0s;
-  -moz-transition: visibility 0s linear 0s, opacity 0.6s ease 0s;
-  -o-transition: visibility 0s linear 0s, opacity 0.6s ease 0s;
-  transition: visibility 0s linear 0s, opacity 0.6s ease 0s;
+  -webkit-transition: visibility 0s linear 0s, opacity 0.62s ease 0s;
+  -moz-transition: visibility 0s linear 0s, opacity 0.62s ease 0s;
+  -o-transition: visibility 0s linear 0s, opacity 0.62s ease 0s;
+  transition: visibility 0s linear 0s, opacity 0.62s ease 0s;
 }
 
 .backgroundHaze.hidden {
   opacity: 0;
   visibility: hidden;
-  -webkit-transition: visibility 0s linear 0.4s, opacity 0.4s ease 0s;
-  -moz-transition: visibility 0s linear 0.4s, opacity 0.4s ease 0s;
-  -o-transition: visibility 0s linear 0.4s, opacity 0.4s ease 0s;
-  transition: visibility 0s linear 0.4s, opacity 0.4s ease 0s;
+  -webkit-transition: visibility 0s linear 0.41s, opacity 0.41s ease 0s;
+  -moz-transition: visibility 0s linear 0.41s, opacity 0.41s ease 0s;
+  -o-transition: visibility 0s linear 0.41s, opacity 0.41s ease 0s;
+  transition: visibility 0s linear 0.41s, opacity 0.41s ease 0s;
 }
 
 .newMainImage, .newSmallImage, .oldMainImage, .oldSmallImage {
@@ -153,19 +153,41 @@ body {
 
 .newMainImage.visible, .newSmallImage.visible, .oldMainImage.visible, .oldSmallImage.visible {
   visibility: visible;
-  -webkit-transition: visibility 0s linear 0s, opacity 0.6s ease 0s;
-  -moz-transition: visibility 0s linear 0s, opacity 0.6s ease 0s;
-  -o-transition: visibility 0s linear 0s, opacity 0.6s ease 0s;
-  transition: visibility 0s linear 0s, opacity 0.6s ease 0s;
+  -webkit-transition: visibility 0s linear 0s, opacity 0.64s ease 0s;
+  -moz-transition: visibility 0s linear 0s, opacity 0.64s ease 0s;
+  -o-transition: visibility 0s linear 0s, opacity 0.64s ease 0s;
+  transition: visibility 0s linear 0s, opacity 0.64s ease 0s;
 }
 
 .newMainImage.hidden, .newSmallImage.hidden, .oldMainImage.hidden, .oldSmallImage.hidden {
   opacity: 0;
   visibility: hidden;
-  -webkit-transition: visibility 0s linear 0.6s, opacity 0.6s ease 0s;
-  -moz-transition: visibility 0s linear 0.6s, opacity 0.6s ease 0s;
-  -o-transition: visibility 0s linear 0.6s, opacity 0.6s ease 0s;
-  transition: visibility 0s linear 0.6s, opacity 0.6s ease 0s;
+  -webkit-transition: visibility 0s linear 0.63s, opacity 0.63s ease 0s;
+  -moz-transition: visibility 0s linear 0.63s, opacity 0.63s ease 0s;
+  -o-transition: visibility 0s linear 0.63s, opacity 0.63s ease 0s;
+  transition: visibility 0s linear 0.63s, opacity 0.63s ease 0s;
+}
+
+/* The image while the lightbox is expanding */
+.lightbox.visible img.newMainImage,
+.lightbox.visible img.newSmallImage,
+.lightbox.visible img.oldMainImage,
+.lightbox.visible img.oldSmallImage {
+  -webkit-transition: width 0.62s ease 0s, height 0.62s ease 0s;
+  -moz-transition: width 0.62s ease 0s, height 0.62s ease 0s;
+  -o-transition: width 0.62s ease 0s, height 0.62s ease 0s;
+  transition: width 0.62s ease 0s, height 0.62s ease 0s;
+}
+
+/* The image while the lightbox is shrinking */
+.lightbox.hidden img.newMainImage,
+.lightbox.hidden img.newSmallImage,
+.lightbox.hidden img.oldMainImage,
+.lightbox.hidden img.oldSmallImage {
+  -webkit-transition: width 0.41s ease 0s, height 0.41s ease 0s;
+  -moz-transition: width 0.41s ease 0s, height 0.41s ease 0s;
+  -o-transition: width 0.41s ease 0s, height 0.41s ease 0s;
+  transition: width 0.41s ease 0s, height 0.41s ease 0s;
 }
 
 .oldMainImage.visible, .newMainImage.visible {
@@ -202,19 +224,19 @@ body {
 .spriteButton.visible {
   opacity: 1;
   visibility: visible;
-  -webkit-transition: visibility 0s linear 0s, opacity 0.2s ease 0s;
-  -moz-transition: visibility 0s linear 0s, opacity 0.2s ease 0s;
-  -o-transition: visibility 0s linear 0s, opacity 0.2s ease 0s;
-  transition: visibility 0s linear 0s, opacity 0.2s ease 0s;
+  -webkit-transition: visibility 0s linear 0s, opacity 0.25s ease 0s;
+  -moz-transition: visibility 0s linear 0s, opacity 0.25s ease 0s;
+  -o-transition: visibility 0s linear 0s, opacity 0.25s ease 0s;
+  transition: visibility 0s linear 0s, opacity 0.25s ease 0s;
 }
 
 .spriteButton.hidden {
   opacity: 0;
   visibility: hidden;
-  -webkit-transition: visibility 0s linear 0.7s, opacity 0.7s ease 0s;
-  -moz-transition: visibility 0s linear 0.7s, opacity 0.7s ease 0s;
-  -o-transition: visibility 0s linear 0.7s, opacity 0.7s ease 0s;
-  transition: visibility 0s linear 0.7s, opacity 0.7s ease 0s;
+  -webkit-transition: visibility 0s linear 0.76s, opacity 0.76s ease 0s;
+  -moz-transition: visibility 0s linear 0.76s, opacity 0.76s ease 0s;
+  -o-transition: visibility 0s linear 0.76s, opacity 0.76s ease 0s;
+  transition: visibility 0s linear 0.76s, opacity 0.76s ease 0s;
 }
 
 .closeButton {

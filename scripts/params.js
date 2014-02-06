@@ -28,8 +28,8 @@
   moduleParams = {};
   params.LIGHTBOX = moduleParams;
 
-  // Max image size is 600x450; padding is 10
-  moduleParams.WIDTH = 620;
+  // Max image size is 600x450; padding is 10 or 20 (I messed up on the aspect ratios of the converted images)
+  moduleParams.WIDTH = 640;
   moduleParams.HEIGHT = 470;
   moduleParams.POINTER_MOVE_BUTTON_FADE_DELAY = 700; // milliseconds
 
