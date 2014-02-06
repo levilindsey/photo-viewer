@@ -168,26 +168,48 @@ body {
   transition: visibility 0s linear 0.63s, opacity 0.63s ease 0s;
 }
 
-/* The image while the lightbox is expanding */
-.lightbox.visible img.newMainImage,
-.lightbox.visible img.newSmallImage,
-.lightbox.visible img.oldMainImage,
-.lightbox.visible img.oldSmallImage {
-  -webkit-transition: width 0.62s ease 0s, height 0.62s ease 0s;
-  -moz-transition: width 0.62s ease 0s, height 0.62s ease 0s;
-  -o-transition: width 0.62s ease 0s, height 0.62s ease 0s;
-  transition: width 0.62s ease 0s, height 0.62s ease 0s;
+/* The image while the lightbox is out or is expanding */
+.lightbox.visible img.visible,
+.lightbox.visible img.visible,
+.lightbox.visible img.visible,
+.lightbox.visible img.visible {
+  -webkit-transition: width 0.62s ease 0s, height 0.62s ease 0s, visibility 0s linear 0s, opacity 0.64s ease 0s;
+  -moz-transition: width 0.62s ease 0s, height 0.62s ease 0s, visibility 0s linear 0s, opacity 0.64s ease 0s;
+  -o-transition: width 0.62s ease 0s, height 0.62s ease 0s, visibility 0s linear 0s, opacity 0.64s ease 0s;
+  transition: width 0.62s ease 0s, height 0.62s ease 0s, visibility 0s linear 0s, opacity 0.64s ease 0s;
 }
 
-/* The image while the lightbox is shrinking */
-.lightbox.hidden img.newMainImage,
-.lightbox.hidden img.newSmallImage,
-.lightbox.hidden img.oldMainImage,
-.lightbox.hidden img.oldSmallImage {
-  -webkit-transition: width 0.41s ease 0s, height 0.41s ease 0s;
-  -moz-transition: width 0.41s ease 0s, height 0.41s ease 0s;
-  -o-transition: width 0.41s ease 0s, height 0.41s ease 0s;
-  transition: width 0.41s ease 0s, height 0.41s ease 0s;
+/* The image while the lightbox is out or is expanding */
+.lightbox.visible img.hidden,
+.lightbox.visible img.hidden,
+.lightbox.visible img.hidden,
+.lightbox.visible img.hidden {
+  -webkit-transition: width 0.62s ease 0s, height 0.62s ease 0s, visibility 0s linear 0.63s, opacity 0.63s ease 0s;
+  -moz-transition: width 0.62s ease 0s, height 0.62s ease 0s, visibility 0s linear 0.63s, opacity 0.63s ease 0s;
+  -o-transition: width 0.62s ease 0s, height 0.62s ease 0s, visibility 0s linear 0.63s, opacity 0.63s ease 0s;
+  transition: width 0.62s ease 0s, height 0.62s ease 0s, visibility 0s linear 0.63s, opacity 0.63s ease 0s;
+}
+
+/* The image while the lightbox is in or is shrinking */
+.lightbox.hidden img.visible,
+.lightbox.hidden img.visible,
+.lightbox.hidden img.visible,
+.lightbox.hidden img.visible {
+  -webkit-transition: width 0.41s ease 0s, height 0.41s ease 0s, visibility 0s linear 0s, opacity 0.64s ease 0s;
+  -moz-transition: width 0.41s ease 0s, height 0.41s ease 0s, visibility 0s linear 0s, opacity 0.64s ease 0s;
+  -o-transition: width 0.41s ease 0s, height 0.41s ease 0s, visibility 0s linear 0s, opacity 0.64s ease 0s;
+  transition: width 0.41s ease 0s, height 0.41s ease 0s, visibility 0s linear 0s, opacity 0.64s ease 0s;
+}
+
+/* The image while the lightbox is in or is shrinking */
+.lightbox.hidden img.hidden,
+.lightbox.hidden img.hidden,
+.lightbox.hidden img.hidden,
+.lightbox.hidden img.hidden {
+  -webkit-transition: width 0.41s ease 0s, height 0.41s ease 0s, visibility 0s linear 0.63s, opacity 0.63s ease 0s;
+  -moz-transition: width 0.41s ease 0s, height 0.41s ease 0s, visibility 0s linear 0.63s, opacity 0.63s ease 0s;
+  -o-transition: width 0.41s ease 0s, height 0.41s ease 0s, visibility 0s linear 0.63s, opacity 0.63s ease 0s;
+  transition: width 0.41s ease 0s, height 0.41s ease 0s, visibility 0s linear 0.63s, opacity 0.63s ease 0s;
 }
 
 .oldMainImage.visible, .newMainImage.visible {
@@ -242,8 +264,8 @@ body {
 .closeButton {
   background-position: 0 0;
   margin: auto;
-  left: 20px;
-  top: 20px;
+  left: 25px;
+  top: 25px;
   width: 34px;
   height: 34px;
 }
@@ -260,8 +282,8 @@ body {
   display: none;
   background-position: 0 -35px;
   margin: auto;
-  right: 20px;
-  top: 20px;
+  right: 25px;
+  top: 25px;
   width: 34px;
   height: 34px;
 }
@@ -277,8 +299,8 @@ body {
 .expandToFullButton {
   background-position: 0 -70px;
   margin: auto;
-  right: 20px;
-  top: 20px;
+  right: 25px;
+  top: 25px;
   width: 34px;
   height: 34px;
 }
@@ -294,7 +316,7 @@ body {
 .previousButton {
   background-position: 0 -105px;
   margin: auto;
-  left: 20px;
+  left: 25px;
   top: 0; bottom: 0;
   width: 34px;
   height: 100px;
@@ -312,7 +334,7 @@ body {
 .nextButton {
   background-position: 0 -206px;
   margin: auto;
-  right: 20px;
+  right: 25px;
   top: 0; bottom: 0;
   width: 34px;
   height: 100px;
