@@ -269,6 +269,74 @@
     }
   }
 
+  function checkIfSmallScreen() {
+    util.isSmallScreen = screen.width < params.SMALL_SCREEN_WIDTH_THRESHOLD ||
+        screen.height < params.SMALL_SCREEN_HEIGHT_THRESHOLD;
+  }
+
+  // TODO: jsdoc
+  function setUpMobileBrowserDependantHelpers() {
+    if (util.isMobileBrowser) {
+      // TODO:
+      util.addTapEventListener = function(element, callback, preventDefault) {
+        var preventionCallback;
+        if (preventDefault) {
+          preventionCallback = function(event) {
+            util.preventDefault(event);
+          };
+          util.listen(element, 'touchstart', preventionCallback);
+        }
+        util.listen(element, 'touchend', callback);
+        return preventionCallback;
+      }
+
+      // TODO:
+      util.removeTapEventListener = function(element, callback, preventionCallback) {
+        util.stopListening(element, 'touchend', callback);
+        util.stopListening(element, 'touchstart', preventionCallback);
+      }
+
+      // TODO:
+      util.addPointerMoveEventListener = function(element, callback) {
+        util.listen(element, 'touchmove', callback);
+      }
+
+      // TODO:
+      util.removePointerMoveEventListener = function(element, callback) {
+        util.stopListening(element, 'touchmove', callback);
+      }
+    } else {
+      // TODO:
+      util.addTapEventListener = function(element, callback, preventDefault) {
+        var preventionCallback;
+        if (preventDefault) {
+          preventionCallback = function(event) {
+            util.preventDefault(event);
+          };
+          util.listen(element, 'mousedown', preventionCallback);
+        }
+        util.listen(element, 'mouseup', callback);
+        return preventionCallback;
+      }
+
+      // TODO:
+      util.removeTapEventListener = function(element, callback, preventionCallback) {
+        util.stopListening(element, 'mouseup', callback);
+        util.stopListening(element, 'mousedown', preventionCallback);
+      }
+
+      // TODO:
+      util.addPointerMoveEventListener = function(element, callback) {
+        util.listen(element, 'mousemove', callback);
+      }
+
+      // TODO:
+      util.removePointerMoveEventListener = function(element, callback) {
+        util.stopListening(element, 'mousemove', callback);
+      }
+    }
+  }
+
   // ------------------------------------------------------------------------------------------- //
   // Public static functions
 
@@ -279,6 +347,9 @@
   function init() {
     params = app.params;
     log = new app.Log('util');
+
+    checkIfMobileBrowser();
+    checkIfSmallScreen();
 
     setUpXHR();
     setUpListen();
@@ -291,7 +362,7 @@
     setUpGetScrollTop();
     setUpAddOnEndFullScreen();
     setUpGetMidTransitionValue();
-    checkIfMobileBrowser();
+    setUpMobileBrowserDependantHelpers();
 
     log.d('init', 'Module initialized');
   }
@@ -395,41 +466,6 @@
                 '00' + millis;
 
     return hours + minutes + seconds + millis;
-  }
-
-  // TODO: jsdoc
-  function addTapEventListener(element, callback, preventDefault) {
-    var preventionCallback;
-    if (preventDefault) {
-      preventionCallback = function(event) {
-        util.preventDefault(event);
-      };
-      util.listen(element, 'mousedown', preventionCallback);
-      util.listen(element, 'touchstart', preventionCallback);
-    }
-    util.listen(element, 'mouseup', callback);
-    util.listen(element, 'touchend', callback);
-    return preventionCallback;
-  }
-
-  // TODO: jsdoc
-  function removeTapEventListener(element, callback, preventionCallback) {
-    util.stopListening(element, 'mouseup', callback);
-    util.stopListening(element, 'touchend', callback);
-    util.stopListening(element, 'mousedown', preventionCallback);
-    util.stopListening(element, 'touchstart', preventionCallback);
-  }
-
-  // TODO: jsdoc
-  function addPointerMoveEventListener(element, callback) {
-    util.listen(element, 'mousemove', callback);
-    util.listen(element, 'touchmove', callback);
-  }
-
-  // TODO: jsdoc
-  function removePointerMoveEventListener(element, callback) {
-    util.stopListening(element, 'mousemove', callback);
-    util.stopListening(element, 'touchmove', callback);
   }
 
   // TODO: jsdoc
@@ -605,10 +641,6 @@
     sendRequest: sendRequest,
     dateObjToDateTimeString: dateObjToDateTimeString,
     millisToTimeString: millisToTimeString,
-    addTapEventListener: addTapEventListener,
-    removeTapEventListener: removeTapEventListener,
-    addPointerMoveEventListener: addPointerMoveEventListener,
-    removePointerMoveEventListener: removePointerMoveEventListener,
     listenToMultipleForMultiple: listenToMultipleForMultiple,
     createElement: createElement,
     containsClass: containsClass,
@@ -631,7 +663,12 @@
     getScrollTop: null,
     addOnEndFullScreen: null,
     getMidTransitionValue: null,
-    isMobileBrowser: false
+    addTapEventListener: null,
+    removeTapEventListener: null,
+    addPointerMoveEventListener: null,
+    removePointerMoveEventListener: null,
+    isMobileBrowser: false,
+    isSmallScreen: false
   };
 
   // Expose this module

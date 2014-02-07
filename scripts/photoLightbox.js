@@ -62,22 +62,27 @@
       onCloseButtonTap.call(photoLightbox, event);
     }, false);
 
-    reduceFromFullButton = util.createElement('div', lightbox, null,
+    reduceFromFullButton = util.createElement('div', null, null,
         ['spriteButton','reduceFromFullButton','hidden']);
-    reduceFromFullButton.style.display = 'none';
-    util.addTapEventListener(reduceFromFullButton, function(event) {
-      onFullscreenButtonTap.call(photoLightbox, event);
-    }, false);
-
-    expandToFullButton = util.createElement('div', lightbox, null,
+    expandToFullButton = util.createElement('div', null, null,
         ['spriteButton','expandToFullButton','hidden']);
-    util.addTapEventListener(expandToFullButton, function(event) {
-      onFullscreenButtonTap.call(photoLightbox, event);
-    }, false);
 
-    util.addOnEndFullScreen(function() {
-      onFullScreenChange.call(photoLightbox, false);
-    });
+    if (!util.isSmallScreen) {
+      lightbox.appendChild(reduceFromFullButton);
+      reduceFromFullButton.style.display = 'none';
+      util.addTapEventListener(reduceFromFullButton, function(event) {
+        onFullscreenButtonTap.call(photoLightbox, event);
+      }, false);
+
+      lightbox.appendChild(expandToFullButton);
+      util.addTapEventListener(expandToFullButton, function(event) {
+        onFullscreenButtonTap.call(photoLightbox, event);
+      }, false);
+
+      util.addOnEndFullScreen(function() {
+        onFullScreenChange.call(photoLightbox, false);
+      });
+    }
 
     previousButton = util.createElement('div', lightbox, null,
         ['spriteButton','previousButton','hidden']);

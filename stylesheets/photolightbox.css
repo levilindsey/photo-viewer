@@ -216,7 +216,8 @@ body {
   opacity: 1;
 }
 
-.oldSmallImage.visible, .newSmallImage.visible {
+.oldSmallImage.visible, .newSmallImage.visible,
+.oldSmallImage.hidden, .newSmallImage.hidden {
   opacity: 0.15;
 }
 
@@ -264,7 +265,7 @@ body {
 .closeButton {
   background-position: 0 0;
   margin: auto;
-  left: 25px;
+  right: 25px;
   top: 25px;
   width: 34px;
   height: 34px;
@@ -282,7 +283,7 @@ body {
   display: none;
   background-position: 0 -35px;
   margin: auto;
-  right: 25px;
+  left: 25px;
   top: 25px;
   width: 34px;
   height: 34px;
@@ -299,7 +300,7 @@ body {
 .expandToFullButton {
   background-position: 0 -70px;
   margin: auto;
-  right: 25px;
+  left: 25px;
   top: 25px;
   width: 34px;
   height: 34px;
