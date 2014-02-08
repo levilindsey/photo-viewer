@@ -1,12 +1,4 @@
 
-body {
-  position: relative;
-  margin: 0;
-  background-color: #0A0A0A;
-  width: 100%;
-  height: 100%;
-}
-
 .lightbox {
   display: none;
   position: fixed;
@@ -123,7 +115,7 @@ body {
 }
 
 .backgroundHaze.visible {
-  opacity: 0.8;
+  opacity: 0.87;
   visibility: visible;
   -webkit-transition: visibility 0s linear 0s, opacity 0.62s ease 0s;
   -moz-transition: visibility 0s linear 0s, opacity 0.62s ease 0s;

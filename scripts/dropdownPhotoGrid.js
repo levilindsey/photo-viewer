@@ -6,25 +6,32 @@
   // ------------------------------------------------------------------------------------------- //
   // Private static variables
 
-  var params, util, log, animate, photoLightbox;
+  var params, util, log, animate, PhotoLightbox, photoLightbox;
 
   // ------------------------------------------------------------------------------------------- //
   // Private dynamic functions
 
   // TODO: jsdoc
   function createElements() {
-    var photoGrid, container, banner, bannerIcon, grid;
+    var photoGrid, container, banner, bannerIcon, bannerTextContainer, bannerText, grid,
+        photoGridInnerContainer;
 
     photoGrid = this;
 
     container = util.createElement('div', photoGrid.parent, null, ['photoGridContainer']);
 
-    banner = util.createElement('div', container, null, ['photoGridBanner']);
+    banner = util.createElement('div', container, null, ['photoGridBanner','closed']);
     util.addTapEventListener(banner, function() {
       onBannerTap.call(photoGrid);
     }, false);
 
-    bannerIcon = util.createElement('div', banner, null, ['bannerIcon']);
+    bannerIcon = util.createElement('img', banner, null, ['bannerIcon']);
+
+    bannerTextContainer = util.createElement('div', banner, null, ['bannerTextContainer']);
+
+    bannerText = util.createElement('span', bannerTextContainer, null, ['insetText']);
+    bannerText.setAttribute('text', photoGrid.photoGroup.title);
+    bannerText.innerHTML = photoGrid.photoGroup.title;
 
     grid = util.createElement('div', container, null, ['photoGrid']);
     // TODO: !!
@@ -32,11 +39,15 @@
     // - will need to add an additional optional parameter to the util.addTapEventListener for this
     // - when a tap occurs, and grid.opening === true, invoke calculateThumbnailPositions()
 
+    photoGridInnerContainer = util.createElement('div', grid, null, ['photoGridInnerContainer']);
+
     photoGrid.elements = {
       container: container,
       banner: banner,
       bannerIcon: bannerIcon,
-      grid: grid
+      grid: grid,
+      photoGridInnerContainer: photoGridInnerContainer,
+      gridCells: null
     };
 
     createThumbnails.call(photoGrid);
@@ -45,90 +56,122 @@
 
   // TODO: jsdoc
   function createThumbnails() {
-    var photoGrid = this;
+    var photoGrid, gridCell;
 
-    photoGrid.photoGroup.loadImages('thumbnail', onPhotoGroupSingleSuccess,
-        onPhotoGroupTotalSuccess, onPhotoGroupTotalError);
+    photoGrid = this;
+    photoGrid.elements.gridCells = [];
 
+    // Load the thumbnails
+    photoGrid.photoGroup.loadImages('gridThumbnail',
+        function(photoGroup, photo) {
+          onPhotoGroupSingleLoadSuccess.call(photoGrid, photoGroup, photo);
+        },
+        function(photoGroup) {
+          onPhotoGroupTotalLoadSuccess.call(photoGrid, photoGroup);
+        },
+        function(photoGroup, failedPhotos) {
+          onPhotoGroupTotalLoadError.call(photoGrid, photoGroup, failedPhotos);
+        });
+
+    // Create the thumbnail elements and add them to the DOM
     photoGrid.photoGroup.photos.forEach(function(photo) {
-      photoGrid.grid.appendChild(photo.thumbnail.image);
+      gridCell = util.createElement('div', photoGrid.elements.photoGridInnerContainer, null,
+          ['gridCell']);
+      gridCell.appendChild(photo.gridThumbnail.image);
+      photoGrid.elements.gridCells.push(gridCell);
     });
+
+    // Listen for thumbnail taps
+    photoGrid.photoGroup.addPhotoItemTapEventListeners('gridThumbnail',
+        function(event, photoGroup, index) {
+          onPhotoItemTap.call(photoGrid, event, photoGroup, index);
+        });
   }
 
   // TODO: jsdoc
   function resize() {
-    var photoGrid, parentColumnCapacity, maxWidth;
+    var photoGrid, parentColumnCapacity;
+
+    // TODO: actually call this from window.onresize too
 
     photoGrid = this;
 
+    // Determine how many columns could fit in the parent container
     parentColumnCapacity =
-        (parseInt(photoGrid.parent.style.width) - params.GRID.THUMBNAIL_MARGIN) /
+        (parseInt(photoGrid.parent.clientWidth) - params.GRID.THUMBNAIL_MARGIN) /
         (params.GRID.THUMBNAIL_WIDTH + params.GRID.THUMBNAIL_MARGIN);
 
-    maxWidth = (params.GRID.THUMBNAIL_MARGIN * params.GRID.MAX_COLUMN_COUNT + 1) +
-        params.GRID.THUMBNAIL_WIDTH * params.GRID.MAX_COLUMN_COUNT;
-
+    // Determine how many columns and rows of thumbnails to use
     photoGrid.columnCount = parentColumnCapacity >= params.GRID.MAX_COLUMN_COUNT ?
         params.GRID.MAX_COLUMN_COUNT : parentColumnCapacity;
-    photoGrid.rowCount = **;
+    photoGrid.rowCount = parseInt(1 + photoGrid.photoGroup.photos.length / photoGrid.columnCount);
 
-    // TODO:
-    // - compute the width to use (according to max width, current parent width, and thumbnail width);
-    // - compute the columnCount and rowCount
-    // - compute the height this will then need
-    // - apply these dimensions to the grid
+    // Set the grid's width and heights
+    photoGrid.elements.container.style.width =
+        photoGrid.columnCount * params.GRID.THUMBNAIL_WIDTH +
+        (photoGrid.columnCount + 1) * params.GRID.THUMBNAIL_MARGIN + 'px';
+    photoGrid.gridHeight = photoGrid.rowCount * params.GRID.THUMBNAIL_HEIGHT +
+        (photoGrid.rowCount + 1) * params.GRID.THUMBNAIL_MARGIN;
+    photoGrid.elements.photoGridInnerContainer.style.height = photoGrid.gridHeight + 'px';
 
-    // TODO: if the grid is currently open, then re-position the thumbnails, then start the bouncing thing as the css transition handles the grid height
-    // - for the bouncing thing:
-    //   - apply the transition properties manually in javascript
-    //     - because I will want smaller height changes to take less time
+    photoGrid.openCloseDuration = photoGrid.gridHeight / params.GRID.HEIGHT_CHANGE_RATE;
+
+    // TODO: if the grid is opening, then re-start the animation
   }
 
   // TODO: jsdoc
-  function calculateThumbnailPositions() {
-    // TODO:
-//    for (var i = 0, count = photoGroup.photos.length; i < count; i++) {
-//      x = i % colCount * width;
-//      y = parseInt(i / colCount) * height;
-//      photoGroup.photos[i].thumbnail.x = x;
-//      photoGroup.photos[i].thumbnail.y = y;
-//    }
-  }
+  function calculateThumbnailRowsAndColumns() {
+    var photoGrid, photos, i, count, columnIndex, rowIndex;
 
-  // TODO: jsdoc
-  function onPhotoGroupSingleSuccess(photoGroup, photo) {
-    ///////////////////////////////////////////////////////////
-    // TODO: CHANGE THIS (as is, it was directly copied from old index code)
-    var pageCoords;
-    if (photoGroup.title === 'J+L') {
-      photo.thumbnail.image.style.position = 'absolute';
-      photo.thumbnail.image.style.left = photo.thumbnail.x + 'px';
-      photo.thumbnail.image.style.top = photo.thumbnail.y + 'px';
-      document.getElementsByTagName('body')[0].appendChild(photo.thumbnail.image);
-//      pageCoords = util.getPageCoordinates(photo.thumbnail.image);
-//      photo.thumbnail.x = pageCoords.x;
-//      photo.thumbnail.y = pageCoords.y;
+    photoGrid = this;
+    photos = photoGrid.photoGroup.photos;
+
+    for (i = 0, count = photos.length; i < count; i++) {
+      columnIndex = i % photoGrid.columnCount;
+      rowIndex = parseInt(i / photoGrid.columnCount);
+      photos[i].gridThumbnail.columnIndex = columnIndex;
+      photos[i].gridThumbnail.rowIndex = rowIndex;
     }
-    ///////////////////////////////////////////////////////////
   }
 
   // TODO: jsdoc
-  function onPhotoGroupTotalSuccess(photoGroup) {
-    log.i('onPhotoGroupTotalSuccess', 'All photos loaded for group ' + photoGroup.title);
-    photoGroup.addPhotoItemTapEventListeners('thumbnail', onPhotoItemTap);
+  function onPhotoGroupSingleLoadSuccess(photoGroup, photo) {
+    //log.v('onPhotoGroupSingleLoadSuccess');
+    // TODO: cancel the progress circle (which will need to have been absolutely positioned at this image)
+  }
+
+  // TODO: jsdoc
+  function onPhotoGroupTotalLoadSuccess(photoGroup) {
+    log.i('onPhotoGroupTotalLoadSuccess', 'All photos loaded for group ' + photoGroup.title);
     // TODO:
   }
 
   // TODO: jsdoc
-  function onPhotoGroupTotalError(photoGroup, failedPhotos) {
-    log.e('onPhotoGroupTotalError', 'Unable to load ' + failedPhotos.length + ' photos for group ' + photoGroup.title);
+  function onPhotoGroupTotalLoadError(photoGroup, failedPhotos) {
+    log.e('onPhotoGroupTotalLoadError',
+        'Unable to load ' + failedPhotos.length + ' photos for group ' + photoGroup.title);
     // TODO:
+  }
+
+  // TODO: jsdoc
+  function onPhotoGroupSingleCacheSuccess(photoGroup, photo) {
+    //log.v('onPhotoGroupSingleCacheSuccess');
+  }
+
+  // TODO: jsdoc
+  function onPhotoGroupTotalCacheSuccess(photoGroup) {
+    log.i('onPhotoGroupTotalCacheSuccess', 'All photos cached for group ' + photoGroup.title);
+  }
+
+  // TODO: jsdoc
+  function onPhotoGroupTotalCacheError(photoGroup, failedPhotos) {
+    log.e('onPhotoGroupTotalCacheError',
+        'Unable to cache ' + failedPhotos.length + ' photos for group ' + photoGroup.title);
   }
 
   // TODO: jsdoc
   function onPhotoItemTap(event, photoGroup, index) {
-    log.i('onPhotoItemTap', 'PhotoItem=' + photoGroup.photos[index].thumbnail.source);
-    // TODO:
+    log.i('onPhotoItemTap', 'PhotoItem=' + photoGroup.photos[index].gridThumbnail.source);
     photoLightbox.open(photoGroup, index);
     util.stopPropogation(event);
   }
@@ -150,10 +193,6 @@
 
     photoGrid = this;
 
-    // TODO:
-
-    calculateThumbnailPositions();
-
     photoGrid.opening = false;
   }
 
@@ -163,9 +202,8 @@
 
     photoGrid = this;
 
-    // TODO:
-
     photoGrid.closing = false;
+    util.toggleClass(photoGrid.elements.banner, 'closed', true);
   }
 
   // ------------------------------------------------------------------------------------------- //
@@ -173,40 +211,72 @@
 
   // TODO: jsdoc
   function open() {
-    var photoGrid;
+    var photoGrid, duration;
 
     photoGrid = this;
+    photoGrid.isOpen = true;
     photoGrid.opening = true;
-
-    // TODO:
-    // - use the current width/height/columnCount/rowCount dimensions that have been saved from resize();
-    // - loop through each thumbnail and assign each a rowIndex (top row is zero)
-    // -
+    util.toggleClass(photoGrid.elements.banner, 'closed', false);
 
     if (photoGrid.openEventListener) {
-      photoGrid.openEventListener();
+      photoGrid.openEventListener(photoGrid);
     }
+
+    calculateThumbnailRowsAndColumns.call(photoGrid);
+    duration = (photoGrid.gridHeight - photoGrid.elements.grid.clientHeight) /
+        params.HEIGHT_CHANGE_RATE;
+
+    // TODO: add the bounce
+    // - for the bouncing thing:
+    //   - apply the transition properties manually in javascript
+    //     - because I will want smaller height changes to take less time
+    animate.startNumericStyleAnimation(photoGrid.elements.grid, 'height',
+        photoGrid.elements.grid.clientHeight, photoGrid.gridHeight, null, duration, null, 'px',
+        'easeInOutQuad', function(animation, photoGrid) {
+          onOpeningFinished.call(photoGrid);
+        }, photoGrid);
   }
 
   // TODO: jsdoc
   function close() {
-    var photoGrid;
+    var photoGrid, duration;
 
     photoGrid = this;
+    photoGrid.isOpen = false;
     photoGrid.closing = true;
 
-    // TODO:
+    if (photoGrid.closeEventListener) {
+      photoGrid.closeEventListener(photoGrid);
+    }
+
+    duration = photoGrid.elements.grid.clientHeight / params.HEIGHT_CHANGE_RATE;
+
+    // TODO: add the bounce
+    animate.startNumericStyleAnimation(photoGrid.elements.grid, 'height',
+        photoGrid.elements.grid.clientHeight, 0, null, duration, null, 'px', 'easeInOutQuad',
+        function(animation, photoGrid) {
+          onClosingFinished.call(photoGrid);
+        }, photoGrid);
   }
 
   // TODO: jsdoc
   function cacheThumbnails() {
-    // TODO:
+    var photoGrid = this;
+
+    photoGrid.photoGroup.cacheImages('thumbnail',
+        function(photoGroup, photo) {
+          onPhotoGroupSingleCacheSuccess.call(photoGrid, photoGroup, photo);
+        },
+        function(photoGroup) {
+          onPhotoGroupTotalCacheSuccess.call(photoGrid, photoGroup);
+        },
+        function(photoGroup, failedPhotos) {
+          onPhotoGroupTotalCacheError.call(photoGrid, photoGroup, failedPhotos);
+        });
   }
 
   // ------------------------------------------------------------------------------------------- //
   // Private static functions
-
-
 
   // ------------------------------------------------------------------------------------------- //
   // Public static functions
@@ -220,6 +290,7 @@
     util = app.util;
     log = new app.Log('dropdownPhotoGrid');
     animate = app.animate;
+    PhotoLightbox = app.PhotoLightbox;
     photoLightbox = new PhotoLightbox();
     log.d('initStaticFields', 'Module initialized');
   }
@@ -232,7 +303,7 @@
    * @global
    * @param {} ...
    */
-  function DropdownPhotoGrid(photoGroup, parent, openEventListener) {
+  function DropdownPhotoGrid(photoGroup, parent, openEventListener, closeEventListener) {
     var photoGrid = this;
 
     photoGrid.photoGroup = photoGroup;
@@ -243,7 +314,12 @@
     photoGrid.closing = false;
     photoGrid.columnCount = 0;
     photoGrid.rowCount = 0;
+    photoGrid.gridHeight = 0;
+    photoGrid.openCloseDuration = 0;
     photoGrid.openEventListener = openEventListener;
+    photoGrid.closeEventListener = closeEventListener;
+    photoGrid.open = open;
+    photoGrid.close = close;
     photoGrid.cacheThumbnails = cacheThumbnails;
 
     createElements.call(photoGrid);

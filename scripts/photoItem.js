@@ -17,8 +17,8 @@
   /**
    * Downloads and caches the target size of this PhotoItem's image, but does not actually keep a
    * reference to it.
-   * @function PhotoItem~cacheImage
-   * @param {'thumbnail'|'small'|'full'} targetSize Which size version of this photo to cache.
+   * @function PhotoItem#cacheImage
+   * @param {'full'|'small'|'thumbnail'|'gridThumbnail'} targetSize Which size version of this photo to cache.
    * @param {Function} onSuccess An event listener called if the image is cached successfully.
    * @param {Function} onError An event listener called if an error occurs while caching the image.
    * @returns {HTMLElement} The image DOM element that is used to cache the image.
@@ -28,18 +28,26 @@
     photo = this;
     image = new Image();
     util.listen(image, 'load', function () {
-      photo[targetSize].isCached = true;
+      if (targetSize !== 'gridThumbnail') {
+        photo[targetSize].isCached = true;
+      }
       onSuccess(photo);
     });
-    util.listen(image, 'error', function() { onError(photo); });
-    image.src = photo[targetSize].source;
+    util.listen(image, 'error', function() {
+      onError(photo);
+    });
+    if (targetSize !== 'gridThumbnail') {
+      image.src = photo[targetSize].source;
+    } else {
+      image.src = photo.thumbnail.source;
+    }
     return image;
   }
 
   /**
    * Loads, and keeps a reference to, the target size of this PhotoItem's image.
-   * @function PhotoItem~loadImage
-   * @param {'thumbnail'|'small'|'full'} targetSize Which size version of this photo to load.
+   * @function PhotoItem#loadImage
+   * @param {'full'|'small'|'thumbnail'|'gridThumbnail'} targetSize Which size version of this photo to load.
    * @param {Function} onSuccess An event listener called if the image is loaded successfully.
    * @param {Function} onError An event listener called if an error occurs while loading the image.
    */
@@ -51,7 +59,7 @@
   /**
    * Adds an event listener for a tap event over one of the image elements of this PhotoItem.
    * @function PhotoItem#addTapEventListener
-   * @param {'full'|'small'|'thumbnail'} targetSize Which size image to use as the target for
+   * @param {'full'|'small'|'thumbnail'|'gridThumbnail'} targetSize Which size image to use as the target for
    * this event listener.
    * @param {Function} tapHandler The callback function to call when a image tap occurs.
    */
@@ -60,6 +68,12 @@
     util.addTapEventListener(photo[targetSize].image, function(event) {
       tapHandler(event, photo);
     }, false);
+  }
+
+  // TODO: jsdoc
+  function getPageOffset(targetSize) {
+    var photo = this;
+    return util.getPageOffset(photo[targetSize].image);
   }
 
   // ------------------------------------------------------------------------------------------- //
@@ -123,14 +137,18 @@
       isCached: false,
       source: thumbnailSource,
       width: thumbnailWidth,
-      height: thumbnailHeight,
-      x: thumbnailX,
-      y: thumbnailY
+      height: thumbnailHeight
+    };
+    this.gridThumbnail = {
+      image: null,
+      columnIndex: -1,
+      rowIndex: -1
     };
 
     this.cacheImage = cacheImage;
     this.loadImage = loadImage;
     this.addTapEventListener = addTapEventListener;
+    this.getPageOffset = getPageOffset;
   }
 
   // Expose this module

@@ -1,40 +1,104 @@
 
+body {
+  position: relative;
+  margin: 0;
+  padding-top: 10px;
+  background-color: #0A0A0A;
+  width: 100%;
+  height: 100%;
+}
+
 .photoGridContainer {
   /* Max thumbnail size is 112x84; margin size is 10 */
   /* (maxColCount * thumbWidth + (maxColCount + 1) * margin) */
   max-width: 1108px;
-  margin: 10px auto;
+  margin: 0 auto 10px;
 }
 
 .photoGridBanner {
+  position: relative;
   width: 100%;
-  height: 40px;
-  padding-left: 10px;
-  color: #D8D8D8;
-  font-size: 32px;
-  font-family: sans-serif;
-  font-weight: bold;
+  height: 46px;
+  padding-top: 4px;
+  cursor: pointer;
+  box-shadow: 0 0 20px 0 #0A0A0A;
+  z-index: 20;
   background: -webkit-linear-gradient(#606060, #404040);
   background: -o-linear-gradient(#606060, #404040);
   background: -moz-linear-gradient(#606060, #404040);
   background: linear-gradient(#606060, #404040);
-  -webkit-border-radius: 4px 4px 0 0;
-  -moz-border-radius: 4px 4px 0 0;
-  -ms-border-radius: 4px 4px 0 0;
-  -o-border-radius: 4px 4px 0 0;
-  border-radius: 4px 4px 0 0;
+  -webkit-border-radius: 6px 6px 0 0;
+  -moz-border-radius: 6px 6px 0 0;
+  -ms-border-radius: 6px 6px 0 0;
+  -o-border-radius: 6px 6px 0 0;
+  border-radius: 6px 6px 0 0;
 }
 
 .photoGridBanner:hover {
-
+  background: -webkit-linear-gradient(#808080, #606060);
+  background: -o-linear-gradient(#808080, #606060);
+  background: -moz-linear-gradient(#808080, #606060);
+  background: linear-gradient(#808080, #606060);
 }
 
 .photoGridBanner:active {
+  background: -webkit-linear-gradient(#606060, #808080);
+  background: -o-linear-gradient(#606060, #808080);
+  background: -moz-linear-gradient(#606060, #808080);
+  background: linear-gradient(#606060, #808080);
+}
 
+.photoGridBanner.closed {
+  -webkit-border-radius: 6px 6px 6px 6px;
+  -moz-border-radius: 6px 6px 6px 6px;
+  -ms-border-radius: 6px 6px 6px 6px;
+  -o-border-radius: 6px 6px 6px 6px;
+  border-radius: 6px 6px 6px 6px;
 }
 
 .bannerIcon {
+  margin-left: 10px;
+}
 
+.bannerTextContainer {
+  position: relative;
+  float: left;
+  margin-left: 10px;
+  color: hsla(0, 0%, 0%, 1);
+  font-size: 36px;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+}
+
+.insetText {
+  display: block;
+  position: relative;
+}
+
+.insetText:before {
+  content: attr(text);
+  position: absolute;
+}
+
+.insetText:before {
+  left: 1px;
+  top: 1px;
+  color: hsla(0, 0%, 100%, 0.2);
+}
+
+.photoGridBanner:active .insetText:after {
+  content: attr(text);
+  position: absolute;
+}
+
+.photoGridBanner:active .insetText:before {
+  color: hsla(0, 0%, 100%, 0.1);
+}
+
+.insetText:after {
+  left: 2px;
+  top: 2px;
+  color: hsla(0, 0%, 100%, 0.1);
 }
 
 .photoGridBanner:hover>.bannerIcon {
@@ -46,23 +110,42 @@
 }
 
 .photoGrid {
+  position: relative;
   width: 100%;
   height: 0;
   background-color: #202020;
   overflow: hidden;
-  -webkit-border-radius: 0 0 4px 4px;
-  -moz-border-radius: 0 0 4px 4px;
-  -ms-border-radius: 0 0 4px 4px;
-  -o-border-radius: 0 0 4px 4px;
-  border-radius: 0 0 4px 4px;
+  -webkit-border-radius: 0 0 6px 6px;
+  -moz-border-radius: 0 0 6px 6px;
+  -ms-border-radius: 0 0 6px 6px;
+  -o-border-radius: 0 0 6px 6px;
+  border-radius: 0 0 6px 6px;
 }
 
-.photoGrid>img {
-  margin: 10px;
+.photoGridInnerContainer {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+}
+
+.gridCell {
+  position: relative;
+  float: left;
+  /* NOTE: if changing these values, also change them in params.js */
+  width: 112px;
+  height: 84px;
+  margin: 10px 0 0 10px;
+}
+
+.gridCell>img {
+  display: block;
+  position: absolute;
+  margin: auto;
+  top: 0; right: 0; bottom: 0; left: 0;
   z-index: 10;
 }
 
-.photoGrid>img:hover {
+.gridCell>img:hover {
   /*box-shadow: 0px 0px 10000px 50px hsla(0, 0%, 10%, 0.9);*//*TODO: tweak this*/
   cursor: pointer;
   z-index: 11;

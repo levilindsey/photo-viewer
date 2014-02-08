@@ -42,6 +42,7 @@
   params.GRID = moduleParams;
 
   // Max image size is 112x84; margin size is 10
+  // NOTE: if changing these values, also change them in dropdownphotogrid.css
   moduleParams.THUMBNAIL_WIDTH = 112;
   moduleParams.THUMBNAIL_HEIGHT = 84;
 

@@ -621,7 +621,7 @@
 
   // TODO: jsdoc
   function open(photoGroup, index) {
-    var photoLightbox, photoItem, body, bodyTapEventListener;
+    var photoLightbox, photoItem, body, pageOffset, bodyTapEventListener;
 
     photoLightbox = this;
     photoLightbox.photoGroup = photoGroup;
@@ -637,8 +637,9 @@
     util.toggleClass(photoLightbox.elements.lightbox, 'visible', false);
 
     // Start the lightbox animation with its dimensions matching the thumbnail
-    photoLightbox.elements.lightbox.style.left = photoItem.thumbnail.x + 'px';
-    photoLightbox.elements.lightbox.style.top = photoItem.thumbnail.y - util.getScrollTop() + 'px';
+    pageOffset = photoItem.getPageOffset('gridThumbnail');
+    photoLightbox.elements.lightbox.style.left = pageOffset.x - util.getScrollLeft() + 'px';
+    photoLightbox.elements.lightbox.style.top = pageOffset.y - util.getScrollTop() + 'px';
     photoLightbox.elements.lightbox.style.width = photoItem.thumbnail.width + 'px';
     photoLightbox.elements.lightbox.style.height = photoItem.thumbnail.height + 'px';
 
@@ -667,7 +668,7 @@
 
   // TODO: jsdoc
   function close() {
-    var photoLightbox, photoItem, body;
+    var photoLightbox, photoItem, body, pageOffset;
 
     photoLightbox = this;
     photoItem = photoLightbox.photoGroup.photos[photoLightbox.currentIndex];
@@ -689,8 +690,9 @@
     setElementVisibility(photoLightbox.elements.lightbox, false, false);
 
     // Have the lightbox transition to match the dimensions of the thumbnail
-    photoLightbox.elements.lightbox.style.left = photoItem.thumbnail.x + 'px';
-    photoLightbox.elements.lightbox.style.top = photoItem.thumbnail.y - util.getScrollTop() + 'px';
+    pageOffset = photoItem.getPageOffset('gridThumbnail');
+    photoLightbox.elements.lightbox.style.left = pageOffset.x - util.getScrollLeft() + 'px';
+    photoLightbox.elements.lightbox.style.top = pageOffset.y - util.getScrollTop() + 'px';
     photoLightbox.elements.lightbox.style.width = photoItem.thumbnail.width + 'px';
     photoLightbox.elements.lightbox.style.height = photoItem.thumbnail.height + 'px';
 

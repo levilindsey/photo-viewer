@@ -208,20 +208,29 @@
   }
 
   // TODO: jsdoc
-  function setUpGetScrollTop() {
+  function setUpGetScrollTopAndLeft() {
     var body;
     if (typeof pageYOffset !== 'undefined') {
       util.getScrollTop = function() {
         return pageYOffset;
       };
+      util.getScrollLeft = function() {
+        return pageXOffset;
+      };
     } else if (document.documentElement) {
       util.getScrollTop = function() {
         return document.documentElement.scrollTop;
+      };
+      util.getScrollLeft = function() {
+        return document.documentElement.scrollLeft;
       };
     } else {
       body = document.getElementsByTagName('body')[0];
       util.getScrollTop = function() {
         return body.scrollTop;
+      };
+      util.getScrollLeft = function() {
+        return body.scrollLeft;
       };
     }
   }
@@ -359,7 +368,7 @@
     setUpStopPropogation();
     setUpPreventDefault();
     setUpListenForTransitionEnd();
-    setUpGetScrollTop();
+    setUpGetScrollTopAndLeft();
     setUpAddOnEndFullScreen();
     setUpGetMidTransitionValue();
     setUpMobileBrowserDependantHelpers();
@@ -550,14 +559,14 @@
 
   /**
    * Gets the coordinates of the element relative to the top-left corner of the page.
-   * @function util.getPageCoordinates
+   * @function util.getPageOffset
    * @param {HTMLElement} element The element to get the coordinates of.
    * @returns {{x: Number, y: Number}} The coordinates of the element relative to the top-left
    * corner of the page.
    */
-  function getPageCoordinates(element) {
+  function getPageOffset(element) {
     var x = 0, y = 0;
-    while (element.offsetParent) {
+    while (element) {
       x += element.offsetLeft;
       y += element.offsetTop;
       element = element.offsetParent;
@@ -645,7 +654,7 @@
     createElement: createElement,
     containsClass: containsClass,
     toggleClass: toggleClass,
-    getPageCoordinates: getPageCoordinates,
+    getPageOffset: getPageOffset,
     getViewportSize: getViewportSize,
     removeChildIfPresent: removeChildIfPresent,
     addClass: addClass,
@@ -661,6 +670,7 @@
     listenForTransitionEnd: null,
     stopListeningForTransitionEnd: null,
     getScrollTop: null,
+    getScrollLeft: null,
     addOnEndFullScreen: null,
     getMidTransitionValue: null,
     addTapEventListener: null,

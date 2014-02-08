@@ -6,6 +6,8 @@
   // ------------------------------------------------------------------------------------------- //
   // Private static variables
 
+  var DEFAULT_DURATION = 1000;
+
   var animate, params, util, log, easingFunctions, currentlyLooping, currentAnimations, currentSynchronizations;
 
   currentAnimations = [];
@@ -90,23 +92,35 @@
   /**
    * Updates the given animation.
    * @function animate~updateAnimation
-   * @param {ObjectPropertyAnimation|NumericAttributeAnimation|ColorAttributeAnimation} animation
+   * @param {ObjectPropertyAnimation|NumericAttributeAnimation|ColorAttributeAnimation|NumericStyleAnimation|ColorStyleAnimation} animation
    * An object representing the animation.
    * @param {Number} currentTime The current time.
    * @returns {Boolean} True if the animation is finished at this time.
    */
   function updateAnimation(animation, currentTime) {
-    var animationFinished;
+    var animationFinished, updateFunction;
 
     if (animation instanceof ObjectPropertyAnimation) {
-      animationFinished = updateObjectPropertyAnimation(animation, currentTime);
+      updateFunction = updateObjectPropertyAnimation;
     } else if (animation instanceof NumericAttributeAnimation) {
-      animationFinished = updateNumericAttributeAnimation(animation, currentTime);
-    } else if (animation.startColor instanceof HSLAColor) {
-      animationFinished = updateHSLAAttributeAnimation(animation, currentTime);
-    } else if (animation.endColor instanceof RGBAColor) {
-      animationFinished = updateRGBAAttributeAnimation(animation, currentTime);
+      updateFunction = updateNumericAttributeAnimation;
+    } else if (animation instanceof NumericStyleAnimation) {
+      updateFunction = updateNumericStyleAnimation;
+    } else if (animation instanceof ColorAttributeAnimation) {
+      if (animation.startColor instanceof HSLAColor) {
+        updateFunction = updateHSLAAttributeAnimation;
+      } else if (animation.endColor instanceof RGBAColor) {
+        updateFunction = updateRGBAAttributeAnimation;
+      }
+    } else if (animation instanceof ColorStyleAnimation) {
+      if (animation.startColor instanceof HSLAColor) {
+        updateFunction = updateHSLAStyleAnimation;
+      } else if (animation.endColor instanceof RGBAColor) {
+        updateFunction = updateRGBAStyleAnimation;
+      }
     }
+
+    animationFinished = updateFunction(animation, currentTime);
 
     return animationFinished;
   }
@@ -155,7 +169,7 @@
       progress = getEasedProgress(deltaTime, animation.duration, animation.easingFunction);
       remaining = 1 - progress;
       animation.currentValue = interpolate(animation.startValue, animation.endValue, remaining,
-        progress);
+          progress);
       animationFinished = false;
     } else {
       animation.currentValue = animation.endValue;
@@ -163,7 +177,7 @@
     }
 
     animation.element.setAttribute(animation.attribute,
-      animation.prefix + animation.currentValue + animation.suffix);
+        animation.prefix + animation.currentValue + animation.suffix);
 
     return animationFinished;
   }
@@ -226,6 +240,97 @@
     }
 
     animation.element.setAttribute(animation.attribute, rgbaColorToString(animation.currentColor));
+
+    return animationFinished;
+  }
+
+  /**
+   * Updates the given numeric style property animation.
+   * @function animate~updateNumericStyleAnimation
+   * @param {NumericStyleAnimation} animation An object representing the animation.
+   * @param {Number} currentTime The current time.
+   * @returns {Boolean} True if the animation is finished at this time.
+   */
+  function updateNumericStyleAnimation(animation, currentTime) {
+    var deltaTime, animationFinished, progress, remaining;
+
+    deltaTime = currentTime - animation.startTime;
+
+    if (deltaTime < animation.duration) {
+      progress = getEasedProgress(deltaTime, animation.duration, animation.easingFunction);
+      remaining = 1 - progress;
+      animation.currentValue = interpolate(animation.startValue, animation.endValue, remaining,
+          progress);
+      animationFinished = false;
+    } else {
+      animation.currentValue = animation.endValue;
+      animationFinished = true;
+    }
+
+    animation.element.style[animation.property] =
+        animation.prefix + animation.currentValue + animation.suffix;
+
+    return animationFinished;
+  }
+
+  /**
+   * Updates the given HSLA style property animation.
+   * @function animate~updateHSLAStyleAnimation
+   * @param {ColorStyleAnimation} animation An object representing the animation.
+   * @param {Number} currentTime The current time.
+   * @returns {Boolean} True if the animation is finished at this time.
+   */
+  function updateHSLAStyleAnimation(animation, currentTime) {
+    var deltaTime, animationFinished, h, s, l, a, progress, remaining;
+
+    deltaTime = currentTime - animation.startTime;
+
+    if (deltaTime < animation.duration) {
+      progress = getEasedProgress(deltaTime, animation.duration, animation.easingFunction);
+      remaining = 1 - progress;
+      h = interpolate(animation.startColor.h, animation.endColor.h, remaining, progress);
+      s = interpolate(animation.startColor.s, animation.endColor.s, remaining, progress);
+      l = interpolate(animation.startColor.l, animation.endColor.l, remaining, progress);
+      a = interpolate(animation.startColor.a, animation.endColor.a, remaining, progress);
+      animation.currentColor = new HSLAColor(h, s, l, a);
+      animationFinished = false;
+    } else {
+      animation.currentColor = animation.endColor;
+      animationFinished = true;
+    }
+
+    animation.element.style[animation.property] = hslaColorToString(animation.currentColor);
+
+    return animationFinished;
+  }
+
+  /**
+   * Updates the given RGBA style property animation.
+   * @function animate~updateRGBAStyleAnimation
+   * @param {ColorStyleAnimation} animation An object representing the animation.
+   * @param {Number} currentTime The current time.
+   * @returns {Boolean} True if the animation is finished at this time.
+   */
+  function updateRGBAStyleAnimation(animation, currentTime) {
+    var deltaTime, animationFinished, r, g, b, a, progress, remaining;
+
+    deltaTime = currentTime - animation.startTime;
+
+    if (deltaTime < animation.duration) {
+      progress = getEasedProgress(deltaTime, animation.duration, animation.easingFunction);
+      remaining = 1 - progress;
+      r = interpolate(animation.startColor.r, animation.endColor.r, remaining, progress);
+      g = interpolate(animation.startColor.g, animation.endColor.g, remaining, progress);
+      b = interpolate(animation.startColor.b, animation.endColor.b, remaining, progress);
+      a = interpolate(animation.startColor.a, animation.endColor.a, remaining, progress);
+      animation.currentColor = new RGBAColor(r, g, b, a);
+      animationFinished = false;
+    } else {
+      animation.currentColor = animation.endColor;
+      animationFinished = true;
+    }
+
+    animation.element.style[animation.property] = rgbaColorToString(animation.currentColor);
 
     return animationFinished;
   }
@@ -314,10 +419,10 @@
    * @constructor
    * @param {HTMLElement} element The element to animate.
    * @param {String} attribute The attribute to animate.
-   * @param {Number} startValue The value of the property at the start of the animation.
-   * @param {Number} endValue The value of the property at the end of the animation.
-   * @param {Number} startTime The time at which the animation starts.
-   * @param {Number} duration The duration of the animation.
+   * @param {Number} startValue The value of the attribute at the start of the animation.
+   * @param {Number} endValue The value of the attribute at the end of the animation.
+   * @param {Number} [startTime] The time at which the animation starts.
+   * @param {Number} [duration] The duration of the animation.
    * @param {String} [prefix] A prefix to prepend to the numeric value.
    * @param {String} [suffix] A suffix to append to the numeric value.
    * @param {String} [easingFunction] The name of the easing function to use with this animation.
@@ -335,12 +440,12 @@
     this.startValue = startValue;
     this.endValue = endValue;
     this.currentValue = startValue;
-    this.startTime = startTime;
-    this.duration = duration;
+    this.startTime = startTime || Date.now();
+    this.duration = duration || DEFAULT_DURATION;
     this.prefix = prefix || '';
     this.suffix = suffix || '';
     this.easingFunction = typeof easingFunction === 'function' ?
-      easingFunction : easingFunctions[easingFunction || 'linear'];
+        easingFunction : easingFunctions[easingFunction || 'linear'];
     this.onDoneCallback = onDoneCallback;
     this.identifier = identifier;
   }
@@ -349,11 +454,11 @@
    * @constructor
    * @param {HTMLElement} element The element to animate.
    * @param {String} attribute The attribute to animate.
-   * @param {HSLAColor|RGBAColor} startColor The value of the property at the start of the
+   * @param {HSLAColor|RGBAColor} startColor The value of the attribute at the start of the
    * animation.
-   * @param {HSLAColor|RGBAColor} endColor The value of the property at the end of the animation.
-   * @param {Number} startTime The time at which the animation starts.
-   * @param {Number} duration The duration of the animation.
+   * @param {HSLAColor|RGBAColor} endColor The value of the attribute at the end of the animation.
+   * @param {Number} [startTime] The time at which the animation starts.
+   * @param {Number} [duration] The duration of the animation.
    * @param {String} [easingFunction] The name of the easing function to use with this animation.
    * @param {Function} [onDoneCallback] A callback function to call when this animation has
    * finished. This callback will be given as arguments a reference to the animation object, and
@@ -368,10 +473,75 @@
     this.startColor = startColor;
     this.endColor = endColor;
     this.currentColor = startColor;
-    this.startTime = startTime;
-    this.duration = duration;
+    this.startTime = startTime || Date.now();
+    this.duration = duration || DEFAULT_DURATION;
     this.easingFunction = typeof easingFunction === 'function' ?
-      easingFunction : easingFunctions[easingFunction || 'linear'];
+        easingFunction : easingFunctions[easingFunction || 'linear'];
+    this.onDoneCallback = onDoneCallback;
+    this.identifier = identifier;
+  }
+
+  /**
+   * @constructor
+   * @param {HTMLElement} element The element to animate.
+   * @param {String} property The style property to animate.
+   * @param {Number} startValue The value of the property at the start of the animation.
+   * @param {Number} endValue The value of the property at the end of the animation.
+   * @param {Number} [startTime] The time at which the animation starts.
+   * @param {Number} [duration] The duration of the animation.
+   * @param {String} [prefix] A prefix to prepend to the numeric value.
+   * @param {String} [suffix] A suffix to append to the numeric value.
+   * @param {String} [easingFunction] The name of the easing function to use with this animation.
+   * @param {Function} [onDoneCallback] A callback function to call when this animation has
+   * finished. This callback will be given as arguments a reference to the animation object, and
+   * whatever argument is passed to this constructor as the identifier parameter.
+   * @param {*} [identifier] This will be passed as an argument to the onDoneCallback, and can
+   * help the client to identify this particular animation.
+   */
+  function NumericStyleAnimation(element, property, startValue, endValue, startTime, duration,
+                                 prefix, suffix, easingFunction, onDoneCallback, identifier) {
+    this.element = element;
+    this.property = property;
+    this.startValue = startValue;
+    this.endValue = endValue;
+    this.currentValue = startValue;
+    this.startTime = startTime || Date.now();
+    this.duration = duration || DEFAULT_DURATION;
+    this.prefix = prefix || '';
+    this.suffix = suffix || '';
+    this.easingFunction = typeof easingFunction === 'function' ?
+        easingFunction : easingFunctions[easingFunction || 'linear'];
+    this.onDoneCallback = onDoneCallback;
+    this.identifier = identifier;
+  }
+
+  /**
+   * @constructor
+   * @param {HTMLElement} element The element to animate.
+   * @param {String} property The style property to animate.
+   * @param {HSLAColor|RGBAColor} startColor The value of the property at the start of the
+   * animation.
+   * @param {HSLAColor|RGBAColor} endColor The value of the property at the end of the animation.
+   * @param {Number} [startTime] The time at which the animation starts.
+   * @param {Number} [duration] The duration of the animation.
+   * @param {String} [easingFunction] The name of the easing function to use with this animation.
+   * @param {Function} [onDoneCallback] A callback function to call when this animation has
+   * finished. This callback will be given as arguments a reference to the animation object, and
+   * whatever argument is passed to this constructor as the identifier parameter.
+   * @param {*} [identifier] This will be passed as an argument to the onDoneCallback, and can
+   * help the client to identify this particular animation.
+   */
+  function ColorStyleAnimation(element, property, startColor, endColor, startTime, duration,
+                               easingFunction, onDoneCallback, identifier) {
+    this.element = element;
+    this.property = property;
+    this.startColor = startColor;
+    this.endColor = endColor;
+    this.currentColor = startColor;
+    this.startTime = startTime || Date.now();
+    this.duration = duration || DEFAULT_DURATION;
+    this.easingFunction = typeof easingFunction === 'function' ?
+        easingFunction : easingFunctions[easingFunction || 'linear'];
     this.onDoneCallback = onDoneCallback;
     this.identifier = identifier;
   }
@@ -382,8 +552,8 @@
    * @param {String} property The property to animate.
    * @param {Number} startValue The value of the property at the start of the animation.
    * @param {Number} endValue The value of the property at the end of the animation.
-   * @param {Number} startTime The time at which the animation starts.
-   * @param {Number} duration The duration of the animation.
+   * @param {Number} [startTime] The time at which the animation starts.
+   * @param {Number} [duration] The duration of the animation.
    * @param {String} [easingFunction] The name of the easing function to use with this animation.
    * @param {Function} [onDoneCallback] A callback function to call when this animation has
    * finished. This callback will be given as arguments a reference to the animation object, and
@@ -398,8 +568,8 @@
     this.startValue = startValue;
     this.endValue = endValue;
     this.currentValue = startValue;
-    this.startTime = startTime;
-    this.duration = duration;
+    this.startTime = startTime || Date.now();
+    this.duration = duration || DEFAULT_DURATION;
     this.easingFunction = typeof easingFunction === 'function' ?
       easingFunction : easingFunctions[easingFunction || 'linear'];
     this.onDoneCallback = onDoneCallback;
@@ -470,14 +640,14 @@
   }
 
   /**
-   * Starts a new animation of the given numeric property for the given element.
+   * Starts a new animation of the given numeric attribute for the given DOM element.
    * @function animate.startNumericAttributeAnimation
    * @param {HTMLElement} element The element to animate.
    * @param {String} attribute The attribute to animate.
-   * @param {Number} startValue The value of the property at the start of the animation.
-   * @param {Number} endValue The value of the property at the end of the animation.
-   * @param {Number} startTime The time at which the animation starts.
-   * @param {Number} duration The duration of the animation.
+   * @param {Number} startValue The value of the attribute at the start of the animation.
+   * @param {Number} endValue The value of the attribute at the end of the animation.
+   * @param {Number} [startTime] The time at which the animation starts.
+   * @param {Number} [duration] The duration of the animation.
    * @param {String} [prefix] A prefix to prepend to the numeric value.
    * @param {String} [suffix] A suffix to append to the numeric value.
    * @param {String} [easingFunction] The name of the easing function to use with this animation.
@@ -491,22 +661,22 @@
                                           duration, prefix, suffix, easingFunction,
                                           onDoneCallback, identifier) {
     var animation = new NumericAttributeAnimation(element, attribute, startValue, endValue,
-      startTime, duration, prefix, suffix, easingFunction, onDoneCallback, identifier);
+        startTime, duration, prefix, suffix, easingFunction, onDoneCallback, identifier);
     currentAnimations.push(animation);
     startAnimationLoop();
     return animation;
   }
 
   /**
-   * Starts a new animation of the given HSLA color property for the given element.
+   * Starts a new animation of the given HSLA color attribute for the given DOM element.
    * @function animate.startHSLAColorAttributeAnimation
    * @param {HTMLElement} element The element to animate.
    * @param {String} attribute The attribute to animate.
-   * @param {HSLAColor|RGBAColor} startColor The value of the property at the start of the
+   * @param {HSLAColor|RGBAColor} startColor The value of the attribute at the start of the
    * animation.
-   * @param {HSLAColor|RGBAColor} endColor The value of the property at the end of the animation.
-   * @param {Number} startTime The time at which the animation starts.
-   * @param {Number} duration The duration of the animation.
+   * @param {HSLAColor|RGBAColor} endColor The value of the attribute at the end of the animation.
+   * @param {Number} [startTime] The time at which the animation starts.
+   * @param {Number} [duration] The duration of the animation.
    * @param {String} [easingFunction] The name of the easing function to use with this animation.
    * @param {Function} [onDoneCallback] A callback function to call when this animation has
    * finished.
@@ -517,7 +687,86 @@
   function startColorAttributeAnimation(element, attribute, startColor, endColor, startTime,
                                         duration, easingFunction, onDoneCallback, identifier) {
     var animation = new ColorAttributeAnimation(element, attribute, startColor, endColor,
-      startTime, duration, easingFunction, onDoneCallback, identifier);
+        startTime, duration, easingFunction, onDoneCallback, identifier);
+    currentAnimations.push(animation);
+    startAnimationLoop();
+    return animation;
+  }
+
+  /**
+   * Starts a new animation of the given numeric style property for the given element.
+   * @function animate.startNumericStyleAnimation
+   * @param {HTMLElement} element The element to animate.
+   * @param {String} property The style property to animate.
+   * @param {Number} startValue The value of the property at the start of the animation.
+   * @param {Number} endValue The value of the property at the end of the animation.
+   * @param {Number} [startTime] The time at which the animation starts.
+   * @param {Number} [duration] The duration of the animation.
+   * @param {String} [prefix] A prefix to prepend to the numeric value.
+   * @param {String} [suffix] A suffix to append to the numeric value.
+   * @param {String} [easingFunction] The name of the easing function to use with this animation.
+   * @param {Function} [onDoneCallback] A callback function to call when this animation has
+   * finished.
+   * @param {*} [identifier] This will be passed as an argument to the onDoneCallback, and can
+   * help the client to identify this particular animation.
+   * @returns {NumericStyleAnimation} The animation object created for this new animation.
+   */
+  function startNumericStyleAnimation(element, property, startValue, endValue, startTime,
+                                      duration, prefix, suffix, easingFunction, onDoneCallback,
+                                      identifier) {
+    var animation = new NumericStyleAnimation(element, property, startValue, endValue,
+        startTime, duration, prefix, suffix, easingFunction, onDoneCallback, identifier);
+    currentAnimations.push(animation);
+    startAnimationLoop();
+    return animation;
+  }
+
+  /**
+   * Starts a new animation of the given HSLA color style property for the given element.
+   * @function animate.startColorStyleAnimation
+   * @param {HTMLElement} element The element to animate.
+   * @param {String} property The style property to animate.
+   * @param {HSLAColor|RGBAColor} startColor The value of the property at the start of the
+   * animation.
+   * @param {HSLAColor|RGBAColor} endColor The value of the property at the end of the animation.
+   * @param {Number} [startTime] The time at which the animation starts.
+   * @param {Number} [duration] The duration of the animation.
+   * @param {String} [easingFunction] The name of the easing function to use with this animation.
+   * @param {Function} [onDoneCallback] A callback function to call when this animation has
+   * finished.
+   * @param {*} [identifier] This will be passed as an argument to the onDoneCallback, and can
+   * help the client to identify this particular animation.
+   * @returns {ColorStyleAnimation} The animation object created for this new animation.
+   */
+  function startColorStyleAnimation(element, property, startColor, endColor, startTime, duration,
+                                    easingFunction, onDoneCallback, identifier) {
+    var animation = new ColorStyleAnimation(element, property, startColor, endColor,
+        startTime, duration, easingFunction, onDoneCallback, identifier);
+    currentAnimations.push(animation);
+    startAnimationLoop();
+    return animation;
+  }
+
+  /**
+   * Starts a new animation of the given numeric property for the given element.
+   * @function animate.startNumericAttributeAnimation
+   * @param {object} object The object whose property this will animate.
+   * @param {String} property The property to animate.
+   * @param {Number} startValue The value of the property at the start of the animation.
+   * @param {Number} endValue The value of the property at the end of the animation.
+   * @param {Number} [startTime] The time at which the animation starts.
+   * @param {Number} [duration] The duration of the animation.
+   * @param {String} [easingFunction] The name of the easing function to use with this animation.
+   * @param {Function} [onDoneCallback] A callback function to call when this animation has
+   * finished.
+   * @param {*} [identifier] This will be passed as an argument to the onDoneCallback, and can
+   * help the client to identify this particular animation.
+   * @returns {ObjectPropertyAnimation} The animation object created for this new animation.
+   */
+  function startObjectPropertyAnimation(object, property, startValue, endValue, startTime,
+                                        duration, easingFunction, onDoneCallback, identifier) {
+    var animation = new ObjectPropertyAnimation(object, property, startValue, endValue, startTime,
+      duration, easingFunction, onDoneCallback, identifier);
     currentAnimations.push(animation);
     startAnimationLoop();
     return animation;
@@ -539,31 +788,6 @@
       }
     }
     return false;
-  }
-
-  /**
-   * Starts a new animation of the given numeric property for the given element.
-   * @function animate.startNumericAttributeAnimation
-   * @param {object} object The object whose property this will animate.
-   * @param {String} property The property to animate.
-   * @param {Number} startValue The value of the property at the start of the animation.
-   * @param {Number} endValue The value of the property at the end of the animation.
-   * @param {Number} startTime The time at which the animation starts.
-   * @param {Number} duration The duration of the animation.
-   * @param {String} [easingFunction] The name of the easing function to use with this animation.
-   * @param {Function} [onDoneCallback] A callback function to call when this animation has
-   * finished.
-   * @param {*} [identifier] This will be passed as an argument to the onDoneCallback, and can
-   * help the client to identify this particular animation.
-   * @returns {ObjectPropertyAnimation} The animation object created for this new animation.
-   */
-  function startObjectPropertyAnimation(object, property, startValue, endValue, startTime,
-                                        duration, easingFunction, onDoneCallback, identifier) {
-    var animation = new ObjectPropertyAnimation(object, property, startValue, endValue, startTime,
-      duration, easingFunction, onDoneCallback, identifier);
-    currentAnimations.push(animation);
-    startAnimationLoop();
-    return animation;
   }
 
   /**
@@ -736,6 +960,8 @@
     init: init,
     startNumericAttributeAnimation: startNumericAttributeAnimation,
     startColorAttributeAnimation: startColorAttributeAnimation,
+    startNumericStyleAnimation: startNumericStyleAnimation,
+    startColorStyleAnimation: startColorStyleAnimation,
     startObjectPropertyAnimation: startObjectPropertyAnimation,
     stopAnimation: stopAnimation,
     startSyncingObjectNumericProperty: startSyncingObjectNumericProperty,

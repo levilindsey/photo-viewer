@@ -5,7 +5,7 @@
 (function() {
 
   var params, util, log, animate, SVGProgressCircle, CSSProgressCircle, PhotoItem, PhotoGroup,
-    photoMetadata, PhotoLightbox, DropdownPhotoGrid, photoGrids;
+    photoMetadata, PhotoLightbox, DropdownPhotoGrid, photoGrids, currentOpenPhotoGrid;
 
   // TODO: jsdoc
   function init() {
@@ -44,6 +44,7 @@
     log.i('reset', 'All modules initialized');
 
     photoGrids = [];
+    currentOpenPhotoGrid = null;
 
     photoMetadata.downloadAndParsePhotoMetadata(params.PHOTO_METADATA.URL,
         onParsePhotoMetadataSuccess, onParsePhotoMetadataError);
@@ -79,13 +80,11 @@
 
     body = document.getElementsByTagName('body')[0];
 
-    // TODO: now, cache the thumbnails for the first group that is displayed (and then, after that is done, cache the other groups' thumbnails)
-    // TODO: call photoGrid.cacheThumbnails() on only the first photoGrid
-    // TODO: attach photoGrid.openEventListener
-
+    // Create the photo grids and add them to the DOM
     photoGroups.forEach(function(photoGroup) {
-      photoGrid = new DropdownPhotoGrid(photoGroup, body);
+      photoGrid = new DropdownPhotoGrid(photoGroup, body, onPhotoGridOpen, onPhotoGridClose);
       photoGrids.push(photoGrid);
+      photoGrid.cacheThumbnails();
     });
   }
 
@@ -95,16 +94,20 @@
     // TODO:
   }
 
-// TODO: PLAN OF ATTACK
-//  - will need to have two folders
-//    - document this (in addition to how to set up the other parameters of the viewer (like full/main image size, or whether the full image should be full screen, and small/grid/thumbnail image size)
-//  - place this app at jackieandlevi.com/wedding/photos
-//    - add a link on the home page
-//    - add a link on my projects page
-//    - add a link, in the form of an eight bubble, to the invite page
-//      - this may require fixing some bugs in the wedding swoosh logic...
-//  - move the invite page to /wedding/invite
-//    - but also show the invite page whenever anyone goes to /wedding
+  // TODO: jsdoc
+  function onPhotoGridOpen(photoGrid) {
+    log.i('onPhotoGridOpen', 'photoGrid.title=' + photoGrid.photoGroup.title);
+    if (currentOpenPhotoGrid) {
+      currentOpenPhotoGrid.close();
+    }
+    currentOpenPhotoGrid = photoGrid;
+  }
+
+  // TODO: jsdoc
+  function onPhotoGridClose(photoGrid) {
+    log.i('onPhotoGridClose', 'photoGrid.title=' + photoGrid.photoGroup.title);
+    currentOpenPhotoGrid = null;
+  }
 
   if (!window.app) window.app = {};
 
