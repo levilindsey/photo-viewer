@@ -41,9 +41,14 @@
   moduleParams = {};
   params.GRID = moduleParams;
 
-  // Max image size is 112x84; margin size is 20
-  moduleParams.THUMBNAIL_WIDTH = 132;
-  moduleParams.THUMBNAIL_HEIGHT = 104;
+  // Max image size is 112x84; margin size is 10
+  moduleParams.THUMBNAIL_WIDTH = 112;
+  moduleParams.THUMBNAIL_HEIGHT = 84;
+
+  moduleParams.THUMBNAIL_MARGIN = 10;
+  moduleParams.MAX_COLUMN_COUNT = 9;
+
+  moduleParams.HEIGHT_CHANGE_RATE = 0.001; // pixels / millis
 
   // --- Progress circle parameters --- //
 

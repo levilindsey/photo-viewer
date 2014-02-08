@@ -1,11 +1,68 @@
 
-/* TODO: make this only for images that are children of the grid */
-img {
+.photoGridContainer {
+  /* Max thumbnail size is 112x84; margin size is 10 */
+  /* (maxColCount * thumbWidth + (maxColCount + 1) * margin) */
+  max-width: 1108px;
+  margin: 10px auto;
+}
+
+.photoGridBanner {
+  width: 100%;
+  height: 40px;
+  padding-left: 10px;
+  color: #D8D8D8;
+  font-size: 32px;
+  font-family: sans-serif;
+  font-weight: bold;
+  background: -webkit-linear-gradient(#606060, #404040);
+  background: -o-linear-gradient(#606060, #404040);
+  background: -moz-linear-gradient(#606060, #404040);
+  background: linear-gradient(#606060, #404040);
+  -webkit-border-radius: 4px 4px 0 0;
+  -moz-border-radius: 4px 4px 0 0;
+  -ms-border-radius: 4px 4px 0 0;
+  -o-border-radius: 4px 4px 0 0;
+  border-radius: 4px 4px 0 0;
+}
+
+.photoGridBanner:hover {
+
+}
+
+.photoGridBanner:active {
+
+}
+
+.bannerIcon {
+
+}
+
+.photoGridBanner:hover>.bannerIcon {
+
+}
+
+.photoGridBanner:active>.bannerIcon {
+
+}
+
+.photoGrid {
+  width: 100%;
+  height: 0;
+  background-color: #202020;
+  overflow: hidden;
+  -webkit-border-radius: 0 0 4px 4px;
+  -moz-border-radius: 0 0 4px 4px;
+  -ms-border-radius: 0 0 4px 4px;
+  -o-border-radius: 0 0 4px 4px;
+  border-radius: 0 0 4px 4px;
+}
+
+.photoGrid>img {
+  margin: 10px;
   z-index: 10;
 }
 
-/* TODO: make this only for images that are children of the grid */
-body>img:hover {
+.photoGrid>img:hover {
   /*box-shadow: 0px 0px 10000px 50px hsla(0, 0%, 10%, 0.9);*//*TODO: tweak this*/
   cursor: pointer;
   z-index: 11;

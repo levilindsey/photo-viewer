@@ -5,7 +5,7 @@
 (function() {
 
   var params, util, log, animate, SVGProgressCircle, CSSProgressCircle, PhotoItem, PhotoGroup,
-    photoMetadata, PhotoLightbox, DropdownPhotoGrid, photoLightbox, photoGrids;
+    photoMetadata, PhotoLightbox, DropdownPhotoGrid, photoGrids;
 
   // TODO: jsdoc
   function init() {
@@ -44,9 +44,9 @@
     log.i('reset', 'All modules initialized');
 
     photoGrids = [];
-    photoLightbox = new PhotoLightbox();
 
-    photoMetadata.downloadAndParsePhotoMetadata(params.PHOTO_METADATA.URL, onParsePhotoMetadataSuccess, onParsePhotoMetadataError);
+    photoMetadata.downloadAndParsePhotoMetadata(params.PHOTO_METADATA.URL,
+        onParsePhotoMetadataSuccess, onParsePhotoMetadataError);
     cacheSpriteSheet();
   }
 
@@ -75,72 +75,24 @@
   // TODO: jsdoc
   function onParsePhotoMetadataSuccess(photoGroups) {
     log.i('onParsePhotoMetadataSuccess', 'Photo metadata successfully loaded and parsed');
+    var photoGrid, body;
+
+    body = document.getElementsByTagName('body')[0];
 
     // TODO: now, cache the thumbnails for the first group that is displayed (and then, after that is done, cache the other groups' thumbnails)
-
-    ///////////////////////////////////////////////////////////
-    // TODO: replace this with grid module
-    var width = 122, height = 94, colCount = 6, x, y;
-    ///////////////////////////////////////////////////////////
+    // TODO: call photoGrid.cacheThumbnails() on only the first photoGrid
+    // TODO: attach photoGrid.openEventListener
 
     photoGroups.forEach(function(photoGroup) {
-      /////////////////////////////////////////////////////////
-      // TODO: replace this with grid module
-      for (var i = 0, count = photoGroup.photos.length; i < count; i++) {
-        x = i % colCount * width;
-        y = parseInt(i / colCount) * height;
-        photoGroup.photos[i].thumbnail.x = x;
-        photoGroup.photos[i].thumbnail.y = y;
-      }
-      /////////////////////////////////////////////////////////
-
-      photoGroup.loadImages('thumbnail', onPhotoGroupSingleSuccess,
-        onPhotoGroupTotalSuccess, onPhotoGroupTotalError);
+      photoGrid = new DropdownPhotoGrid(photoGroup, body);
+      photoGrids.push(photoGrid);
     });
-  }
-
-  // TODO: jsdoc
-  function onPhotoGroupSingleSuccess(photoGroup, photo) {
-    ///////////////////////////////////////////////////////////
-    // TODO: replace this with grid module
-    var pageCoords;
-    if (photoGroup.title === 'J+L') {
-      photo.thumbnail.image.style.position = 'absolute';
-      photo.thumbnail.image.style.left = photo.thumbnail.x + 'px';
-      photo.thumbnail.image.style.top = photo.thumbnail.y + 'px';
-      document.getElementsByTagName('body')[0].appendChild(photo.thumbnail.image);
-//      pageCoords = util.getPageCoordinates(photo.thumbnail.image);
-//      photo.thumbnail.x = pageCoords.x;
-//      photo.thumbnail.y = pageCoords.y;
-    }
-    ///////////////////////////////////////////////////////////
-  }
-
-  // TODO: jsdoc
-  function onPhotoGroupTotalSuccess(photoGroup) {
-    log.i('onPhotoGroupTotalSuccess', 'All photos loaded for group ' + photoGroup.title);
-    photoGroup.addPhotoItemTapEventListeners('thumbnail', onPhotoItemTap);
-    // TODO:
-  }
-
-  // TODO: jsdoc
-  function onPhotoGroupTotalError(photoGroup, failedPhotos) {
-    log.e('onPhotoGroupTotalError', 'Unable to load ' + failedPhotos.length + ' photos for group ' + photoGroup.title);
-    // TODO:
   }
 
   // TODO: jsdoc
   function onParsePhotoMetadataError(errorMessage) {
     log.e('onParsePhotoMetadataError', 'Unable to load/parse metadata: ' + errorMessage);
     // TODO:
-  }
-
-  // TODO: jsdoc
-  function onPhotoItemTap(event, photoGroup, index) {
-    log.i('onPhotoItemTap', 'PhotoItem=' + photoGroup.photos[index].thumbnail.source);
-    // TODO:
-    photoLightbox.open(photoGroup, index);
-    util.stopPropogation(event);
   }
 
 // TODO: PLAN OF ATTACK
