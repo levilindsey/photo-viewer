@@ -5,7 +5,7 @@
 (function() {
 
   var params, util, log, animate, SVGProgressCircle, CSSProgressCircle, PhotoItem, PhotoGroup,
-    photoMetadata, PhotoLightbox, DropdownPhotoGrid, photoGrids, currentOpenPhotoGrid;
+    photoMetadata, PhotoLightbox, DropdownPhotoGrid, PhotoGridCollection;
 
   // TODO: jsdoc
   function init() {
@@ -31,6 +31,7 @@
     photoMetadata = app.photoMetadata;
     PhotoLightbox = app.PhotoLightbox;
     DropdownPhotoGrid = app.DropdownPhotoGrid;
+    PhotoGridCollection = app.PhotoGridCollection;
 
     animate.init();
     SVGProgressCircle.initStaticFields();
@@ -40,11 +41,9 @@
     photoMetadata.init();
     PhotoLightbox.initStaticFields();
     DropdownPhotoGrid.initStaticFields();
+    PhotoGridCollection.initStaticFields();
 
     log.i('reset', 'All modules initialized');
-
-    photoGrids = [];
-    currentOpenPhotoGrid = null;
 
     photoMetadata.downloadAndParsePhotoMetadata(params.PHOTO_METADATA.URL,
         onParsePhotoMetadataSuccess, onParsePhotoMetadataError);
@@ -76,15 +75,13 @@
   // TODO: jsdoc
   function onParsePhotoMetadataSuccess(photoGroups) {
     log.i('onParsePhotoMetadataSuccess', 'Photo metadata successfully loaded and parsed');
-    var photoGrid, body;
+    var body = document.getElementsByTagName('body')[0];
 
-    body = document.getElementsByTagName('body')[0];
-
+    new PhotoGridCollection(photoGroups, parent);
+    // TODO: move this next bit to PhotoGridCollection
     // Create the photo grids and add them to the DOM
     photoGroups.forEach(function(photoGroup) {
-      photoGrid = new DropdownPhotoGrid(photoGroup, body, onPhotoGridOpen, onPhotoGridClose);
-      photoGrids.push(photoGrid);
-      photoGrid.cacheThumbnails();
+      new DropdownPhotoGrid(photoGroup, body);
     });
   }
 
@@ -92,21 +89,6 @@
   function onParsePhotoMetadataError(errorMessage) {
     log.e('onParsePhotoMetadataError', 'Unable to load/parse metadata: ' + errorMessage);
     // TODO:
-  }
-
-  // TODO: jsdoc
-  function onPhotoGridOpen(photoGrid) {
-    log.i('onPhotoGridOpen', 'photoGrid.title=' + photoGrid.photoGroup.title);
-    if (currentOpenPhotoGrid) {
-      currentOpenPhotoGrid.close();
-    }
-    currentOpenPhotoGrid = photoGrid;
-  }
-
-  // TODO: jsdoc
-  function onPhotoGridClose(photoGrid) {
-    log.i('onPhotoGridClose', 'photoGrid.title=' + photoGrid.photoGroup.title);
-    currentOpenPhotoGrid = null;
   }
 
   if (!window.app) window.app = {};

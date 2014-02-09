@@ -49,7 +49,13 @@
   moduleParams.THUMBNAIL_MARGIN = 10;
   moduleParams.MAX_COLUMN_COUNT = 9;
 
-  moduleParams.HEIGHT_CHANGE_RATE = 0.001; // pixels / millis
+  moduleParams.MARGIN = 10;
+  moduleParams.BANNER_HEIGHT = 50;
+  moduleParams.SHRUNKEN_GRIDS_WIDTH = 300;
+
+  moduleParams.HEIGHT_CHANGE_RATE = 0.001; // pixels / milliseconds
+  moduleParams.ALL_GRIDS_EXPAND_DURATION = 200; // milliseconds
+  moduleParams.ALL_GRIDS_SHRINK_DURATION = 400; // milliseconds
 
   // --- Progress circle parameters --- //
 

@@ -638,8 +638,8 @@
 
     // Start the lightbox animation with its dimensions matching the thumbnail
     pageOffset = photoItem.getPageOffset('gridThumbnail');
-    photoLightbox.elements.lightbox.style.left = pageOffset.x - util.getScrollLeft() + 'px';
-    photoLightbox.elements.lightbox.style.top = pageOffset.y - util.getScrollTop() + 'px';
+    photoLightbox.elements.lightbox.style.left = pageOffset.x + 'px';
+    photoLightbox.elements.lightbox.style.top = pageOffset.y + 'px';
     photoLightbox.elements.lightbox.style.width = photoItem.thumbnail.width + 'px';
     photoLightbox.elements.lightbox.style.height = photoItem.thumbnail.height + 'px';
 
@@ -691,8 +691,8 @@
 
     // Have the lightbox transition to match the dimensions of the thumbnail
     pageOffset = photoItem.getPageOffset('gridThumbnail');
-    photoLightbox.elements.lightbox.style.left = pageOffset.x - util.getScrollLeft() + 'px';
-    photoLightbox.elements.lightbox.style.top = pageOffset.y - util.getScrollTop() + 'px';
+    photoLightbox.elements.lightbox.style.left = pageOffset.x + 'px';
+    photoLightbox.elements.lightbox.style.top = pageOffset.y + 'px';
     photoLightbox.elements.lightbox.style.width = photoItem.thumbnail.width + 'px';
     photoLightbox.elements.lightbox.style.height = photoItem.thumbnail.height + 'px';
 

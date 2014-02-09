@@ -571,6 +571,8 @@
       y += element.offsetTop;
       element = element.offsetParent;
     }
+    x -= util.getScrollLeft();
+    y -= util.getScrollTop();
     return { x: x, y: y };
   }
 
