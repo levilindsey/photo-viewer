@@ -56,16 +56,19 @@
 
     backgroundHaze = util.createElement('div', body, null, ['backgroundHaze','hidden']);
 
-    closeButton = util.createElement('div', lightbox, null,
+    closeButton = util.createElement('img', lightbox, null,
         ['spriteButton','closeButton','hidden']);
+    closeButton.src = params.TRANSPARENT_GIF_URL;
     util.addTapEventListener(closeButton, function(event) {
       onCloseButtonTap.call(photoLightbox, event);
     }, false);
 
-    reduceFromFullButton = util.createElement('div', null, null,
+    reduceFromFullButton = util.createElement('img', null, null,
         ['spriteButton','reduceFromFullButton','hidden']);
-    expandToFullButton = util.createElement('div', null, null,
+    reduceFromFullButton.src = params.TRANSPARENT_GIF_URL;
+    expandToFullButton = util.createElement('img', null, null,
         ['spriteButton','expandToFullButton','hidden']);
+    expandToFullButton.src = params.TRANSPARENT_GIF_URL;
 
     if (!util.isSmallScreen) {
       lightbox.appendChild(reduceFromFullButton);
@@ -84,14 +87,16 @@
       });
     }
 
-    previousButton = util.createElement('div', lightbox, null,
+    previousButton = util.createElement('img', lightbox, null,
         ['spriteButton','previousButton','hidden']);
+    previousButton.src = params.TRANSPARENT_GIF_URL;
     util.addTapEventListener(previousButton, function(event) {
       onPreviousButtonTap.call(photoLightbox, event);
     }, false);
 
-    nextButton = util.createElement('div', lightbox, null,
+    nextButton = util.createElement('img', lightbox, null,
         ['spriteButton','nextButton','hidden']);
+    nextButton.src = params.TRANSPARENT_GIF_URL;
     util.addTapEventListener(nextButton, function(event) {
       onNextButtonTap.call(photoLightbox, event);
     }, false);

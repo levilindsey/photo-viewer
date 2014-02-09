@@ -108,6 +108,8 @@
 
   // --- Miscellaneous parameters --- //
 
+  params.SPRITE_SHEET_URL = '../images/spritesheet.png';
+  params.TRANSPARENT_GIF_URL = '../images/transparent.gif';
   params.ADD_CSS_TRANSITION_DELAY = 10;
   params.SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
   params.TWO_PI = Math.PI * 2;

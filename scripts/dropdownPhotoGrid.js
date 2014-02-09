@@ -28,7 +28,8 @@
       onBannerTap.call(photoGrid);
     }, false);
 
-    bannerIcon = util.createElement('img', banner, null, ['bannerIcon']);
+    bannerIcon = util.createElement('img', banner, null, ['bannerIcon','openGridIcon']);
+    bannerIcon.src = params.TRANSPARENT_GIF_URL;
 
     bannerTitleContainer = util.createElement('div', banner, null, ['bannerTitleContainer']);
 
@@ -254,6 +255,8 @@
     duration = (photoGrid.gridHeight - photoGrid.elements.grid.clientHeight) /
         params.HEIGHT_CHANGE_RATE;
 
+    switchOpenCloseIconImageClass(photoGrid.elements.bannerIcon, false);
+
     // TODO: cancel any prior animations
 
     // TODO: add the bounce
@@ -279,6 +282,8 @@
     onPhotoGridClose(photoGrid);
 
     duration = photoGrid.elements.grid.clientHeight / params.HEIGHT_CHANGE_RATE;
+
+    switchOpenCloseIconImageClass(photoGrid.elements.bannerIcon, true);
 
     // TODO: cancel any prior animations
 
@@ -422,6 +427,20 @@
     for (i = 0, count = allGrids.length; i < count; i++) {
       allGrids[i].elements.tapThumbnailPromptContainer.style.display = display;
     }
+  }
+
+  // TODO: jsdoc
+  function switchOpenCloseIconImageClass(element, open) {
+    var addClass, removeClass;
+    if (open) {
+      addClass = 'openGridIcon';
+      removeClass = 'closeGridIcon';
+    } else {
+      addClass = 'closeGridIcon';
+      removeClass = 'openGridIcon';
+    }
+    util.toggleClass(element, removeClass, false);
+    util.toggleClass(element, addClass, true);
   }
 
   // ------------------------------------------------------------------------------------------- //

@@ -133,27 +133,34 @@ body {
 
 .bannerIcon {
   float: left;
-  margin: 10px 0 0 10px;
-  width: 30px;
-  height: 30px;
+  margin: 9px 0 0 9px;
+  width: 32px;
+  height: 32px;
+  background: transparent url('../images/spritesheet.png') no-repeat;
 }
 
 .openGridIcon {
+  background-position: 0 -307px;
 }
 
 .photoGridBanner:hover>.openGridIcon {
+  background-position: -33px -307px;
 }
 
 .photoGridBanner:active>.openGridIcon {
+  background-position: -66px -307px;
 }
 
 .closeGridIcon {
+  background-position: 0 -340px;
 }
 
 .photoGridBanner:hover>.closeGridIcon {
+  background-position: -33px -340px;
 }
 
 .photoGridBanner:active>.closeGridIcon {
+  background-position: -66px -340px;
 }
 
 .photoGrid {
