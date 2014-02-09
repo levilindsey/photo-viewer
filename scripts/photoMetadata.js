@@ -77,6 +77,7 @@
   // TODO: jsdoc
   function downloadAndParsePhotoMetadata(url, onSuccess, onError) {
     util.sendRequest(url, function(responseText) {
+      log.i('downloadAndParsePhotoMetadata', 'Metadata successfully downloaded');
       parsePhotoMetadata(responseText, onSuccess, onError);
     }, onError);
   }

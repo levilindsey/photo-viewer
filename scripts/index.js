@@ -76,13 +76,7 @@
   function onParsePhotoMetadataSuccess(photoGroups) {
     log.i('onParsePhotoMetadataSuccess', 'Photo metadata successfully loaded and parsed');
     var body = document.getElementsByTagName('body')[0];
-
-    new PhotoGridCollection(photoGroups, parent);
-    // TODO: move this next bit to PhotoGridCollection
-    // Create the photo grids and add them to the DOM
-    photoGroups.forEach(function(photoGroup) {
-      new DropdownPhotoGrid(photoGroup, body);
-    });
+    new PhotoGridCollection(photoGroups, body);
   }
 
   // TODO: jsdoc

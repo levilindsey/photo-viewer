@@ -6,9 +6,7 @@
   // ------------------------------------------------------------------------------------------- //
   // Private static variables
 
-  var params, util, log, animate, PhotoLightbox, photoLightbox, allGrids, currentOpenPhotoGrid,
-      allGridsAreExpanded, expandingAllGrids, shrinkingAllGrids, gridCollectionExpandedWidth,
-      gridCollectionContainer;
+  var params, util, log, animate;
 
   // ------------------------------------------------------------------------------------------- //
   // Private dynamic functions
@@ -20,7 +18,7 @@
 
     photoGrid = this;
 
-    container = util.createElement('div', gridCollectionContainer, null, ['photoGridContainer']);
+    container = util.createElement('div', photoGrid.parent, null, ['photoGridContainer']);
 
     banner = util.createElement('div', container, null, ['photoGridBanner','closed']);
     util.addTapEventListener(banner, function() {
@@ -104,45 +102,6 @@
   }
 
   // TODO: jsdoc
-  function resize() {
-    var photoGrid, columnCapacity, viewportSize;
-
-    photoGrid = this;
-    viewportSize = util.getViewportSize();
-
-    // Determine how many columns could fit in the parent container
-    columnCapacity =
-        parseInt((viewportSize.w - params.GRID.MARGIN * 2 - params.GRID.THUMBNAIL_MARGIN) /
-        (params.GRID.THUMBNAIL_WIDTH + params.GRID.THUMBNAIL_MARGIN));
-
-    // Determine how many columns and rows of thumbnails to use
-    photoGrid.columnCount = columnCapacity >= params.GRID.MAX_COLUMN_COUNT ?
-        params.GRID.MAX_COLUMN_COUNT : columnCapacity;
-    photoGrid.rowCount = parseInt(1 + photoGrid.photoGroup.photos.length / photoGrid.columnCount);
-
-    // Set the grid's width and heights
-    gridCollectionExpandedWidth = photoGrid.columnCount * params.GRID.THUMBNAIL_WIDTH +
-        (photoGrid.columnCount + 1) * params.GRID.THUMBNAIL_MARGIN;
-    photoGrid.gridHeight = photoGrid.rowCount * params.GRID.THUMBNAIL_HEIGHT +
-        (photoGrid.rowCount + 1) * params.GRID.THUMBNAIL_MARGIN;
-    photoGrid.elements.photoGridInnerContainer.style.height = photoGrid.gridHeight + 'px';
-
-    // Do not expand the grid collection width if it is in its shrunken, centered state
-    if (allGridsAreExpanded) {
-      if (expandingAllGrids) {
-        // Update the animation object with the new width
-        // TODO:
-      } else {
-        gridCollectionContainer.style.width = gridCollectionExpandedWidth + 'px';
-      }
-    }
-
-    photoGrid.openCloseDuration = photoGrid.gridHeight / params.GRID.HEIGHT_CHANGE_RATE;
-
-    // TODO: if the grid is opening, then re-start the animation
-  }
-
-  // TODO: jsdoc
   function calculateThumbnailRowsAndColumns() {
     var photoGrid, photos, i, count, columnIndex, rowIndex;
 
@@ -179,7 +138,8 @@
   // TODO: jsdoc
   function onPhotoItemTap(event, photoGroup, index) {
     log.i('onPhotoItemTap', 'PhotoItem=' + photoGroup.photos[index].gridThumbnail.source);
-    photoLightbox.open(photoGroup, index);
+    var photoGrid = this;
+    photoGrid.gridCollection.photoLightbox.open(photoGroup, index);
     util.stopPropogation(event);
   }
 
@@ -201,8 +161,7 @@
     photoGrid = this;
 
     // Ensure that nothing interrupted this animation while it was running
-    if (photoGrid.opening && !photoGrid.closing &&
-        allGridsAreExpanded && !shrinkingAllGrids && !expandingAllGrids) {
+    if (photoGrid.opening && !photoGrid.closing) {
       photoGrid.opening = false;
 
       // Don't show the tap thumbnail prompt on small screens
@@ -219,14 +178,11 @@
     photoGrid = this;
 
     // Ensure that nothing interrupted this animation while it was running
-    if (photoGrid.closing && !photoGrid.opening &&
-        allGridsAreExpanded && !shrinkingAllGrids && !expandingAllGrids) {
+    if (photoGrid.closing && !photoGrid.opening) {
       photoGrid.closing = false;
       util.toggleClass(photoGrid.elements.banner, 'closed', true);
 
-      if (areAllGridsFullyClosed()) {
-        shrinkAndCenterAllGrids();
-      }
+      photoGrid.gridCollection.onGridCloseEnd(photoGrid);
     }
   }
 
@@ -240,11 +196,11 @@
     photoGrid = this;
 
     // The grid collection needs to be in its fully expanded form before we can open a grid
-    if (!allGridsAreExpanded) {
+    if (!photoGrid.gridCollection.expanded) {
       // Quickly expand the grid collection
-      expandAndRaiseAllGrids(photoGrid);
+      photoGrid.gridCollection.expand(photoGrid);
       return;
-    } else if (expandingAllGrids) {
+    } else if (photoGrid.gridCollection.expanding) {
       // Wait for the grid collection expansion to complete
       return;
     }
@@ -254,7 +210,7 @@
     photoGrid.closing = false;
     util.toggleClass(photoGrid.elements.banner, 'closed', false);
 
-    onPhotoGridOpen(photoGrid);
+    photoGrid.gridCollection.onGridOpenStart(photoGrid);
 
     calculateThumbnailRowsAndColumns.call(photoGrid);
     duration = (photoGrid.gridHeight - photoGrid.elements.grid.clientHeight) /
@@ -284,8 +240,6 @@
     photoGrid.closing = true;
     photoGrid.opening = false;
 
-    onPhotoGridClose(photoGrid);
-
     duration = photoGrid.elements.grid.clientHeight / params.HEIGHT_CHANGE_RATE;
 
     switchOpenCloseIconImageClass(photoGrid.elements.bannerIcon, true);
@@ -302,96 +256,35 @@
     setElementVisibility(photoGrid.elements.tapThumbnailPromptContainer, false, false, null);
   }
 
-  // ------------------------------------------------------------------------------------------- //
-  // Private static functions
-
   // TODO: jsdoc
-  function onPhotoGridOpen(photoGrid) {
-    log.i('onPhotoGridOpen', 'photoGrid.title=' + photoGrid.photoGroup.title);
-    if (currentOpenPhotoGrid) {
-      currentOpenPhotoGrid.close();
-    }
-    currentOpenPhotoGrid = photoGrid;
-  }
+  function resize() {
+    var photoGrid, columnCapacity, viewportSize;
 
-  // TODO: jsdoc
-  function onPhotoGridClose(photoGrid) {
-    log.i('onPhotoGridClose', 'photoGrid.title=' + photoGrid.photoGroup.title);
-    currentOpenPhotoGrid = null;
-  }
-
-  // TODO: jsdoc
-  function areAllGridsFullyClosed() {
-    var i, count;
-    for (i = 0, count = allGrids.length; i < count; i++) {
-      if (allGrids[i].isOpen || allGrids[i].closing) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  // TODO: jsdoc
-  function shrinkAndCenterAllGrids() {
-    var viewportSize, gridCollectionHeight, gridCollectionTop, pageOffset;
-
-    allGridsAreExpanded = false;
-    shrinkingAllGrids = true;
-    expandingAllGrids = false;
-
+    photoGrid = this;
     viewportSize = util.getViewportSize();
 
-    gridCollectionHeight = allGrids.length * params.GRID.BANNER_HEIGHT +
-        (allGrids.length - 1) * params.GRID.MARGIN;
-    gridCollectionTop = (viewportSize.h - gridCollectionHeight) / 2;
+    // Determine how many columns could fit in the parent container
+    columnCapacity =
+        parseInt((viewportSize.w - params.GRID.MARGIN * 2 - params.GRID.THUMBNAIL_MARGIN) /
+            (params.GRID.THUMBNAIL_WIDTH + params.GRID.THUMBNAIL_MARGIN));
 
-    pageOffset = util.getPageOffset(gridCollectionContainer);
+    // Determine how many columns and rows of thumbnails to use
+    photoGrid.columnCount = columnCapacity >= params.GRID.MAX_COLUMN_COUNT ?
+        params.GRID.MAX_COLUMN_COUNT : columnCapacity;
+    photoGrid.rowCount = parseInt(1 + photoGrid.photoGroup.photos.length / photoGrid.columnCount);
 
-    setTapThumbnailPromptsDisplay(false);
+    // Set the grid's heights (the width expands to fill its containing element)
+    photoGrid.gridHeight = photoGrid.rowCount * params.GRID.THUMBNAIL_HEIGHT +
+        (photoGrid.rowCount + 1) * params.GRID.THUMBNAIL_MARGIN;
+    photoGrid.elements.photoGridInnerContainer.style.height = photoGrid.gridHeight + 'px';
 
-    // TODO: cancel any prior animations
+    photoGrid.openCloseDuration = photoGrid.gridHeight / params.GRID.HEIGHT_CHANGE_RATE;
 
-    animate.startNumericStyleAnimation(gridCollectionContainer, 'top', pageOffset.y,
-        gridCollectionTop, null, params.GRID.ALL_GRIDS_SHRINK_DURATION, null, 'px',
-        'easeInOutQuad', function(animation, identifier) {
-          // Ensure that nothing interrupted this animation while it was running
-          if (allGridsAreExpanded && shrinkingAllGrids && !expandingAllGrids) {
-            shrinkingAllGrids = false;
-          }
-        }, null);
-    animate.startNumericStyleAnimation(gridCollectionContainer, 'width',
-        gridCollectionContainer.clientWidth, params.GRID.SHRUNKEN_GRIDS_WIDTH, null,
-        params.GRID.ALL_GRIDS_SHRINK_DURATION, null, 'px', 'easeInOutQuad', null, null);
+    // TODO: if the grid is opening, then re-start the animation
   }
 
-  // TODO: jsdoc
-  function expandAndRaiseAllGrids(gridToOpen) {
-    var pageOffset;
-
-    allGridsAreExpanded = true;
-    expandingAllGrids = true;
-    shrinkingAllGrids = false;
-
-    pageOffset = util.getPageOffset(gridCollectionContainer);
-
-    // TODO: cancel any prior animations
-
-    animate.startNumericStyleAnimation(gridCollectionContainer, 'top', pageOffset.y,
-        params.GRID.MARGIN, null, params.GRID.ALL_GRIDS_SHRINK_DURATION, null, 'px',
-        'easeInOutQuad', function(animation, gridToOpen) {
-          // Ensure that nothing interrupted this animation while it was running
-          if (allGridsAreExpanded && expandingAllGrids && !shrinkingAllGrids) {
-            expandingAllGrids = false;
-            setTapThumbnailPromptsDisplay(true);
-            gridToOpen.open();
-          }
-        }, gridToOpen);
-    animate.startNumericStyleAnimation(gridCollectionContainer, 'width',
-        gridCollectionContainer.clientWidth, gridCollectionExpandedWidth, null,
-        params.GRID.ALL_GRIDS_EXPAND_DURATION, null, 'px', 'easeInOutQuad', null, null);
-
-    gridToOpen.open();
-  }
+  // ------------------------------------------------------------------------------------------- //
+  // Private static functions
 
   /**
    * Adds or removes the hidden and visible classes from the given element, in order for it to be
@@ -426,15 +319,6 @@
   }
 
   // TODO: jsdoc
-  function setTapThumbnailPromptsDisplay(areDisplayed) {
-    var display, i, count;
-    display = areDisplayed ? 'block' : 'none';
-    for (i = 0, count = allGrids.length; i < count; i++) {
-      allGrids[i].elements.tapThumbnailPromptContainer.style.display = display;
-    }
-  }
-
-  // TODO: jsdoc
   function switchOpenCloseIconImageClass(element, open) {
     var addClass, removeClass;
     if (open) {
@@ -456,22 +340,10 @@
    * @function DropdownPhotoGrid.initStaticFields
    */
   function initStaticFields() {
-    var body;
-
     params = app.params;
     util = app.util;
     log = new app.Log('dropdownPhotoGrid');
     animate = app.animate;
-    PhotoLightbox = app.PhotoLightbox;
-    photoLightbox = new PhotoLightbox();
-    allGrids = [];
-    currentOpenPhotoGrid = null;
-    allGridsAreExpanded = false;
-    expandingAllGrids = false;
-    shrinkingAllGrids = false;
-    gridCollectionExpandedWidth = 0;
-    body = document.getElementsByTagName('body')[0];
-    gridCollectionContainer = util.createElement('div', body, null, ['gridCollectionContainer']);
     log.d('initStaticFields', 'Module initialized');
   }
 
@@ -481,14 +353,16 @@
   /**
    * @constructor
    * @global
-   * @param {} ...
-   */
-  function DropdownPhotoGrid(photoGroup) {
+   * @param {PhotoGroup} photoGroup The collection of photo data for this grid.
+   * @param {PhotoGridCollection} gridCollection The parent grid collection that this grid is a
+   * part of.
+   */// TODO: refactor these function parameters to instead pass in the collection object
+  function DropdownPhotoGrid(photoGroup, gridCollection) {
     var photoGrid = this;
 
-    allGrids.push(photoGrid);
-
     photoGrid.photoGroup = photoGroup;
+    photoGrid.gridCollection = gridCollection;
+    photoGrid.parent = gridCollection.elements.container;
     photoGrid.elements = null;
     photoGrid.isOpen = false;
     photoGrid.opening = false;
@@ -499,13 +373,9 @@
     photoGrid.openCloseDuration = 0;
     photoGrid.open = open;
     photoGrid.close = close;
+    photoGrid.resize = resize;
 
     createElements.call(photoGrid);
-
-    // Re-position the grid when the window re-sizes
-    util.listen(window, 'resize', function() {
-      resize.call(photoGrid);
-    });
   }
 
   // Expose this module
