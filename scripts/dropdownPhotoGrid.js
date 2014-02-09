@@ -15,7 +15,8 @@
 
   // TODO: jsdoc
   function createElements() {
-    var photoGrid, container, banner, bannerIcon, bannerTextContainer, bannerText, grid,
+    var photoGrid, container, banner, bannerIcon, bannerTitleContainer, bannerTitleText,
+        tapThumbnailPromptContainer, tapThumbnailPromptText, grid,
         photoGridInnerContainer;
 
     photoGrid = this;
@@ -29,11 +30,19 @@
 
     bannerIcon = util.createElement('img', banner, null, ['bannerIcon']);
 
-    bannerTextContainer = util.createElement('div', banner, null, ['bannerTextContainer']);
+    bannerTitleContainer = util.createElement('div', banner, null, ['bannerTitleContainer']);
 
-    bannerText = util.createElement('span', bannerTextContainer, null, ['insetText']);
-    bannerText.setAttribute('text', photoGrid.photoGroup.title);
-    bannerText.innerHTML = photoGrid.photoGroup.title;
+    bannerTitleText = util.createElement('span', bannerTitleContainer, null, ['insetText']);
+    bannerTitleText.setAttribute('text', photoGrid.photoGroup.title);
+    bannerTitleText.innerHTML = photoGrid.photoGroup.title;
+
+    tapThumbnailPromptContainer = util.createElement('div', banner, null,
+        ['tapThumbnailPromptContainer','hidden']);
+
+    tapThumbnailPromptText = util.createElement('span', tapThumbnailPromptContainer, null,
+        ['insetText']);
+    tapThumbnailPromptText.setAttribute('text', params.L18N.EN.TAP_THUMBNAIL_PROMPT);
+    tapThumbnailPromptText.innerHTML = params.L18N.EN.TAP_THUMBNAIL_PROMPT;
 
     grid = util.createElement('div', container, null, ['photoGrid']);
     // TODO: !!
@@ -47,6 +56,7 @@
       container: container,
       banner: banner,
       bannerIcon: bannerIcon,
+      tapThumbnailPromptContainer: tapThumbnailPromptContainer,
       grid: grid,
       photoGridInnerContainer: photoGridInnerContainer,
       gridCells: null
@@ -187,7 +197,13 @@
 
     photoGrid = this;
 
-    photoGrid.opening = false;
+    // Ensure that nothing interrupted this animation while it was running
+    if (photoGrid.opening && !photoGrid.closing &&
+        allGridsAreExpanded && !shrinkingAllGrids && !expandingAllGrids) {
+      photoGrid.opening = false;
+
+      setElementVisibility(photoGrid.elements.tapThumbnailPromptContainer, true, false, null);
+    }
   }
 
   // TODO: jsdoc
@@ -196,11 +212,15 @@
 
     photoGrid = this;
 
-    photoGrid.closing = false;
-    util.toggleClass(photoGrid.elements.banner, 'closed', true);
+    // Ensure that nothing interrupted this animation while it was running
+    if (photoGrid.closing && !photoGrid.opening &&
+        allGridsAreExpanded && !shrinkingAllGrids && !expandingAllGrids) {
+      photoGrid.closing = false;
+      util.toggleClass(photoGrid.elements.banner, 'closed', true);
 
-    if (areAllGridsFullyClosed()) {
-      shrinkAndCenterAllGrids();
+      if (areAllGridsFullyClosed()) {
+        shrinkAndCenterAllGrids();
+      }
     }
   }
 
@@ -225,6 +245,7 @@
 
     photoGrid.isOpen = true;
     photoGrid.opening = true;
+    photoGrid.closing = false;
     util.toggleClass(photoGrid.elements.banner, 'closed', false);
 
     onPhotoGridOpen(photoGrid);
@@ -253,6 +274,7 @@
     photoGrid = this;
     photoGrid.isOpen = false;
     photoGrid.closing = true;
+    photoGrid.opening = false;
 
     onPhotoGridClose(photoGrid);
 
@@ -266,6 +288,8 @@
         function(animation, photoGrid) {
           onClosingFinished.call(photoGrid);
         }, photoGrid);
+
+    setElementVisibility(photoGrid.elements.tapThumbnailPromptContainer, false, false, null);
   }
 
   // ------------------------------------------------------------------------------------------- //
@@ -303,6 +327,7 @@
 
     allGridsAreExpanded = false;
     shrinkingAllGrids = true;
+    expandingAllGrids = false;
 
     viewportSize = util.getViewportSize();
 
@@ -312,12 +337,17 @@
 
     pageOffset = util.getPageOffset(gridCollectionContainer);
 
+    setTapThumbnailPromptsDisplay(false);
+
     // TODO: cancel any prior animations
 
     animate.startNumericStyleAnimation(gridCollectionContainer, 'top', pageOffset.y,
         gridCollectionTop, null, params.GRID.ALL_GRIDS_SHRINK_DURATION, null, 'px',
         'easeInOutQuad', function(animation, identifier) {
-          shrinkingAllGrids = false;
+          // Ensure that nothing interrupted this animation while it was running
+          if (allGridsAreExpanded && shrinkingAllGrids && !expandingAllGrids) {
+            shrinkingAllGrids = false;
+          }
         }, null);
     animate.startNumericStyleAnimation(gridCollectionContainer, 'width',
         gridCollectionContainer.clientWidth, params.GRID.SHRUNKEN_GRIDS_WIDTH, null,
@@ -330,6 +360,7 @@
 
     allGridsAreExpanded = true;
     expandingAllGrids = true;
+    shrinkingAllGrids = false;
 
     pageOffset = util.getPageOffset(gridCollectionContainer);
 
@@ -338,14 +369,59 @@
     animate.startNumericStyleAnimation(gridCollectionContainer, 'top', pageOffset.y,
         params.GRID.MARGIN, null, params.GRID.ALL_GRIDS_SHRINK_DURATION, null, 'px',
         'easeInOutQuad', function(animation, gridToOpen) {
-          expandingAllGrids = false;
-          gridToOpen.open();
+          // Ensure that nothing interrupted this animation while it was running
+          if (allGridsAreExpanded && expandingAllGrids && !shrinkingAllGrids) {
+            expandingAllGrids = false;
+            setTapThumbnailPromptsDisplay(true);
+            gridToOpen.open();
+          }
         }, gridToOpen);
     animate.startNumericStyleAnimation(gridCollectionContainer, 'width',
         gridCollectionContainer.clientWidth, gridCollectionExpandedWidth, null,
         params.GRID.ALL_GRIDS_EXPAND_DURATION, null, 'px', 'easeInOutQuad', null, null);
 
     gridToOpen.open();
+  }
+
+  /**
+   * Adds or removes the hidden and visible classes from the given element, in order for it to be
+   * visible or hidden, as specified. These two classes have corresponding CSS rules regarding
+   * visibility and transitions.
+   * @function dropdownPhotoGrid~setElementVisibility
+   * @param {HTMLElement} element The element to show or hide.
+   * @param {Boolean} visible If true, then the element will be made visible.
+   * @param {Boolean} [delay] If true, then there will be a slight delay before the element's
+   * classes are changed. This is important, because if a CSS transition is added to an element
+   * immediately after changing the element's display, or adding it to the DOM, then there will be
+   * problems with the transition.
+   * @param {Function} [callback] This function will be called after the delay.
+   */
+  function setElementVisibility(element, visible, delay, callback) {
+    util.toggleClass(element, 'hidden', !visible);
+
+    if (delay) {
+      setTimeout(function() {
+        setVisibility();
+      }, params.ADD_CSS_TRANSITION_DELAY);
+    } else {
+      setVisibility();
+    }
+
+    function setVisibility() {
+      util.toggleClass(element, 'visible', visible);
+      if (callback) {
+        callback();
+      }
+    }
+  }
+
+  // TODO: jsdoc
+  function setTapThumbnailPromptsDisplay(areDisplayed) {
+    var display, i, count;
+    display = areDisplayed ? 'block' : 'none';
+    for (i = 0, count = allGrids.length; i < count; i++) {
+      allGrids[i].elements.tapThumbnailPromptContainer.style.display = display;
+    }
   }
 
   // ------------------------------------------------------------------------------------------- //

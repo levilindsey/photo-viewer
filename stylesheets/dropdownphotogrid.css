@@ -23,8 +23,7 @@ body {
 .photoGridBanner {
   position: relative;
   width: 100%;
-  height: 46px;
-  padding-top: 4px;
+  height: 50px;
   cursor: pointer;
   box-shadow: 0 0 20px 0 #0A0A0A;
   z-index: 20;
@@ -61,14 +60,10 @@ body {
   border-radius: 6px 6px 6px 6px;
 }
 
-.bannerIcon {
-  margin-left: 10px;
-}
-
-.bannerTextContainer {
+.bannerTitleContainer {
   position: relative;
   float: left;
-  margin-left: 10px;
+  margin: 4px 0 0 10px;
   color: hsla(0, 0%, 0%, 1);
   font-size: 36px;
   font-family: Arial, sans-serif;
@@ -106,12 +101,59 @@ body {
   color: hsla(0, 0%, 100%, 0.15);
 }
 
-.photoGridBanner:hover>.bannerIcon {
-
+.tapThumbnailPromptContainer {
+  position: relative;
+  float: right;
+  margin: 18px 10px 0 0;
+  color: hsla(0, 0%, 0%, 1);
+  font-size: 20px;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  font-style: italic;
+  white-space: nowrap;
 }
 
-.photoGridBanner:active>.bannerIcon {
+.tapThumbnailPromptContainer.hidden {
+  opacity: 0;
+  visibility: hidden;
+  -webkit-transition: visibility 0s linear 0.21s, opacity 0.21s ease 0s;
+  -moz-transition: visibility 0s linear 0.21s, opacity 0.21s ease 0s;
+  -o-transition: visibility 0s linear 0.21s, opacity 0.21s ease 0s;
+  transition: visibility 0s linear 0.21s, opacity 0.21s ease 0s;
+}
 
+.tapThumbnailPromptContainer.visible {
+  opacity: 1;
+  visibility: visible;
+  -webkit-transition: visibility 0s linear 0s, opacity 0.41s ease 0s;
+  -moz-transition: visibility 0s linear 0s, opacity 0.41s ease 0s;
+  -o-transition: visibility 0s linear 0s, opacity 0.41s ease 0s;
+  transition: visibility 0s linear 0s, opacity 0.41s ease 0s;
+}
+
+.bannerIcon {
+  float: left;
+  margin: 10px 0 0 10px;
+  width: 30px;
+  height: 30px;
+}
+
+.openGridIcon {
+}
+
+.photoGridBanner:hover>.openGridIcon {
+}
+
+.photoGridBanner:active>.openGridIcon {
+}
+
+.closeGridIcon {
+}
+
+.photoGridBanner:hover>.closeGridIcon {
+}
+
+.photoGridBanner:active>.closeGridIcon {
 }
 
 .photoGrid {

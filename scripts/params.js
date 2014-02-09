@@ -51,7 +51,7 @@
 
   moduleParams.MARGIN = 10;
   moduleParams.BANNER_HEIGHT = 50;
-  moduleParams.SHRUNKEN_GRIDS_WIDTH = 300;
+  moduleParams.SHRUNKEN_GRIDS_WIDTH = 260;
 
   moduleParams.HEIGHT_CHANGE_RATE = 0.001; // pixels / milliseconds
   moduleParams.ALL_GRIDS_EXPAND_DURATION = 200; // milliseconds
@@ -96,6 +96,15 @@
   params.SPRITES = moduleParams;
 
   moduleParams.SRC = '../images/spritesheet.png';
+
+  // --- Localization parameters --- //
+
+  params.L18N = {};
+
+  moduleParams = {};
+  params.L18N.EN = moduleParams;
+
+  moduleParams.TAP_THUMBNAIL_PROMPT = '(tap to expand thumbnail)';
 
   // --- Miscellaneous parameters --- //
 
