@@ -393,7 +393,7 @@
           setElementVisibility(photoLightbox.elements.newMainImage, true, true, function() {
             // Set up the dimensions of the new image
             resizeMainImage(photoLightbox.elements.newMainImage, photoItem.small.width,
-                photoItem.small.height, photoLightbox.inFullscreenMode);
+                photoItem.small.height, photoLightbox.inFullscreenMode, photoLightbox);
           });
 
           // Start caching the neighboring images
@@ -559,7 +559,7 @@
       photoLightbox.elements.reduceFromFullButton.style.display = 'none';
       util.toggleClass(photoLightbox.elements.lightbox, 'fullScreen', false);
     }
-    recenterAndResize.call(photoLightbox);
+    resize.call(photoLightbox);
     setPhoto.call(photoLightbox, photoLightbox.currentIndex);
   }
 
@@ -574,7 +574,7 @@
   }
 
   // TODO: jsdoc
-  function recenterAndResize() {
+  function resize() {
     var photoLightbox, boundingBox, viewportSize;
     photoLightbox = this;
 
@@ -587,8 +587,8 @@
           boundingBox.w > viewportSize.w || boundingBox.h > viewportSize.h) {
         photoLightbox.elements.lightbox.style.left = '0';
         photoLightbox.elements.lightbox.style.top = '0';
-        photoLightbox.elements.lightbox.style.width = '100%';
-        photoLightbox.elements.lightbox.style.height = '100%';
+        photoLightbox.elements.lightbox.style.width = viewportSize.w + 'px';
+        photoLightbox.elements.lightbox.style.height = viewportSize.h + 'px';
       } else {
         photoLightbox.elements.lightbox.style.left = boundingBox.x + 'px';
         photoLightbox.elements.lightbox.style.top = boundingBox.y + 'px';
@@ -652,7 +652,7 @@
     photoLightbox.elements.lightbox.style.display = 'block';
     setElementVisibility(photoLightbox.elements.lightbox, true, true, function() {
       // Have the lightbox transition to its larger, centered dimensions
-      recenterAndResize.call(photoLightbox);
+      resize.call(photoLightbox);
     });
 
     // Make the background haze visible and start its CSS transitions
@@ -798,16 +798,17 @@
   }
 
   // TODO: jsdoc
-  function resizeMainImage(element, smallWidth, smallHeight, isFullScreen) {
-    var photoAspectRatio, screenAspectRatio, scaledWidth, scaledHeight;
+  function resizeMainImage(element, smallWidth, smallHeight, isFullScreen, photoLightbox) {
+    var photoAspectRatio, parentAspectRatio, scaledWidth, scaledHeight, lightboxWidth,
+        lightboxHeight;
 
     photoAspectRatio = smallWidth / smallHeight;
 
     if (isFullScreen) {
-      screenAspectRatio = screen.width / screen.height;
+      parentAspectRatio = screen.width / screen.height;
 
       // Stretch the photo uniformly to fit within the screen
-      if (photoAspectRatio > screenAspectRatio) {
+      if (photoAspectRatio > parentAspectRatio) {
         scaledWidth = screen.width;
         scaledHeight = screen.width / photoAspectRatio;
       } else {
@@ -815,8 +816,24 @@
         scaledHeight = screen.height;
       }
     } else {
-      scaledWidth = smallWidth;
-      scaledHeight = smallHeight;
+      lightboxWidth = parseInt(photoLightbox.elements.lightbox.style.width);
+      lightboxHeight = parseInt(photoLightbox.elements.lightbox.style.height);
+      parentAspectRatio = lightboxWidth / lightboxHeight;
+
+      // Determine whether the small image is even larger than the screen
+      if (smallWidth > lightboxWidth || smallHeight > lightboxHeight) {
+        // Stretch the photo uniformly to fit within the screen
+        if (photoAspectRatio > parentAspectRatio) {
+          scaledWidth = lightboxWidth;
+          scaledHeight = lightboxWidth / photoAspectRatio;
+        } else {
+          scaledWidth = lightboxHeight * photoAspectRatio;
+          scaledHeight = lightboxHeight;
+        }
+      } else {
+        scaledWidth = smallWidth;
+        scaledHeight = smallHeight;
+      }
     }
 
     element.style.width = scaledWidth + 'px';
@@ -873,7 +890,7 @@
 
     // Re-position the lightbox when the window re-sizes
     util.listen(window, 'resize', function() {
-      recenterAndResize.call(photoLightbox);
+      resize.call(photoLightbox);
     });
   }
 

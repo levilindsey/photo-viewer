@@ -11,9 +11,6 @@ body {
   position: absolute;
   top: 0; right: 0; bottom: 0; left: 0;
   margin: auto;
-  /* Max thumbnail size is 112x84; margin size is 10 */
-  /* (maxColCount * thumbWidth + (maxColCount + 1) * margin) */
-  max-width: 1108px;
 }
 
 .photoGridContainer {
@@ -61,9 +58,9 @@ body {
 }
 
 .bannerTitleContainer {
-  position: relative;
-  float: left;
-  margin: 4px 0 0 10px;
+  position: absolute;
+  top: 4px; left: 0; right: 0;
+  margin: auto;
   color: hsla(0, 0%, 0%, 1);
   font-size: 36px;
   font-family: Arial, sans-serif;
@@ -132,6 +129,7 @@ body {
 }
 
 .bannerIcon {
+  display: none;
   float: left;
   margin: 9px 0 0 9px;
   width: 32px;

@@ -16,8 +16,7 @@
   // TODO: jsdoc
   function createElements() {
     var photoGrid, container, banner, bannerIcon, bannerTitleContainer, bannerTitleText,
-        tapThumbnailPromptContainer, tapThumbnailPromptText, grid,
-        photoGridInnerContainer;
+        tapThumbnailPromptContainer, tapThumbnailPromptText, grid, photoGridInnerContainer, width;
 
     photoGrid = this;
 
@@ -32,6 +31,9 @@
     bannerIcon.src = params.TRANSPARENT_GIF_URL;
 
     bannerTitleContainer = util.createElement('div', banner, null, ['bannerTitleContainer']);
+    width = util.getTextWidth(photoGrid.photoGroup.title, 'span', bannerTitleContainer, null,
+        ['insetText']);
+    bannerTitleContainer.style.width = width + 2 + 'px';
 
     bannerTitleText = util.createElement('span', bannerTitleContainer, null, ['insetText']);
     bannerTitleText.setAttribute('text', photoGrid.photoGroup.title);
@@ -110,8 +112,8 @@
 
     // Determine how many columns could fit in the parent container
     columnCapacity =
-        (parseInt(viewportSize.w) - params.GRID.THUMBNAIL_MARGIN) /
-        (params.GRID.THUMBNAIL_WIDTH + params.GRID.THUMBNAIL_MARGIN);
+        parseInt((viewportSize.w - params.GRID.MARGIN * 2 - params.GRID.THUMBNAIL_MARGIN) /
+        (params.GRID.THUMBNAIL_WIDTH + params.GRID.THUMBNAIL_MARGIN));
 
     // Determine how many columns and rows of thumbnails to use
     photoGrid.columnCount = columnCapacity >= params.GRID.MAX_COLUMN_COUNT ?
@@ -120,7 +122,7 @@
 
     // Set the grid's width and heights
     gridCollectionExpandedWidth = photoGrid.columnCount * params.GRID.THUMBNAIL_WIDTH +
-        (photoGrid.columnCount + 1) * params.GRID.THUMBNAIL_MARGIN - params.GRID.MARGIN * 2;
+        (photoGrid.columnCount + 1) * params.GRID.THUMBNAIL_MARGIN;
     photoGrid.gridHeight = photoGrid.rowCount * params.GRID.THUMBNAIL_HEIGHT +
         (photoGrid.rowCount + 1) * params.GRID.THUMBNAIL_MARGIN;
     photoGrid.elements.photoGridInnerContainer.style.height = photoGrid.gridHeight + 'px';
@@ -203,7 +205,10 @@
         allGridsAreExpanded && !shrinkingAllGrids && !expandingAllGrids) {
       photoGrid.opening = false;
 
-      setElementVisibility(photoGrid.elements.tapThumbnailPromptContainer, true, false, null);
+      // Don't show the tap thumbnail prompt on small screens
+      if (!util.isSmallScreen) {
+        setElementVisibility(photoGrid.elements.tapThumbnailPromptContainer, true, false, null);
+      }
     }
   }
 

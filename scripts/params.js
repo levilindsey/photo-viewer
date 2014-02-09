@@ -51,7 +51,7 @@
 
   moduleParams.MARGIN = 10;
   moduleParams.BANNER_HEIGHT = 50;
-  moduleParams.SHRUNKEN_GRIDS_WIDTH = 260;
+  moduleParams.SHRUNKEN_GRIDS_WIDTH = 230;
 
   moduleParams.HEIGHT_CHANGE_RATE = 0.001; // pixels / milliseconds
   moduleParams.ALL_GRIDS_EXPAND_DURATION = 200; // milliseconds

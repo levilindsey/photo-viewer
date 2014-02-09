@@ -295,13 +295,13 @@
           };
           util.listen(element, 'touchstart', preventionCallback);
         }
-        util.listen(element, 'touchend', callback);
+        util.listen(element, 'click', callback);
         return preventionCallback;
       }
 
       // TODO:
       util.removeTapEventListener = function(element, callback, preventionCallback) {
-        util.stopListening(element, 'touchend', callback);
+        util.stopListening(element, 'click', callback);
         util.stopListening(element, 'touchstart', preventionCallback);
       }
 
@@ -324,13 +324,13 @@
           };
           util.listen(element, 'mousedown', preventionCallback);
         }
-        util.listen(element, 'mouseup', callback);
+        util.listen(element, 'click', callback);
         return preventionCallback;
       }
 
       // TODO:
       util.removeTapEventListener = function(element, callback, preventionCallback) {
-        util.stopListening(element, 'mouseup', callback);
+        util.stopListening(element, 'click', callback);
         util.stopListening(element, 'mousedown', preventionCallback);
       }
 
@@ -640,6 +640,32 @@
     element.className = '';
   }
 
+  /**
+   * Calculates the width that the DOM would give to a div with the given text. The given tag
+   * name, parent, id, and classes allow the width to be affected by various CSS rules.
+   * @function util.getTextWidth
+   * @param {String} text The text to determine the width of.
+   * @param {String} tagName The tag name this text would supposedly have.
+   * @param {HTMLElement} [parent] The parent this text would supposedly be a child of; defaults
+   * to the document body.
+   * @param {String} [id] The id this text would supposedly have.
+   * @param {Array.<String>} [classes] The classes this text would supposedly have.
+   * @returns {Number} The width of the text under these conditions.
+   */
+  function getTextWidth(text, tagName, parent, id, classes) {
+    var tmpElement, width;
+    parent = parent || document.getElementsByTagName('body')[0];
+    tmpElement = util.createElement(tagName, null, id, classes);
+    tmpElement.style.position = 'absolute';
+    tmpElement.style.visibility = 'hidden';
+    tmpElement.style.whiteSpace = 'nowrap';
+    parent.appendChild(tmpElement);
+    tmpElement.innerHTML = text;
+    width = tmpElement.clientWidth;
+    parent.removeChild(tmpElement);
+    return width;
+  }
+
   // ------------------------------------------------------------------------------------------- //
   // Expose this module
 
@@ -662,6 +688,7 @@
     addClass: addClass,
     removeClass: removeClass,
     clearClasses: clearClasses,
+    getTextWidth: getTextWidth,
     XHR: null,
     listen: null,
     stopListening: null,
