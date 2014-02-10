@@ -575,27 +575,35 @@
 
   // TODO: jsdoc
   function resize() {
-    var photoLightbox, boundingBox, viewportSize;
+    var photoLightbox, lightboxElement, boundingBox, viewportSize;
+    
     photoLightbox = this;
+    lightboxElement = photoLightbox.elements.lightbox;
 
     // Only change the lightbox dimensions if the lightbox is visible
-    if (photoLightbox.elements.lightbox.style.display !== 'none' &&
-        !util.containsClass(photoLightbox.elements.lightbox, 'hidden')) {
+    if (lightboxElement.style.display !== 'none' &&
+        !util.containsClass(lightboxElement, 'hidden')) {
       boundingBox = getCenteredBoundingBox();
       viewportSize = util.getViewportSize();
       if (photoLightbox.inFullscreenMode ||
           boundingBox.w > viewportSize.w || boundingBox.h > viewportSize.h) {
-        photoLightbox.elements.lightbox.style.left = '0';
-        photoLightbox.elements.lightbox.style.top = '0';
-        photoLightbox.elements.lightbox.style.width = viewportSize.w + 'px';
-        photoLightbox.elements.lightbox.style.height = viewportSize.h + 'px';
+        lightboxElement.style.left = '0';
+        lightboxElement.style.top = '0';
+        lightboxElement.style.width = viewportSize.w + 'px';
+        lightboxElement.style.height = viewportSize.h + 'px';
       } else {
-        photoLightbox.elements.lightbox.style.left = boundingBox.x + 'px';
-        photoLightbox.elements.lightbox.style.top = boundingBox.y + 'px';
-        photoLightbox.elements.lightbox.style.width = boundingBox.w + 'px';
-        photoLightbox.elements.lightbox.style.height = boundingBox.h + 'px';
+        lightboxElement.style.left = boundingBox.x + 'px';
+        lightboxElement.style.top = boundingBox.y + 'px';
+        lightboxElement.style.width = boundingBox.w + 'px';
+        lightboxElement.style.height = boundingBox.h + 'px';
       }
     }
+
+    // Center the svg
+    photoLightbox.elements.svg.style.top =
+        (parseInt(lightboxElement.style.height) - params.LIGHTBOX.SVG_SIDE_LENGTH) / 2 + 'px';
+    photoLightbox.elements.svg.style.left =
+        (parseInt(lightboxElement.style.width) - params.LIGHTBOX.SVG_SIDE_LENGTH) / 2 + 'px';
   }
 
   // TODO: jsdoc

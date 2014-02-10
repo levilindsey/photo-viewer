@@ -232,7 +232,7 @@
 .spriteButton {
   background: transparent url('../images/spritesheet.png') no-repeat;
   position: absolute;
-  z-index: 32030;
+  z-index: 32040;
   cursor: pointer;
 }
 
@@ -345,7 +345,6 @@
 .lightbox svg {
   position: absolute;
   top: 0; right: 0; bottom: 0; left: 0;
-  margin: auto;
-  z-index: 32040;
+  z-index: 32030;
   cursor: pointer;
 }

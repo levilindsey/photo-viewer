@@ -111,16 +111,20 @@
     if (gridCollection.expanded) {
       // Determine whether the grid is currently animating
       if (gridCollection.expanding) {
-        // Update the animation object with the new width end value
+        // Completely restart the animation
         // TODO:
       } else {
         gridCollection.elements.container.style.width = gridCollection.expandedWidth + 'px';
         gridCollection.elements.container.style.top = params.GRID.MARGIN + 'px';
+
+        // Start an animation to partly open or close the grid so the height can match the new
+        // width
+        // TODO:
       }
     } else {
       // Determine whether the grid is currently animating
       if (gridCollection.shrinking) {
-        // Update the animation object with the new width end value
+        // Completely restart the animation
         // TODO:
       } else {
         gridCollection.elements.container.style.width = params.GRID.SHRUNKEN_GRIDS_WIDTH + 'px';
@@ -130,6 +134,8 @@
 
     gridCollection.elements.svg.style.top =
         (viewportSize.h - params.GRID.SVG_SIDE_LENGTH) / 2 + 'px';
+    gridCollection.elements.svg.style.left =
+        (viewportSize.w - params.GRID.SVG_SIDE_LENGTH) / 2 + 'px';
   }
 
   // TODO: jsdoc
@@ -178,13 +184,11 @@
 
       // Determine whether to use the values for the forward half-pulse or the backward half-pulse
       if (animation.startValue === params.GRID.BACKGROUND_PULSE_INNER_RADIUS) {
-        easingFunction = 'easeOutQuad';
         startRadius = params.GRID.BACKGROUND_PULSE_OUTER_RADIUS;
         endRadius = params.GRID.BACKGROUND_PULSE_INNER_RADIUS;
         startOpacity = params.GRID.BACKGROUND_PULSE_OUTER_OPACITY;
         endOpacity = params.GRID.BACKGROUND_PULSE_INNER_OPACITY;
       } else {
-        easingFunction = 'easeInQuad';
         startRadius = params.GRID.BACKGROUND_PULSE_INNER_RADIUS;
         endRadius = params.GRID.BACKGROUND_PULSE_OUTER_RADIUS;
         startOpacity = params.GRID.BACKGROUND_PULSE_INNER_OPACITY;
@@ -196,18 +200,25 @@
       // Animate both the radius and the opacity together
       gridCollection.backgroundPulseRadiusAnimation = animate.startNumericAttributeAnimation(
           animation.element, 'r', startRadius, endRadius, startTime, animation.duration, null,
-          null, easingFunction, onHalfPulseEnd, gridCollection);
+          null, animation.easingFunction, onHalfPulseEnd, gridCollection);
       gridCollection.backgroundPulseOpacityAnimation = animate.startNumericAttributeAnimation(
           animation.element, 'opacity', startOpacity, endOpacity, startTime, animation.duration,
-          null, null, easingFunction, null, gridCollection);
+          null, null, animation.easingFunction, null, gridCollection);
     }
   }
 
   // TODO: jsdoc
   function stopBackgroundPulseAnimation() {
     var gridCollection = this;
+
     animate.stopAnimation(gridCollection.backgroundPulseRadiusAnimation);
     animate.stopAnimation(gridCollection.backgroundPulseOpacityAnimation);
+
+    // Reset the pulse background gradient to its default state
+    gridCollection.elements.pulseCircle.setAttribute('r',
+        '' + params.GRID.BACKGROUND_PULSE_INNER_RADIUS);
+    gridCollection.elements.pulseCircle.setAttribute('opacity',
+        '' + params.GRID.BACKGROUND_PULSE_INNER_OPACITY);
   }
 
   // TODO: jsdoc

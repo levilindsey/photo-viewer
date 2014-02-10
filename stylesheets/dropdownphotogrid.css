@@ -23,7 +23,7 @@ body {
   width: 100%;
   height: 50px;
   cursor: pointer;
-  box-shadow: 0 5px 15px 0 #000000;
+  box-shadow: -2px 5px 15px 0 #000000;
   z-index: 20;
   background: -webkit-linear-gradient(#A0A0A0, #808080);
   background: -o-linear-gradient(#A0A0A0, #808080);
@@ -207,6 +207,5 @@ body {
 svg {
   position: absolute;
   top: 0; right: 0; bottom: 0; left: 0;
-  margin: 0 auto;
   z-index: 0;
 }
