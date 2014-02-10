@@ -5,7 +5,7 @@
 (function() {
 
   var params, util, log, animate, SVGProgressCircle, CSSProgressCircle, PhotoItem, PhotoGroup,
-    photoMetadata, PhotoLightbox, DropdownPhotoGrid, PhotoGridCollection;
+    photoMetadata, PhotoLightbox, DropdownPhotoGrid, PhotoGridCollection, photoGridCollection;
 
   // TODO: jsdoc
   function init() {
@@ -23,6 +23,8 @@
 
   // TODO: jsdoc
   function reset() {
+    var body;
+
     animate = app.animate;
     SVGProgressCircle = app.SVGProgressCircle;
     CSSProgressCircle = app.CSSProgressCircle;
@@ -44,6 +46,9 @@
     PhotoGridCollection.initStaticFields();
 
     log.i('reset', 'All modules initialized');
+
+    body = document.getElementsByTagName('body')[0];
+    photoGridCollection = new PhotoGridCollection(body);
 
     photoMetadata.downloadAndParsePhotoMetadata(params.PHOTO_METADATA.URL,
         onParsePhotoMetadataSuccess, onParsePhotoMetadataError);
@@ -75,8 +80,7 @@
   // TODO: jsdoc
   function onParsePhotoMetadataSuccess(photoGroups) {
     log.i('onParsePhotoMetadataSuccess', 'Photo metadata successfully loaded and parsed');
-    var body = document.getElementsByTagName('body')[0];
-    new PhotoGridCollection(photoGroups, body);
+    photoGridCollection.onPhotoMetadataParsed(photoGroups);
   }
 
   // TODO: jsdoc

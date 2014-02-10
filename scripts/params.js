@@ -57,6 +57,24 @@
   moduleParams.ALL_GRIDS_EXPAND_DURATION = 200; // milliseconds
   moduleParams.ALL_GRIDS_SHRINK_DURATION = 400; // milliseconds
 
+
+  moduleParams.PROGRESS_CIRCLE_DIAMETER = 350;
+  moduleParams.PROGRESS_CIRCLE_DOT_RADIUS = 10;
+
+  moduleParams.BACKGROUND_PULSE_STOP_1_COLOR = '#a4fff7';
+  moduleParams.BACKGROUND_PULSE_STOP_2_COLOR = '#a4fff7';
+  moduleParams.BACKGROUND_PULSE_INNER_RADIUS = 175;
+  moduleParams.BACKGROUND_PULSE_OUTER_RADIUS = 250;
+  moduleParams.BACKGROUND_PULSE_INNER_OPACITY = 0; // from 0 to 1
+  moduleParams.BACKGROUND_PULSE_OUTER_OPACITY = 0.2; // from 0 to 1
+  moduleParams.BACKGROUND_PULSE_PERIOD = 2000; // milliseconds per half-pulse
+
+  moduleParams.SVG_SIDE_LENGTH =
+      moduleParams.BACKGROUND_PULSE_OUTER_RADIUS * 2 > moduleParams.PROGRESS_CIRCLE_DIAMETER ?
+          moduleParams.BACKGROUND_PULSE_OUTER_RADIUS * 2 : moduleParams.PROGRESS_CIRCLE_DIAMETER;
+  moduleParams.PROGRESS_CIRCLE_OFFSET =
+      (moduleParams.SVG_SIDE_LENGTH - moduleParams.PROGRESS_CIRCLE_DIAMETER) / 2;
+
   // --- Progress circle parameters --- //
 
   moduleParams = {};
