@@ -11,7 +11,13 @@
   // ------------------------------------------------------------------------------------------- //
   // Private static functions
 
-  // TODO: jsdoc
+  /**
+   * Attempts to parse the given HTTP response text as a JSON object containing photo metadata.
+   * @function photoMetadata~parsePhotoMetadata
+   * @param {String} responseText The text to parse as JSON data.
+   * @param {Function} onSuccess This function is called if the JSON data was successfully parsed.
+   * @param {Function} onError This function is called if there was an error parsing the JSON data.
+   */
   function parsePhotoMetadata(responseText, onSuccess, onError) {
     var metadata, groupTitle, photoGroups;
 
@@ -33,7 +39,15 @@
     onSuccess(photoGroups);
   }
 
-  // TODO: jsdoc
+  /**
+   * Parses the given collection of photo metadata into an internal photo group object.
+   * @function photoMetadata~parsePhotoGroupMetadata
+   * @param {String} title The title of this collection of photos.
+   * @param {Object} groupedPhotoItemMetadata The photo collection data to parse into an internal
+   * photo group object.
+   * @returns {PhotoGroup} The internal photo group object that represents the given photo
+   * collection data.
+   */
   function parsePhotoGroupMetadata(title, groupedPhotoItemMetadata) {
     var photos, i, count;
 
@@ -46,7 +60,13 @@
     return new PhotoGroup(title, photos);
   }
 
-  // TODO: jsdoc
+  /**
+   * Parses the given photo metadata into an internal photo item object.
+   * @function photoMetadata~parsePhotoItem
+   * @param {Object} photoItemMetadata The photo metadata to parse.
+   * @param {Number} index The index of this photo item within its collection.
+   * @returns {PhotoItem} The internal photo item object that represents the given photo item data.
+   */
   function parsePhotoItem(photoItemMetadata, index) {
     var full, small, thumb;
 
@@ -74,7 +94,13 @@
     log.d('init', 'Module initialized');
   }
 
-  // TODO: jsdoc
+  /**
+   * Downloads and parses photo metadata in JSON form from the given URL.
+   * @function photoMetadata.downloadAndParsePhotoMetadata
+   * @param {String} url The location of the photo metadata.
+   * @param {Function} onSuccess This function is called if the JSON data was successfully parsed.
+   * @param {Function} onError This function is called if there was an error parsing the JSON data.
+   */
   function downloadAndParsePhotoMetadata(url, onSuccess, onError) {
     util.sendRequest(url, function(responseText) {
       log.i('downloadAndParsePhotoMetadata', 'Metadata successfully downloaded');

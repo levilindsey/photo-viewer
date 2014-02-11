@@ -7,7 +7,10 @@
   var params, util, log, animate, SVGProgressCircle, CSSProgressCircle, PhotoItem, PhotoGroup,
     photoMetadata, PhotoLightbox, DropdownPhotoGrid, PhotoGridCollection, photoGridCollection;
 
-  // TODO: jsdoc
+  /**
+   * Initializes this app.
+   * @function index~init
+   */
   function init() {
     params = app.params;
     util = app.util;
@@ -21,7 +24,10 @@
     util.listen(window, 'load', onDocumentLoad);
   }
 
-  // TODO: jsdoc
+  /**
+   * Resets all of the state for this app.
+   * @function index~reset
+   */
   function reset() {
     var body;
 
@@ -55,7 +61,10 @@
     cacheSpriteSheet();
   }
 
-  // TODO: jsdoc
+  /**
+   * This is the event handler for the completion of the DOM loading.
+   * @function index~onDocumentLoad
+   */
   function onDocumentLoad() {
     log.i('onDocumentLoad');
 
@@ -77,13 +86,23 @@
     image.src = params.SPRITES.SRC;
   }
 
-  // TODO: jsdoc
+  /**
+   * This is the event handler for all of the photo metadata being downloaded and parse
+   * successfully.
+   * @function index~onParsePhotoMetadataSuccess
+   * @param photoGroups
+   */
   function onParsePhotoMetadataSuccess(photoGroups) {
     log.i('onParsePhotoMetadataSuccess', 'Photo metadata successfully loaded and parsed');
     photoGridCollection.onPhotoMetadataParsed(photoGroups);
   }
 
-  // TODO: jsdoc
+  /**
+   * This is the event handler for an error occurring while downloading or parsing the photo
+   * metadata.
+   * @function index~onParsePhotoMetadataError
+   * @param errorMessage
+   */
   function onParsePhotoMetadataError(errorMessage) {
     log.e('onParsePhotoMetadataError', 'Unable to load/parse metadata: ' + errorMessage);
     // TODO:
