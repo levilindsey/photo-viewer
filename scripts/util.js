@@ -9,7 +9,7 @@
   var util, params, log;
 
   /**
-   * Sets up XHR to be cross-browser compatible.
+   * Sets up a cross-browser compatible XHR function. This function is stored as util.XHR.
    * @function util~setUpXHR
    */
   function setUpXHR() {
@@ -25,7 +25,11 @@
     }
   }
 
-  // TODO: jsdoc
+  /**
+   * Sets up a cross-browser compatible function for adding event listeners. This function is
+   * stored as util.listen.
+   * @function util~setUpListen
+   */
   function setUpListen() {
     var body = document.getElementsByTagName('body')[0];
     if (body.addEventListener) {
@@ -43,7 +47,11 @@
     }
   }
 
-  // TODO: jsdoc
+  /**
+   * Sets up a cross-browser compatible function for removing event listeners. This function is
+   * stored as util.stopListening.
+   * @function util~setUpStopListening
+   */
   function setUpStopListening() {
     var body = document.getElementsByTagName('body')[0];
     if (body.removeEventListener) {
@@ -55,13 +63,17 @@
         element.detachEvent('on' + eventName, handler);
       };
     } else {
-      util.stopListening = function(element, eventName, handler) {
+      util.stopListening = function(element, eventName) {
         element['on' + eventName] = null;
       };
     }
   }
 
-  // TODO: jsdoc
+  /**
+   * Sets up a cross-browser compatible function for entering full-screen mode. This function is
+   * stored as util.requestFullscreen.
+   * @function util~setUpRequestFullScreen
+   */
   function setUpRequestFullScreen() {
     var body = document.getElementsByTagName('body')[0];
     if (body.requestFullscreen) {
@@ -81,14 +93,18 @@
         element.msRequestFullScreen();
       };
     } else {
-      util.requestFullscreen = function(element) {
+      util.requestFullscreen = function() {
         log.e('This browser does not support fullscreen mode.');
       };
       log.w('This browser does not support fullscreen mode.');
     }
   }
 
-  // TODO: jsdoc
+  /**
+   * Sets up a cross-browser compatible function for exiting full-screen mode. This function is
+   * stored as util.cancelFullScreen.
+   * @function util~setUpCancelFullScreen
+   */
   function setUpCancelFullScreen() {
     if (document.cancelFullScreen) {
       util.cancelFullScreen = function() {
@@ -114,7 +130,11 @@
     }
   }
 
-  // TODO: jsdoc
+  /**
+   * Sets up a cross-browser compatible function for adding an event listener for full-screen mode
+   * being exited. This function is stored as util.addOnEndFullScreen.
+   * @function util~setUpAddOnEndFullScreen
+   */
   function setUpAddOnEndFullScreen() {
     if (typeof document.webkitCancelFullScreen !== 'undefined') {
       util.addOnEndFullScreen = function(handler) {
@@ -141,14 +161,18 @@
         });
       }
     } else {
-      util.addOnEndFullScreen = function(handler) {
+      util.addOnEndFullScreen = function() {
         log.e('This browser does not support the fullscreenchange event.');
       }
       log.w('This browser does not support the fullscreenchange event.');
     }
   }
 
-  // TODO: jsdoc
+  /**
+   * Sets up a cross-browser compatible function for stopping the propogation of a given event.
+   * This function is stored as util.stopPropogation.
+   * @function util~setUpStopPropogation
+   */
   function setUpStopPropogation() {
     util.stopPropogation = function(event) {
       if (event.stopPropagation) {
@@ -159,7 +183,11 @@
     };
   }
 
-  // TODO: jsdoc
+  /**
+   * Sets up a cross-browser compatible function for stopping the default browser response to a
+   * given event. This function is stored as util.setUpPreventDefault.
+   * @function util~setUpPreventDefault
+   */
   function setUpPreventDefault() {
     util.preventDefault = function(event) {
       if (event.preventDefault) {
@@ -170,7 +198,11 @@
     };
   }
 
-  // TODO: jsdoc
+  /**
+   * Sets up a cross-browser compatible function for adding an event listener for the end of a CSS
+   * transition. This function is stored as util.setUpListenForTransitionEnd.
+   * @function util~setUpListenForTransitionEnd
+   */
   function setUpListenForTransitionEnd() {
     var body, transitions, transition, transitionEndEventName;
 
@@ -197,17 +229,21 @@
         util.stopListening(element, transitionEndEventName, handler);
       };
     } else {
-      util.listenForTransitionEnd = function(element, handler) {
+      util.listenForTransitionEnd = function() {
         log.e('This browser does not support the transitionend event.');
       };
-      util.stopListeningForTransitionEnd = function(element, handler) {
+      util.stopListeningForTransitionEnd = function() {
         log.e('This browser does not support the transitionend event.');
       };
       log.w('This browser does not support the transitionend event.');
     }
   }
 
-  // TODO: jsdoc
+  /**
+   * Sets up a cross-browser compatible functions for getting the current horizontal and vertical
+   * scroll of the overall page. This function is stored as util.setUpGetScrollTopAndLeft.
+   * @function util~setUpGetScrollTopAndLeft
+   */
   function setUpGetScrollTopAndLeft() {
     var body;
     if (typeof pageYOffset !== 'undefined') {
@@ -235,7 +271,11 @@
     }
   }
 
-  // TODO: jsdoc
+  /**
+   * Sets up a cross-browser compatible function for getting the intermediate transition value of
+   * a given property of a given element. This function is stored as util.getMidTransitionValue.
+   * @function util~setUpGetMidTransitionValue
+   */
   function setUpGetMidTransitionValue() {
     var body = document.getElementsByTagName('body')[0];
     if (window.getComputedStyle) {
@@ -252,7 +292,7 @@
         }
       };
     } else {
-      util.getMidTransitionValue = function(element, property) {
+      util.getMidTransitionValue = function() {
         log.e('This browser dose not support getComputedStyle.');
         return '';
       };
@@ -260,7 +300,11 @@
     }
   }
 
-  // TODO: jsdoc
+  /**
+   * Determines whether the current browser is probably a mobile browser. This flag is recorded in
+   * util.isMobileBrowser.
+   * @function util~checkIfMobileBrowser
+   */
   function checkIfMobileBrowser() {
     var MOBILE_REGEX_1, MOBILE_REGEX_2, userAgentInfo;
 
@@ -278,15 +322,34 @@
     }
   }
 
+  /**
+   * Determines whether the current device has a small screen. This flag is recorded in
+   * util.isSmallScreen.
+   * @function util~checkIfSmallScreen
+   */
   function checkIfSmallScreen() {
     util.isSmallScreen = screen.width < params.SMALL_SCREEN_WIDTH_THRESHOLD ||
         screen.height < params.SMALL_SCREEN_HEIGHT_THRESHOLD;
   }
 
-  // TODO: jsdoc
+  /**
+   * Sets up various cross-browser compatible utility functions that are all dependent on whether
+   * the current browser is a mobile browser.
+   * @function util~setUpMobileBrowserDependantHelpers
+   */
   function setUpMobileBrowserDependantHelpers() {
     if (util.isMobileBrowser) {
-      // TODO:
+      /**
+       * Adds a tap event listener in a mobile-browser-friendly manner.
+       * @function util.addTapEventListener
+       * @param {HTMLElement} element The element to listen for the event on.
+       * @param {Function} callback The callback function to handle the event.
+       * @param {Boolean} preventDefault True if the default browser response should be prevented.
+       * @returns {Function} The event-handler shim which is used to prevent the default browser
+       * response (if the preventDefault flag is set to true). It is important for the client to
+       * keep track of this, so that if the tap event-lister is later removed, the default browser
+       * behavior can then be resumed.
+       */
       util.addTapEventListener = function(element, callback, preventDefault) {
         var preventionCallback;
         if (preventDefault) {
@@ -297,25 +360,52 @@
         }
         util.listen(element, 'click', callback);
         return preventionCallback;
-      }
+      };
 
-      // TODO:
+      /**
+       * Removes the given tap event listener for mobile browsers.
+       * @function util.removeTapEventListener
+       * @param {HTMLElement} element The element to listen for the event on.
+       * @param {Function} callback The callback function to handle the event.
+       * @param {Function} [preventionCallback] The event handler shim that was used, if the
+       * default browser response was prevented with this tap event handler.
+       */
       util.removeTapEventListener = function(element, callback, preventionCallback) {
         util.stopListening(element, 'click', callback);
         util.stopListening(element, 'touchstart', preventionCallback);
-      }
+      };
 
-      // TODO:
+      /**
+       * Adds a pointer-move event listener in a mobile-browser-friendly manner.
+       * @function util.addPointerMoveEventListener
+       * @param {HTMLElement} element The element to listen for the event on.
+       * @param {Function} callback The callback function to handle the event.
+       */
       util.addPointerMoveEventListener = function(element, callback) {
         util.listen(element, 'touchmove', callback);
-      }
+      };
 
-      // TODO:
+      /**
+       * Removes the given pointer-move event listener for mobile browsers.
+       * @function util.removePointerMoveEventListener
+       * @param {HTMLElement} element The element to listen for the event on.
+       * @param {Function} callback The callback function to handle the event.
+       */
       util.removePointerMoveEventListener = function(element, callback) {
         util.stopListening(element, 'touchmove', callback);
-      }
+      };
     } else {
-      // TODO:
+      /**
+       * Adds a tap event listener in a non-mobile-browser-friendly manner.
+       * @function util.addTapEventListener
+       * @param {HTMLElement} element The element to listen for the event on.
+       * @param {Function} callback The callback function to handle the event.
+       * @param {Boolean} preventDefault True if the default browser response should be prevented.
+       * @returns {Function} The event-handler shim which is used to prevent the default browser
+       * response (if the preventDefault flag is set to true). It is important for the client to
+       * keep track of this, so that if the tap event-lister is later removed, the default browser
+       * behavior can then be resumed.
+       */
       util.addTapEventListener = function(element, callback, preventDefault) {
         var preventionCallback;
         if (preventDefault) {
@@ -326,23 +416,40 @@
         }
         util.listen(element, 'click', callback);
         return preventionCallback;
-      }
+      };
 
-      // TODO:
+      /**
+       * Removes the given tap event listener for non-mobile browsers.
+       * @function util.removeTapEventListener
+       * @param {HTMLElement} element The element to listen for the event on.
+       * @param {Function} callback The callback function to handle the event.
+       * @param {Function} [preventionCallback] The event handler shim that was used, if the
+       * default browser response was prevented with this tap event handler.
+       */
       util.removeTapEventListener = function(element, callback, preventionCallback) {
         util.stopListening(element, 'click', callback);
         util.stopListening(element, 'mousedown', preventionCallback);
-      }
+      };
 
-      // TODO:
+      /**
+       * Adds a pointer-move event listener in a non-mobile-browser-friendly manner.
+       * @function util.addPointerMoveEventListener
+       * @param {HTMLElement} element The element to listen for the event on.
+       * @param {Function} callback The callback function to handle the event.
+       */
       util.addPointerMoveEventListener = function(element, callback) {
         util.listen(element, 'mousemove', callback);
-      }
+      };
 
-      // TODO:
+      /**
+       * Removes the given pointer-move event listener for non-mobile browsers.
+       * @function util.removePointerMoveEventListener
+       * @param {HTMLElement} element The element to listen for the event on.
+       * @param {Function} callback The callback function to handle the event.
+       */
       util.removePointerMoveEventListener = function(element, callback) {
         util.stopListening(element, 'mousemove', callback);
-      }
+      };
     }
   }
 
@@ -477,7 +584,13 @@
     return hours + minutes + seconds + millis;
   }
 
-  // TODO: jsdoc
+  /**
+   * Adds an event listener for each of the given events to each of the given elements.
+   * @function util.listenToMultipleForMultiple
+   * @param {Array.<HTMLElement>} elements The elements to add event listeners to.
+   * @param {Array.<String>} events The event listeners to add to the elements.
+   * @param {Function} callback The single callback for handling the events.
+   */
   function listenToMultipleForMultiple(elements, events, callback) {
     elements.forEach(function(element) {
       events.forEach(function(event) {
@@ -576,7 +689,11 @@
     return { x: x, y: y };
   }
 
-  // TODO: jsdoc
+  /**
+   * Gets the dimensions of the viewport.
+   * @function util.getViewportSize
+   * @returns {{w: Number, h: Number}} The dimensions of the viewport.
+   */
   function getViewportSize() {
     var w, h;
     if (typeof window.innerWidth !== 'undefined') {
@@ -635,7 +752,11 @@
     }).join(' ');
   }
 
-  // TODO: jsdoc
+  /**
+   * Removes all classes from the given element.
+   * @function util.clearClasses
+   * @param {HTMLElement} element The element to remove all classes from.
+   */
   function clearClasses(element) {
     element.className = '';
   }
