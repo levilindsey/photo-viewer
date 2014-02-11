@@ -168,6 +168,14 @@
       if (!util.isSmallScreen) {
         setElementVisibility(photoGrid.elements.tapThumbnailPromptContainer, true, false, null);
       }
+
+      // If this grid was told to open a photo while it itself was still opening, then open that
+      // photo now
+      if (photoGrid.showPhotoAtIndexAfterOpening >= 0) {
+        photoGrid.gridCollection.photoLightbox.open(photoGrid.photoGroup,
+            photoGrid.showPhotoAtIndexAfterOpening);
+        photoGrid.showPhotoAtIndexAfterOpening = -1;
+      }
     }
   }
 
@@ -283,6 +291,26 @@
     // TODO: if the grid is opening, then re-start the animation
   }
 
+  /**
+   * Opens the photo at the given index within this grid's photo group.
+   * @function DropdownPhotoGrid#openPhoto
+   * @param {Number} index The index of the photo to open.
+   * @returns {Boolean} True if the photo was opened successfully.
+   */
+  function openPhoto(index) {
+    var photoGrid = this;
+
+    if (photoGrid.gridCollection.expanding || photoGrid.opening) {
+      photoGrid.showPhotoAtIndexAfterOpening = index;
+      return true;
+    } else if (photoGrid.isOpen) {
+      photoGrid.gridCollection.photoLightbox.open(photoGrid.photoGroup, index);
+      return true;
+    }
+
+    return false;
+  }
+
   // ------------------------------------------------------------------------------------------- //
   // Private static functions
 
@@ -371,9 +399,11 @@
     photoGrid.rowCount = 0;
     photoGrid.gridHeight = 0;
     photoGrid.openCloseDuration = 0;
+    photoGrid.showPhotoAtIndexAfterOpening = -1;
     photoGrid.open = open;
     photoGrid.close = close;
     photoGrid.resize = resize;
+    photoGrid.openPhoto = openPhoto;
 
     createElements.call(photoGrid);
   }

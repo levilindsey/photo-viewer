@@ -231,9 +231,10 @@
     var photoLightbox, photoItem, mainImageIsNotYetCached, mainTargetSize, smallTargetSize;
 
     photoLightbox = this;
-    photoLightbox.currentIndex = index;
     photoItem = photoLightbox.photoGroup.photos[index];
     mainImageIsNotYetCached = true;
+
+    recordCurrentPhoto.call(photoLightbox, index);
 
     // Stop listening for the end of any transition that may still be running for the old main
     // image
@@ -629,6 +630,17 @@
     }
   }
 
+  // TODO: jsdoc
+  function recordCurrentPhoto(index) {
+    var photoLightbox, photoGroup;
+
+    photoLightbox = this;
+    photoLightbox.currentIndex = index;
+    photoGroup = photoLightbox.photoGroup;
+
+    app.updateQueryString(photoGroup, index);
+  }
+
   // ------------------------------------------------------------------------------------------- //
   // Public dynamic functions
 
@@ -721,6 +733,8 @@
         photoLightbox.bodyTapPreventionCallback);
     photoLightbox.bodyTapEventListener = null;
     photoLightbox.bodyTapPreventionCallback = null;
+
+    photoLightbox.onLightboxCloseStart();
   }
 
   // ------------------------------------------------------------------------------------------- //
@@ -872,10 +886,12 @@
    * @global
    * @param {Number} [width] The width of this lightbox when not in full-screen mode.
    * @param {Number} [height] The height of this lightbox when not in full-screen mode.
+   * @param {Function} [onLightboxCloseStart] An event handler for this lightbox's close event.
    */
-  function PhotoLightbox(width, height) {
+  function PhotoLightbox(width, height, onLightboxCloseStart) {
     var photoLightbox = this;
 
+    photoLightbox.onLightboxCloseStart = onLightboxCloseStart;
     photoLightbox.elements = null;
     photoLightbox.currentIndex = Number.NaN;
     photoLightbox.photoGroup = null;

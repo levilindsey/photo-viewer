@@ -787,6 +787,42 @@
     return width;
   }
 
+  /**
+   * Encodes and concatenates the given URL parameters into a single query string.
+   * @function util.encodeQueryString
+   * @param {Object} rawParams An object whose properties represent the URL query string
+   * parameters.
+   * @return {String} The query string.
+   */
+  function encodeQueryString(rawParams) {
+    var parameter, encodedParams;
+    encodedParams = [];
+    for (parameter in rawParams) {
+      if (rawParams.hasOwnProperty(parameter)) {
+        encodedParams.push(encodeURIComponent(parameter) + '=' +
+            encodeURIComponent(rawParams[parameter]));
+      }
+    }
+    return '?' + encodedParams.join('&');
+  }
+
+  /**
+   * Retrieves the value corresponding to the given name from the given query string.
+   * (borrowed from http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript)
+   * @function util.getQueryStringParameterValue
+   * @param {String} queryString The query string containing the parameter.
+   * @param {String} name The (non-encoded) name of the parameter value to retrieve.
+   * @returns {string} The query string parameter value, or null if the parameter was not found.
+   */
+  function getQueryStringParameterValue(queryString, name) {
+    var regex, results;
+    name = encodeURIComponent(name);
+    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+    regex = new RegExp('[\\?&]' + name + '=([^&#]*)', 'i');
+    results = regex.exec(queryString);
+    return results === null ? null : decodeURIComponent(results[1].replace(/\+/g, ' '));
+  }
+
   // ------------------------------------------------------------------------------------------- //
   // Expose this module
 
@@ -810,6 +846,8 @@
     removeClass: removeClass,
     clearClasses: clearClasses,
     getTextWidth: getTextWidth,
+    encodeQueryString: encodeQueryString,
+    getQueryStringParameterValue: getQueryStringParameterValue,
     XHR: null,
     listen: null,
     stopListening: null,

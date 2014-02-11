@@ -180,7 +180,7 @@
 
     // Repeat the same pair of animations, but in reverse
     function onHalfPulseEnd(animation, gridCollection) {
-      var startTime, easingFunction, startRadius, endRadius, startOpacity, endOpacity;
+      var startTime, startRadius, endRadius, startOpacity, endOpacity;
 
       // Determine whether to use the values for the forward half-pulse or the backward half-pulse
       if (animation.startValue === params.GRID.BACKGROUND_PULSE_INNER_RADIUS) {
@@ -271,6 +271,22 @@
     }
   }
 
+  // TODO: jsdoc
+  function recordCurrentOpenGrid(currentOpenGrid) {
+    var gridCollection, photoGroup;
+
+    gridCollection = this;
+    gridCollection.currentOpenGrid = currentOpenGrid;
+
+    if (!currentOpenGrid) {
+      photoGroup = null;
+    } else {
+      photoGroup = currentOpenGrid.photoGroup;
+    }
+
+    app.updateQueryString(photoGroup, -1);
+  }
+
   // ------------------------------------------------------------------------------------------- //
   // Public dynamic functions
 
@@ -292,6 +308,8 @@
     animate.startNumericStyleAnimation(gridCollection.elements.container, 'top', pageOffset.y,
         params.GRID.MARGIN, null, params.GRID.ALL_GRIDS_SHRINK_DURATION, null, 'px',
         'easeInOutQuad', function(animation, gridToOpen) {
+          var t = Date.now();
+          var b = 1;
           onExpandEnd.call(gridCollection, gridToOpen);
         }, gridToOpen);
     animate.startNumericStyleAnimation(gridCollection.elements.container, 'width',
@@ -307,7 +325,7 @@
     if (gridCollection.currentOpenGrid) {
       gridCollection.currentOpenGrid.close();
     }
-    gridCollection.currentOpenGrid = grid;
+    recordCurrentOpenGrid.call(gridCollection, grid);
   }
 
   // TODO: jsdoc
@@ -315,12 +333,18 @@
     var gridCollection = this;
 
     if (grid === gridCollection.currentOpenGrid) {
-      gridCollection.currentOpenGrid = null;
+      recordCurrentOpenGrid.call(gridCollection, null);
     }
 
     if (areAllGridsFullyClosed.call(gridCollection)) {
       shrink.call(gridCollection);
     }
+  }
+
+  // TODO: jsdoc
+  function onLightboxCloseStart() {
+    var gridCollection = this;
+    recordCurrentOpenGrid.call(gridCollection, gridCollection.currentOpenGrid);
   }
 
   /**
@@ -351,6 +375,48 @@
     startBackgroundPulseAnimation.call(gridCollection);
   }
 
+  /**
+   * Opens the grid whose photo group has the given name.
+   * @function PhotoGridCollection#openPhoto
+   * @param {String} groupName The name of the photo group to open.
+   * @returns {Boolean} True if the grid was opened successfully.
+   */
+  function openGroup(groupName) {
+    var gridCollection, grid;
+
+    gridCollection = this;
+    grid = getGridByTitle(gridCollection.grids, groupName);
+
+    if (grid) {
+      grid.open();
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Opens the photo at the given index within the current grid's photo group.
+   * @function PhotoGridCollection#openPhoto
+   * @param {Number} index The index of the photo to open.
+   * @param {String} [groupName] The name of the photo group to open.
+   * @returns {Boolean} True if the photo was opened successfully.
+   */
+  function openPhoto(index, groupName) {
+    var gridCollection, grid;
+
+    gridCollection = this;
+
+    if (gridCollection.currentOpenGrid) {
+      return gridCollection.currentOpenGrid.openPhoto(index);
+    } else if (groupName) {
+      grid = getGridByTitle(gridCollection.grids, groupName);
+      grid.openPhoto(index);
+    }
+
+    return false;
+  }
+
   // ------------------------------------------------------------------------------------------- //
   // Public static functions
 
@@ -369,6 +435,17 @@
     log.d('initStaticFields', 'Module initialized');
   }
 
+  // TODO: jsdoc
+  function getGridByTitle(grids, title) {
+    var i, count;
+    for (i = 0, count = grids.length; i < count; i++) {
+      if (grids[i].photoGroup.title.toLowerCase() === title.toLowerCase()) {
+        return grids[i];
+      }
+    }
+    return null;
+  }
+
   // ------------------------------------------------------------------------------------------- //
   // Expose this module's constructor
 
@@ -380,7 +457,9 @@
   function PhotoGridCollection(parent) {
     var gridCollection = this;
 
-    gridCollection.photoLightbox = new PhotoLightbox();
+    gridCollection.photoLightbox = new PhotoLightbox(null, null, function() {
+      onLightboxCloseStart.call(gridCollection);
+    });
     gridCollection.parent = parent;
     gridCollection.elements = null;
     gridCollection.grids = [];
@@ -395,7 +474,10 @@
     gridCollection.expand = expand;
     gridCollection.onGridOpenStart = onGridOpenStart;
     gridCollection.onGridCloseEnd = onGridCloseEnd;
+    gridCollection.onLightboxCloseStart = onLightboxCloseStart;
     gridCollection.onPhotoMetadataParsed = onPhotoMetadataParsed;
+    gridCollection.openGroup = openGroup;
+    gridCollection.openPhoto = openPhoto;
 
     createElements.call(gridCollection);
   }
