@@ -2,7 +2,7 @@
  * This module defines a constructor for PhotoGroup objects.
  * @module photoGroup
  */
-(function() {
+(function () {
   // ------------------------------------------------------------------------------------------- //
   // Private static variables
 
@@ -56,8 +56,7 @@
    * @param {Boolean} onlyCache If true, then the images will be cached and not "loaded" (i.e.,
    * references to the images will not be kept).
    */
-  function loadOrCacheIMages(targetSize, onSingleSuccess, onTotalSuccess, onTotalError,
-                             onlyCache) {
+  function loadOrCacheIMages(targetSize, onSingleSuccess, onTotalSuccess, onTotalError, onlyCache) {
     var loadedCount, failedPhotos, photoGroup, photoFunction;
 
     photoGroup = this;
@@ -66,7 +65,7 @@
 
     photoFunction = onlyCache ? 'cacheImage' : 'loadImage';
 
-    photoGroup.photos.forEach(function(photo) {
+    photoGroup.photos.forEach(function (photo) {
       photo[photoFunction](targetSize, onImageLoadSuccess, onImageLoadError);
     });
 
@@ -96,8 +95,8 @@
    */
   function addPhotoItemTapEventListeners(targetSize, tapHandler) {
     var photoGroup = this;
-    photoGroup.photos.forEach(function(photo) {
-      photo.addTapEventListener(targetSize, function(event) {
+    photoGroup.photos.forEach(function (photo) {
+      photo.addTapEventListener(targetSize, function (event) {
         tapHandler(event, photoGroup, photo.index);
       });
     });

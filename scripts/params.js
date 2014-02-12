@@ -2,7 +2,7 @@
  * This module defines a collection of parameters used throughout this app.
  * @module params
  */
-(function() {
+(function () {
   var params, moduleParams;
 
   params = {};
@@ -14,7 +14,8 @@
 
   moduleParams.TITLE = 'Photo Viewer';
   moduleParams.VERSION = '??.??.??';
-  moduleParams.LICENSE = 'The MIT License (MIT). Copyright (c) 2014 Levi Lindsey <levi@jackieandlevi.com>.';
+  moduleParams.LICENSE =
+      'The MIT License (MIT). Copyright (c) 2014 Levi Lindsey <levi@jackieandlevi.com>.';
 
   // --- Photo metadata parameters --- //
 

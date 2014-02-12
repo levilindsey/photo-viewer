@@ -2,7 +2,7 @@
  * This module defines a constructor for DropdownPhotoGrid objects.
  * @module dropdownPhotoGrid
  */
-(function() {
+(function () {
   // ------------------------------------------------------------------------------------------- //
   // Private static variables
 
@@ -20,28 +20,29 @@
 
     container = util.createElement('div', photoGrid.parent, null, ['photoGridContainer']);
 
-    banner = util.createElement('div', container, null, ['photoGridBanner','closed']);
-    util.addTapEventListener(banner, function() {
+    banner = util.createElement('div', container, null, ['photoGridBanner', 'closed']);
+    util.addTapEventListener(banner, function () {
       onBannerTap.call(photoGrid);
     }, false);
 
-    bannerIcon = util.createElement('img', banner, null, ['bannerIcon','openGridIcon']);
+    bannerIcon = util.createElement('img', banner, null, ['bannerIcon', 'openGridIcon']);
     bannerIcon.src = params.TRANSPARENT_GIF_URL;
 
     bannerTitleContainer = util.createElement('div', banner, null, ['bannerTitleContainer']);
-    width = util.getTextWidth(photoGrid.photoGroup.title, 'span', bannerTitleContainer, null,
-        ['insetText']);
+    width =
+        util.getTextWidth(photoGrid.photoGroup.title, 'span', bannerTitleContainer, null,
+            ['insetText']);
     bannerTitleContainer.style.width = width + 2 + 'px';
 
     bannerTitleText = util.createElement('span', bannerTitleContainer, null, ['insetText']);
     bannerTitleText.setAttribute('text', photoGrid.photoGroup.title);
     bannerTitleText.innerHTML = photoGrid.photoGroup.title;
 
-    tapThumbnailPromptContainer = util.createElement('div', banner, null,
-        ['tapThumbnailPromptContainer','hidden']);
+    tapThumbnailPromptContainer =
+        util.createElement('div', banner, null, ['tapThumbnailPromptContainer', 'hidden']);
 
-    tapThumbnailPromptText = util.createElement('span', tapThumbnailPromptContainer, null,
-        ['insetText']);
+    tapThumbnailPromptText =
+        util.createElement('span', tapThumbnailPromptContainer, null, ['insetText']);
     tapThumbnailPromptText.setAttribute('text', params.L18N.EN.TAP_THUMBNAIL_PROMPT);
     tapThumbnailPromptText.innerHTML = params.L18N.EN.TAP_THUMBNAIL_PROMPT;
 
@@ -75,28 +76,25 @@
     photoGrid.elements.gridCells = [];
 
     // Load the thumbnails
-    photoGrid.photoGroup.loadImages('gridThumbnail',
-        function(photoGroup, photo) {
-          onPhotoGroupSingleLoadSuccess.call(photoGrid, photoGroup, photo);
-        },
-        function(photoGroup) {
-          onPhotoGroupTotalLoadSuccess.call(photoGrid, photoGroup);
-        },
-        function(photoGroup, failedPhotos) {
-          onPhotoGroupTotalLoadError.call(photoGrid, photoGroup, failedPhotos);
-        });
+    photoGrid.photoGroup.loadImages('gridThumbnail', function (photoGroup, photo) {
+      onPhotoGroupSingleLoadSuccess.call(photoGrid, photoGroup, photo);
+    }, function (photoGroup) {
+      onPhotoGroupTotalLoadSuccess.call(photoGrid, photoGroup);
+    }, function (photoGroup, failedPhotos) {
+      onPhotoGroupTotalLoadError.call(photoGrid, photoGroup, failedPhotos);
+    });
 
     // Create the thumbnail elements and add them to the DOM
-    photoGrid.photoGroup.photos.forEach(function(photo) {
-      gridCell = util.createElement('div', photoGrid.elements.photoGridInnerContainer, null,
-          ['gridCell']);
+    photoGrid.photoGroup.photos.forEach(function (photo) {
+      gridCell =
+          util.createElement('div', photoGrid.elements.photoGridInnerContainer, null, ['gridCell']);
       gridCell.appendChild(photo.gridThumbnail.image);
       photoGrid.elements.gridCells.push(gridCell);
     });
 
     // Listen for thumbnail taps
     photoGrid.photoGroup.addPhotoItemTapEventListeners('gridThumbnail',
-        function(event, photoGroup, index) {
+        function (event, photoGroup, index) {
           onPhotoItemTap.call(photoGrid, event, photoGroup, index);
         });
   }
@@ -221,20 +219,20 @@
     photoGrid.gridCollection.onGridOpenStart(photoGrid);
 
     calculateThumbnailRowsAndColumns.call(photoGrid);
-    duration = (photoGrid.gridHeight - photoGrid.elements.grid.clientHeight) /
-        params.HEIGHT_CHANGE_RATE;
+    duration =
+        (photoGrid.gridHeight - photoGrid.elements.grid.clientHeight) / params.HEIGHT_CHANGE_RATE;
 
     switchOpenCloseIconImageClass(photoGrid.elements.bannerIcon, false);
 
-    // TODO: cancel any prior animations
+    animate.stopAnimation(photoGrid.gridHeightAnimation);
 
     // TODO: add the bounce
     // - for the bouncing thing:
     //   - apply the transition properties manually in javascript
     //     - because I will want smaller height changes to take less time
-    animate.startNumericStyleAnimation(photoGrid.elements.grid, 'height',
+    photoGrid.gridHeightAnimation = animate.startNumericStyleAnimation(photoGrid.elements.grid, 'height',
         photoGrid.elements.grid.clientHeight, photoGrid.gridHeight, null, duration, null, 'px',
-        'easeInOutQuad', function(animation, photoGrid) {
+        'easeInOutQuad', function (animation, photoGrid) {
           onOpeningFinished.call(photoGrid);
         }, photoGrid);
   }
@@ -252,12 +250,12 @@
 
     switchOpenCloseIconImageClass(photoGrid.elements.bannerIcon, true);
 
-    // TODO: cancel any prior animations
+    animate.stopAnimation(photoGrid.gridHeightAnimation);
 
     // TODO: add the bounce
-    animate.startNumericStyleAnimation(photoGrid.elements.grid, 'height',
+    photoGrid.gridHeightAnimation = animate.startNumericStyleAnimation(photoGrid.elements.grid, 'height',
         photoGrid.elements.grid.clientHeight, 0, null, duration, null, 'px', 'easeInOutQuad',
-        function(animation, photoGrid) {
+        function (animation, photoGrid) {
           onClosingFinished.call(photoGrid);
         }, photoGrid);
 
@@ -277,13 +275,15 @@
             (params.GRID.THUMBNAIL_WIDTH + params.GRID.THUMBNAIL_MARGIN));
 
     // Determine how many columns and rows of thumbnails to use
-    photoGrid.columnCount = columnCapacity >= params.GRID.MAX_COLUMN_COUNT ?
-        params.GRID.MAX_COLUMN_COUNT : columnCapacity;
+    photoGrid.columnCount =
+        columnCapacity >= params.GRID.MAX_COLUMN_COUNT ? params.GRID.MAX_COLUMN_COUNT :
+            columnCapacity;
     photoGrid.rowCount = parseInt(1 + photoGrid.photoGroup.photos.length / photoGrid.columnCount);
 
     // Set the grid's heights (the width expands to fill its containing element)
-    photoGrid.gridHeight = photoGrid.rowCount * params.GRID.THUMBNAIL_HEIGHT +
-        (photoGrid.rowCount + 1) * params.GRID.THUMBNAIL_MARGIN;
+    photoGrid.gridHeight =
+        photoGrid.rowCount * params.GRID.THUMBNAIL_HEIGHT +
+            (photoGrid.rowCount + 1) * params.GRID.THUMBNAIL_MARGIN;
     photoGrid.elements.photoGridInnerContainer.style.height = photoGrid.gridHeight + 'px';
 
     photoGrid.openCloseDuration = photoGrid.gridHeight / params.GRID.HEIGHT_CHANGE_RATE;
@@ -331,7 +331,7 @@
     util.toggleClass(element, 'hidden', !visible);
 
     if (delay) {
-      setTimeout(function() {
+      setTimeout(function () {
         setVisibility();
       }, params.ADD_CSS_TRANSITION_DELAY);
     } else {
@@ -400,6 +400,7 @@
     photoGrid.gridHeight = 0;
     photoGrid.openCloseDuration = 0;
     photoGrid.showPhotoAtIndexAfterOpening = -1;
+    photoGrid.gridHeightAnimation = null;
     photoGrid.open = open;
     photoGrid.close = close;
     photoGrid.resize = resize;

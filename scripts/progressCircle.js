@@ -2,7 +2,7 @@
  * This module defines a constructor for ProgressCircle objects.
  * @module progressCircle
  */
-(function() {
+(function () {
   // ------------------------------------------------------------------------------------------- //
   // Private static variables
 
@@ -25,9 +25,7 @@
    * @returns {Array.<ProgressDot>} The dots that were just created.
    */
   function createDots(svgElement, dotCount, left, top, diameter, dotRadius) {
-    var i, dots, angleDeg, dot, color, progressCircleCenterX, progressCircleCenterY,
-      progressCircleRadius, dotBaseCenterX, dotBaseCenterY, dotInnerPulseCenterY,
-      deltaAngleDeg, startTime;
+    var i, dots, angleDeg, dot, color, progressCircleCenterX, progressCircleCenterY, progressCircleRadius, dotBaseCenterX, dotBaseCenterY, dotInnerPulseCenterY, deltaAngleDeg, startTime;
 
     dots = [];
     deltaAngleDeg = 360 / dotCount;
@@ -39,15 +37,17 @@
     dotBaseCenterX = left + progressCircleRadius;
     dotBaseCenterY = top + dotRadius;
     dotInnerPulseCenterY =
-      dotBaseCenterY + (diameter - dotRadius) * (1 - params.PROGRESS_CIRCLE.RADIUS_PULSE_INNER_RADIUS_RATIO);
+        dotBaseCenterY +
+            (diameter - dotRadius) * (1 - params.PROGRESS_CIRCLE.RADIUS_PULSE_INNER_RADIUS_RATIO);
     startTime = Date.now();
 
     for (i = 0, angleDeg = 0; i < dotCount; i++, angleDeg += deltaAngleDeg) {
       color = new animate.HSLAColor(-angleDeg, 50, 50, params.PROGRESS_CIRCLE.DOT_OPACITY);
 
       // Create the new dot
-      dot = new ProgressDot(svgElement, color, dotBaseCenterX, dotBaseCenterY,
-        dotInnerPulseCenterY, dotRadius, angleDeg, progressCircleCenterY);
+      dot =
+          new ProgressDot(svgElement, color, dotBaseCenterX, dotBaseCenterY, dotInnerPulseCenterY,
+              dotRadius, angleDeg, progressCircleCenterY);
       startAnimationsForDot(dot, startTime, progressCircleCenterX, progressCircleCenterY);
       svgElement.appendChild(dot.element);
       dots.push(dot);
@@ -70,32 +70,40 @@
     dot.element.setAttribute('r', dot.dotRadius);
 
     // Dot revolution
-    dot.animations.dotRevolution = animate.startNumericAttributeAnimation(dot.element, 'transform',
-      dot.revolutionAngleRad, dot.revolutionAngleRad + 360, startTime, params.PROGRESS_CIRCLE.DOT_REVOLUTION_PERIOD,
-      'rotate(', ' ' + progressCircleCenterX + ' ' + progressCircleCenterY + ')', 'linear',
-      onDotRevolutionDone, dot);
+    dot.animations.dotRevolution =
+        animate.startNumericAttributeAnimation(dot.element, 'transform', dot.revolutionAngleRad,
+            dot.revolutionAngleRad + 360, startTime, params.PROGRESS_CIRCLE.DOT_REVOLUTION_PERIOD,
+            'rotate(', ' ' + progressCircleCenterX + ' ' + progressCircleCenterY + ')', 'linear',
+            onDotRevolutionDone, dot);
 
     // Color revolution
-    dot.animations.colorRevolution = animate.startObjectPropertyAnimation(dot.color, 'h',
-      dot.color.h, dot.color.h - 360, startTime, params.PROGRESS_CIRCLE.COLOR_REVOLUTION_PERIOD, 'linear',
-      onColorRevolutionDone, dot);
+    dot.animations.colorRevolution =
+        animate.startObjectPropertyAnimation(dot.color, 'h', dot.color.h, dot.color.h - 360,
+            startTime, params.PROGRESS_CIRCLE.COLOR_REVOLUTION_PERIOD, 'linear',
+            onColorRevolutionDone, dot);
 
     // Brightness pulse half cycle
-    dot.animations.brightnessHalfPulseS = animate.startObjectPropertyAnimation(dot.color, 's',
-      params.PROGRESS_CIRCLE.BRIGHTNESS_PULSE_OUTER_SATURATION, params.PROGRESS_CIRCLE.BRIGHTNESS_PULSE_INNER_SATURATION, startTime,
-      params.PROGRESS_CIRCLE.BRIGHTNESS_PULSE_HALF_PERIOD, 'easeInQuint', null, dot);
-    dot.animations.brightnessHalfPulseL = animate.startObjectPropertyAnimation(dot.color, 'l',
-      params.PROGRESS_CIRCLE.BRIGHTNESS_PULSE_OUTER_LIGHTNESS, params.PROGRESS_CIRCLE.BRIGHTNESS_PULSE_INNER_LIGHTNESS, startTime,
-      params.PROGRESS_CIRCLE.BRIGHTNESS_PULSE_HALF_PERIOD, 'easeInQuint', onBrightnessPulseHalfCycleDone, dot);
+    dot.animations.brightnessHalfPulseS =
+        animate.startObjectPropertyAnimation(dot.color, 's',
+            params.PROGRESS_CIRCLE.BRIGHTNESS_PULSE_OUTER_SATURATION,
+            params.PROGRESS_CIRCLE.BRIGHTNESS_PULSE_INNER_SATURATION, startTime,
+            params.PROGRESS_CIRCLE.BRIGHTNESS_PULSE_HALF_PERIOD, 'easeInQuint', null, dot);
+    dot.animations.brightnessHalfPulseL =
+        animate.startObjectPropertyAnimation(dot.color, 'l',
+            params.PROGRESS_CIRCLE.BRIGHTNESS_PULSE_OUTER_LIGHTNESS,
+            params.PROGRESS_CIRCLE.BRIGHTNESS_PULSE_INNER_LIGHTNESS, startTime,
+            params.PROGRESS_CIRCLE.BRIGHTNESS_PULSE_HALF_PERIOD, 'easeInQuint',
+            onBrightnessPulseHalfCycleDone, dot);
 
     // Radius pulse half cycle; start at outer radius and move to inner radius
-    dot.animations.radiusHalfPulseY = animate.startNumericAttributeAnimation(dot.element, 'cy',
-      dot.dotBaseCenterY, dot.dotInnerPulseCenterY, startTime, params.PROGRESS_CIRCLE.RADIUS_PULSE_HALF_PERIOD, null,
-      null, 'easeInQuint', onRadiusPulseHalfCycleDone, dot);
+    dot.animations.radiusHalfPulseY =
+        animate.startNumericAttributeAnimation(dot.element, 'cy', dot.dotBaseCenterY,
+            dot.dotInnerPulseCenterY, startTime, params.PROGRESS_CIRCLE.RADIUS_PULSE_HALF_PERIOD,
+            null, null, 'easeInQuint', onRadiusPulseHalfCycleDone, dot);
 
     // Keep updating the color as the various animations separately change its components
-    dot.colorSynchronization = animate.startSyncingObjectHSLAColorProperty(dot, 'color',
-      dot.element, 'fill');
+    dot.colorSynchronization =
+        animate.startSyncingObjectHSLAColorProperty(dot, 'color', dot.element, 'fill');
   }
 
   /**
@@ -106,10 +114,11 @@
    * @param {ProgressDot} dot The dot object that has been animating.
    */
   function onDotRevolutionDone(animation, dot) {
-    dot.animations.dotRevolution = animate.startNumericAttributeAnimation(animation.element,
-      animation.attribute, animation.startValue, animation.endValue,
-      animation.startTime + animation.duration, animation.duration, animation.prefix,
-      animation.suffix, animation.easingFunction, onDotRevolutionDone, dot);
+    dot.animations.dotRevolution =
+        animate.startNumericAttributeAnimation(animation.element, animation.attribute,
+            animation.startValue, animation.endValue, animation.startTime + animation.duration,
+            animation.duration, animation.prefix, animation.suffix, animation.easingFunction,
+            onDotRevolutionDone, dot);
   }
 
   /**
@@ -121,10 +130,10 @@
    * @param {ProgressDot} dot The dot object that has been animating.
    */
   function onColorRevolutionDone(animation, dot) {
-    dot.animations.colorRevolution = animate.startObjectPropertyAnimation(animation.object,
-      animation.property, animation.startValue, animation.endValue,
-      animation.startTime + animation.duration, animation.duration, animation.easingFunction,
-      onColorRevolutionDone, dot);
+    dot.animations.colorRevolution =
+        animate.startObjectPropertyAnimation(animation.object, animation.property,
+            animation.startValue, animation.endValue, animation.startTime + animation.duration,
+            animation.duration, animation.easingFunction, onColorRevolutionDone, dot);
   }
 
   /**
@@ -154,12 +163,14 @@
       easingFunction = 'easeInQuint';
     }
 
-    dot.animations.brightnessHalfPulseS = animate.startObjectPropertyAnimation(animation.object,
-      's', startValueS, endValueS, animation.startTime + animation.duration,
-      animation.duration, easingFunction, null, dot);
-    dot.animations.brightnessHalfPulseL = animate.startObjectPropertyAnimation(animation.object,
-      'l', startValueL, endValueL, animation.startTime + animation.duration,
-      animation.duration, easingFunction, onBrightnessPulseHalfCycleDone, dot);
+    dot.animations.brightnessHalfPulseS =
+        animate.startObjectPropertyAnimation(animation.object, 's', startValueS, endValueS,
+            animation.startTime + animation.duration, animation.duration, easingFunction, null,
+            dot);
+    dot.animations.brightnessHalfPulseL =
+        animate.startObjectPropertyAnimation(animation.object, 'l', startValueL, endValueL,
+            animation.startTime + animation.duration, animation.duration, easingFunction,
+            onBrightnessPulseHalfCycleDone, dot);
   }
 
   /**
@@ -171,11 +182,13 @@
    * @param {ProgressDot} dot The dot object that has been animating.
    */
   function onRadiusPulseHalfCycleDone(animation, dot) {
-    var easingFunction = animation.startValue === dot.dotBaseCenterY ? 'easeOutQuint' : 'easeInQuint';
-    dot.animations.radiusHalfPulseY = animate.startNumericAttributeAnimation(animation.element,
-      animation.attribute, animation.endValue, animation.startValue,
-      animation.startTime + animation.duration, animation.duration, animation.prefix,
-      animation.suffix, easingFunction, onRadiusPulseHalfCycleDone, dot);
+    var easingFunction = animation.startValue === dot.dotBaseCenterY ? 'easeOutQuint' :
+        'easeInQuint';
+    dot.animations.radiusHalfPulseY =
+        animate.startNumericAttributeAnimation(animation.element, animation.attribute,
+            animation.endValue, animation.startValue, animation.startTime + animation.duration,
+            animation.duration, animation.prefix, animation.suffix, easingFunction,
+            onRadiusPulseHalfCycleDone, dot);
   }
 
   /**
@@ -248,8 +261,9 @@
   function open() {
     // TODO: refactor this so that it doesn't re-create the elements each time?
     if (!this.dots) {
-      this.dots = createDots(this.svgElement, params.PROGRESS_CIRCLE.DOT_COUNT, this.left, this.top,
-          this.diameter, this.dotRadius);
+      this.dots =
+          createDots(this.svgElement, params.PROGRESS_CIRCLE.DOT_COUNT, this.left, this.top,
+              this.diameter, this.dotRadius);
     }
   }
 
@@ -261,7 +275,7 @@
     var startTime = Date.now();
 
     if (this.dots) {
-      this.dots.forEach(function(dot) {
+      this.dots.forEach(function (dot) {
         var a;
 
         // Stop the original animations that conflict with the closing animations
@@ -270,20 +284,20 @@
 
         // Spin the dots faster for closing
         a = dot.animations.dotRevolution;
-        dot.animations.dotRevolution = animate.startNumericAttributeAnimation(a.element,
-            a.attribute, a.currentValue, a.currentValue +
-                params.PROGRESS_CIRCLE.WIND_DOWN_REVOLUTION_DEG,
-            startTime, params.PROGRESS_CIRCLE.WIND_DOWN_PERIOD, a.prefix, a.suffix, 'linear',
-            null, dot);
+        dot.animations.dotRevolution =
+            animate.startNumericAttributeAnimation(a.element, a.attribute, a.currentValue,
+                a.currentValue + params.PROGRESS_CIRCLE.WIND_DOWN_REVOLUTION_DEG, startTime,
+                params.PROGRESS_CIRCLE.WIND_DOWN_PERIOD, a.prefix, a.suffix, 'linear', null, dot);
 
         // Draw the balls inward and fade them away
-        dot.animations.windDownShrink = animate.startNumericAttributeAnimation(dot.element,
-            'cy', dot.animations.radiusHalfPulseY.currentValue, dot.progressCircleCenterY,
-            startTime, params.PROGRESS_CIRCLE.WIND_DOWN_PERIOD, null, null, 'linear',
-            onWindDownAnimationDone, dot);
-        dot.animations.windDownFade = animate.startNumericAttributeAnimation(dot.element,
-            'opacity', 1, 0, startTime, params.PROGRESS_CIRCLE.WIND_DOWN_PERIOD, null, null,
-            'linear', null, dot);
+        dot.animations.windDownShrink =
+            animate.startNumericAttributeAnimation(dot.element, 'cy',
+                dot.animations.radiusHalfPulseY.currentValue, dot.progressCircleCenterY, startTime,
+                params.PROGRESS_CIRCLE.WIND_DOWN_PERIOD, null, null, 'linear',
+                onWindDownAnimationDone, dot);
+        dot.animations.windDownFade =
+            animate.startNumericAttributeAnimation(dot.element, 'opacity', 1, 0, startTime,
+                params.PROGRESS_CIRCLE.WIND_DOWN_PERIOD, null, null, 'linear', null, dot);
       });
 
       this.dots = null;

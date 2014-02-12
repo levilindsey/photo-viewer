@@ -2,7 +2,7 @@
  * This module defines a constructor for PhotoLightbox objects.
  * @module photoLightbox
  */
-(function() {
+(function () {
   // ------------------------------------------------------------------------------------------- //
   // Private static variables
 
@@ -19,9 +19,7 @@
    * @param {Number} [height] The height of this lightbox when not in full-screen mode.
    */
   function createElements(width, height) {
-    var photoLightbox, body, lightbox, oldMainImage, newMainImage, newSmallImage, oldSmallImage,
-        backgroundHaze, closeButton, reduceFromFullButton, expandToFullButton, previousButton,
-        nextButton, newImageTransitionEndEventListener, svg;
+    var photoLightbox, body, lightbox, oldMainImage, newMainImage, newSmallImage, oldSmallImage, backgroundHaze, closeButton, reduceFromFullButton, expandToFullButton, previousButton, nextButton, newImageTransitionEndEventListener, svg;
 
     photoLightbox = this;
     body = document.getElementsByTagName('body')[0];
@@ -31,85 +29,87 @@
       height = params.LIGHTBOX.HEIGHT;
     }
 
-    lightbox = util.createElement('div', body, null, ['lightbox','hidden']);
+    lightbox = util.createElement('div', body, null, ['lightbox', 'hidden']);
     lightbox.style.width = width + 'px';
     lightbox.style.height = height + 'px';
-    util.addTapEventListener(lightbox, function(event) {
+    util.addTapEventListener(lightbox, function (event) {
       onNextButtonTap.call(photoLightbox, event);
     }, false);
-    util.addPointerMoveEventListener(lightbox, function(event) {
+    util.addPointerMoveEventListener(lightbox, function (event) {
       onLightboxPointerMove.call(photoLightbox, event);
     });
-    util.listenForTransitionEnd(lightbox, function(event) {
+    util.listenForTransitionEnd(lightbox, function (event) {
       onLightboxTransitionEnd.call(photoLightbox, event);
     });
 
-    oldMainImage = util.createElement('img', lightbox, null, ['oldMainImage','hidden']);
-    newMainImage = util.createElement('img', lightbox, null, ['newMainImage','hidden']);
-    newImageTransitionEndEventListener = function(event) {
+    oldMainImage = util.createElement('img', lightbox, null, ['oldMainImage', 'hidden']);
+    newMainImage = util.createElement('img', lightbox, null, ['newMainImage', 'hidden']);
+    newImageTransitionEndEventListener = function (event) {
       onNewImageTransitionEnd.call(photoLightbox, event);
     };
     photoLightbox.newImageTransitionEndEventListener = newImageTransitionEndEventListener;
     util.listenForTransitionEnd(newMainImage, newImageTransitionEndEventListener);
-    newSmallImage = util.createElement('img', lightbox, null, ['newSmallImage','hidden']);
-    oldSmallImage = util.createElement('img', lightbox, null, ['oldSmallImage','hidden']);
+    newSmallImage = util.createElement('img', lightbox, null, ['newSmallImage', 'hidden']);
+    oldSmallImage = util.createElement('img', lightbox, null, ['oldSmallImage', 'hidden']);
 
-    backgroundHaze = util.createElement('div', body, null, ['backgroundHaze','hidden']);
+    backgroundHaze = util.createElement('div', body, null, ['backgroundHaze', 'hidden']);
 
-    closeButton = util.createElement('img', lightbox, null,
-        ['spriteButton','closeButton','hidden']);
+    closeButton =
+        util.createElement('img', lightbox, null, ['spriteButton', 'closeButton', 'hidden']);
     closeButton.src = params.TRANSPARENT_GIF_URL;
-    util.addTapEventListener(closeButton, function(event) {
+    util.addTapEventListener(closeButton, function (event) {
       onCloseButtonTap.call(photoLightbox, event);
     }, false);
 
-    reduceFromFullButton = util.createElement('img', null, null,
-        ['spriteButton','reduceFromFullButton','hidden']);
+    reduceFromFullButton =
+        util.createElement('img', null, null, ['spriteButton', 'reduceFromFullButton', 'hidden']);
     reduceFromFullButton.src = params.TRANSPARENT_GIF_URL;
-    expandToFullButton = util.createElement('img', null, null,
-        ['spriteButton','expandToFullButton','hidden']);
+    expandToFullButton =
+        util.createElement('img', null, null, ['spriteButton', 'expandToFullButton', 'hidden']);
     expandToFullButton.src = params.TRANSPARENT_GIF_URL;
 
     if (!util.isSmallScreen) {
       lightbox.appendChild(reduceFromFullButton);
       reduceFromFullButton.style.display = 'none';
-      util.addTapEventListener(reduceFromFullButton, function(event) {
+      util.addTapEventListener(reduceFromFullButton, function (event) {
         onFullscreenButtonTap.call(photoLightbox, event);
       }, false);
 
       lightbox.appendChild(expandToFullButton);
-      util.addTapEventListener(expandToFullButton, function(event) {
+      util.addTapEventListener(expandToFullButton, function (event) {
         onFullscreenButtonTap.call(photoLightbox, event);
       }, false);
 
-      util.addOnEndFullScreen(function() {
+      util.addOnEndFullScreen(function () {
         onFullScreenChange.call(photoLightbox, false);
       });
     }
 
-    previousButton = util.createElement('img', lightbox, null,
-        ['spriteButton','previousButton','hidden']);
+    previousButton =
+        util.createElement('img', lightbox, null, ['spriteButton', 'previousButton', 'hidden']);
     previousButton.src = params.TRANSPARENT_GIF_URL;
-    util.addTapEventListener(previousButton, function(event) {
+    util.addTapEventListener(previousButton, function (event) {
       onPreviousButtonTap.call(photoLightbox, event);
     }, false);
 
-    nextButton = util.createElement('img', lightbox, null,
-        ['spriteButton','nextButton','hidden']);
+    nextButton =
+        util.createElement('img', lightbox, null, ['spriteButton', 'nextButton', 'hidden']);
     nextButton.src = params.TRANSPARENT_GIF_URL;
-    util.addTapEventListener(nextButton, function(event) {
+    util.addTapEventListener(nextButton, function (event) {
       onNextButtonTap.call(photoLightbox, event);
     }, false);
 
-    util.listenToMultipleForMultiple([closeButton,reduceFromFullButton,expandToFullButton,
-      previousButton,nextButton], ['mouseover','mousemove','touchmove'], function(event) {
-      onOverlayButtonHover.call(photoLightbox, event);
-    });
+    util.listenToMultipleForMultiple(
+        [closeButton, reduceFromFullButton, expandToFullButton, previousButton, nextButton],
+        ['mouseover', 'mousemove', 'touchmove'], function (event) {
+          onOverlayButtonHover.call(photoLightbox, event);
+        });
 
-    util.listenToMultipleForMultiple([closeButton,reduceFromFullButton,expandToFullButton,
-      previousButton,nextButton], ['mouseout','touchend','touchcancel'], function(event) {
-      onOverlayButtonHoverEnd.call(photoLightbox, event);
-    });
+    util.listenToMultipleForMultiple(
+        [closeButton, reduceFromFullButton, expandToFullButton, previousButton, nextButton],
+        ['mouseout', 'touchend', 'touchcancel'], function (event) {
+          onOverlayButtonHoverEnd.call(photoLightbox, event);
+        });
 
     svg = document.createElementNS(params.SVG_NAMESPACE, 'svg');
     svg.style.width = params.LIGHTBOX.PROGRESS_CIRCLE_DIAMETER + 'px';
@@ -201,13 +201,14 @@
       //log.v('onLightboxPointerMove', 'Refreshing pointer move timeout');
       clearTimeout(photoLightbox.pointerMoveTimeout);
     } else {
-      log.d('onLightboxPointerMove', 'Showing overlay buttons, and starting new pointer move timeout');
+      log.d('onLightboxPointerMove',
+          'Showing overlay buttons, and starting new pointer move timeout');
       photoLightbox.buttonsHaveBeenVisible = true;
       setOverlayButtonsVisibility.call(photoLightbox, true);
     }
 
     // Start a new pointer move timer
-    photoLightbox.pointerMoveTimeout = setTimeout(function() {
+    photoLightbox.pointerMoveTimeout = setTimeout(function () {
       onLightboxPointerMoveTimeout.call(photoLightbox);
     }, params.LIGHTBOX.POINTER_MOVE_BUTTON_FADE_DELAY);
   }
@@ -215,8 +216,8 @@
   // TODO: jsdoc
   function onLightboxPointerMoveTimeout() {
     var photoLightbox = this;
-    log.d('onLightboxPointerMoveTimeout', 'mouseIsOverOverlayButton=' +
-        photoLightbox.mouseIsOverOverlayButton);
+    log.d('onLightboxPointerMoveTimeout',
+        'mouseIsOverOverlayButton=' + photoLightbox.mouseIsOverOverlayButton);
     // Don't hide the buttons on a mobile device
     if (!util.isMobileBrowser) {
       if (!photoLightbox.mouseIsOverOverlayButton) {
@@ -242,7 +243,8 @@
         photoLightbox.newImageTransitionEndEventListener);
 
     // Remove the old small and main images from the DOM
-    util.removeChildIfPresent(photoLightbox.elements.lightbox, photoLightbox.elements.oldSmallImage);
+    util.removeChildIfPresent(photoLightbox.elements.lightbox,
+        photoLightbox.elements.oldSmallImage);
     util.removeChildIfPresent(photoLightbox.elements.lightbox, photoLightbox.elements.oldMainImage);
 
     // Remove the visibility classes from the old small and main images
@@ -287,9 +289,12 @@
     loadPhotoImage(photoLightbox, true, mainTargetSize, photoItem);
 
     if (mainImageIsNotYetCached) {
-      // Show the progress circle
       loadPhotoImage(photoLightbox, false, smallTargetSize, photoItem);
-      photoLightbox.progressCircle.open();
+      // Do not show the progress circle until the lightbox is fully open
+      if (!photoLightbox.opening) {
+        // Show the progress circle
+        photoLightbox.progressCircle.open();
+      }
     }
 
     // Fade out the old image
@@ -298,11 +303,11 @@
 
     // TODO: jsdoc
     function loadPhotoImage(photoLightbox, isMainImage, targetSize, photoItem) {
-      log.d('setPhoto.loadPhotoImage', 'Sending image load request: ' +
-          photoItem[targetSize].source);
-      photoItem.loadImage(targetSize, function(photoItem) {
+      log.d('setPhoto.loadPhotoImage',
+          'Sending image load request: ' + photoItem[targetSize].source);
+      photoItem.loadImage(targetSize, function (photoItem) {
         onPhotoImageLoadSuccess.call(photoLightbox, isMainImage, targetSize, photoItem);
-      }, function(photoItem) {
+      }, function (photoItem) {
         onPhotoImageLoadError.call(photoLightbox, isMainImage, targetSize, photoItem);
       });
     }
@@ -391,7 +396,7 @@
           // Display this new image; there needs to be a slight delay after adding the element to
           // the DOM, and before adding its CSS transitions; otherwise, the transitions will not
           // work properly
-          setElementVisibility(photoLightbox.elements.newMainImage, true, true, function() {
+          setElementVisibility(photoLightbox.elements.newMainImage, true, true, function () {
             // Set up the dimensions of the new image
             resizeMainImage(photoLightbox.elements.newMainImage, photoItem.small.width,
                 photoItem.small.height, photoLightbox.inFullscreenMode, photoLightbox);
@@ -431,11 +436,11 @@
 
     // TODO: jsdoc
     function cacheNeighborImage(photoLightbox, targetSize, photoItem) {
-      log.v('onPhotoImageLoadSuccess.cacheNeighborImage', 'Sending image cache request: ' +
-          photoItem[targetSize].source);
-      photoItem.cacheImage(targetSize, function(photoItem) {
+      log.v('onPhotoImageLoadSuccess.cacheNeighborImage',
+          'Sending image cache request: ' + photoItem[targetSize].source);
+      photoItem.cacheImage(targetSize, function (photoItem) {
         onNeighborPhotoCacheSuccess.call(photoLightbox, targetSize, photoItem);
-      }, function(photoItem) {
+      }, function (photoItem) {
         onNeighborPhotoCacheError.call(photoLightbox, targetSize, photoItem);
       });
     }
@@ -474,8 +479,7 @@
     // Remove the old small and main images from the DOM
     util.removeChildIfPresent(photoLightbox.elements.lightbox,
         photoLightbox.elements.oldSmallImage);
-    util.removeChildIfPresent(photoLightbox.elements.lightbox,
-        photoLightbox.elements.oldMainImage);
+    util.removeChildIfPresent(photoLightbox.elements.lightbox, photoLightbox.elements.oldMainImage);
 
     // Remove the visibility classes from the old small and main images
     util.toggleClass(photoLightbox.elements.oldSmallImage, 'hidden', false);
@@ -503,7 +507,7 @@
         // TODO: this is a hack; fix the root problem of why this function gets called at times other than when we open or close the lightbox
         if (!photoLightbox.buttonsHaveBeenVisible) {
           // Have the overlay buttons briefly show at the start
-          setTimeout(function() {
+          setTimeout(function () {
             onLightboxPointerMove.call(photoLightbox);
           }, params.ADD_CSS_TRANSITION_DELAY);
         }
@@ -577,7 +581,7 @@
   // TODO: jsdoc
   function resize() {
     var photoLightbox, lightboxElement, boundingBox, viewportSize;
-    
+
     photoLightbox = this;
     lightboxElement = photoLightbox.elements.lightbox;
 
@@ -586,8 +590,8 @@
         !util.containsClass(lightboxElement, 'hidden')) {
       boundingBox = getCenteredBoundingBox();
       viewportSize = util.getViewportSize();
-      if (photoLightbox.inFullscreenMode ||
-          boundingBox.w > viewportSize.w || boundingBox.h > viewportSize.h) {
+      if (photoLightbox.inFullscreenMode || boundingBox.w > viewportSize.w ||
+          boundingBox.h > viewportSize.h) {
         lightboxElement.style.left = '0';
         lightboxElement.style.top = '0';
         lightboxElement.style.width = viewportSize.w + 'px';
@@ -670,7 +674,7 @@
 
     // Make the lightbox visible and start its CSS transitions
     photoLightbox.elements.lightbox.style.display = 'block';
-    setElementVisibility(photoLightbox.elements.lightbox, true, true, function() {
+    setElementVisibility(photoLightbox.elements.lightbox, true, true, function () {
       // Have the lightbox transition to its larger, centered dimensions
       resize.call(photoLightbox);
     });
@@ -680,7 +684,7 @@
     setElementVisibility(photoLightbox.elements.backgroundHaze, true, true, null);
 
     // The lightbox is closed when the viewer taps outside of it
-    bodyTapEventListener = function(event) {
+    bodyTapEventListener = function (event) {
       onCloseButtonTap.call(photoLightbox, event);
     };
     photoLightbox.bodyTapEventListener = bodyTapEventListener;
@@ -757,7 +761,7 @@
     util.toggleClass(element, 'hidden', !visible);
 
     if (delay) {
-      setTimeout(function() {
+      setTimeout(function () {
         setVisibility();
       }, params.ADD_CSS_TRANSITION_DELAY);
     } else {
@@ -821,8 +825,7 @@
 
   // TODO: jsdoc
   function resizeMainImage(element, smallWidth, smallHeight, isFullScreen, photoLightbox) {
-    var photoAspectRatio, parentAspectRatio, scaledWidth, scaledHeight, lightboxWidth,
-        lightboxHeight;
+    var photoAspectRatio, parentAspectRatio, scaledWidth, scaledHeight, lightboxWidth, lightboxHeight;
 
     photoAspectRatio = smallWidth / smallHeight;
 
@@ -909,11 +912,12 @@
 
     createElements.call(photoLightbox, width, height);
 
-    photoLightbox.progressCircle = new SVGProgressCircle(photoLightbox.elements.svg, 0, 0,
-        params.LIGHTBOX.PROGRESS_CIRCLE_DIAMETER, params.LIGHTBOX.PROGRESS_CIRCLE_DOT_RADIUS);
+    photoLightbox.progressCircle =
+        new SVGProgressCircle(photoLightbox.elements.svg, 0, 0,
+            params.LIGHTBOX.PROGRESS_CIRCLE_DIAMETER, params.LIGHTBOX.PROGRESS_CIRCLE_DOT_RADIUS);
 
     // Re-position the lightbox when the window re-sizes
-    util.listen(window, 'resize', function() {
+    util.listen(window, 'resize', function () {
       resize.call(photoLightbox);
     });
   }

@@ -2,7 +2,7 @@
  * This module defines a collection of static general animation functions.
  * @module animate
  */
-(function() {
+(function () {
   // ------------------------------------------------------------------------------------------- //
   // Private static variables
 
@@ -15,21 +15,45 @@
 
   // A collection of different types of easing functions.
   easingFunctions = {
-    linear: function(t) { return t; },
-    easeInQuad: function(t) { return t * t; },
-    easeOutQuad: function(t) { return t * (2 - t); },
-    easeInOutQuad: function(t) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; },
-    easeInCubic: function(t) { return t * t * t; },
-    easeOutCubic: function(t) { return 1 + --t * t * t; },
-    easeInOutCubic:
-      function(t) { return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1; },
-    easeInQuart: function(t) { return t * t * t * t; },
-    easeOutQuart: function(t) { return 1 - --t * t * t * t; },
-    easeInOutQuart: function(t) { return t < 0.5 ? 8 * t * t * t * t : 1 - 8 * --t * t * t * t; },
-    easeInQuint: function(t) { return t * t * t * t * t; },
-    easeOutQuint: function(t) { return 1 + --t * t * t * t * t; },
-    easeInOutQuint:
-      function(t) { return t < 0.5 ? 16 * t * t * t * t * t : 1 + 16 * --t * t * t * t * t; }
+    linear: function (t) {
+      return t;
+    },
+    easeInQuad: function (t) {
+      return t * t;
+    },
+    easeOutQuad: function (t) {
+      return t * (2 - t);
+    },
+    easeInOutQuad: function (t) {
+      return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+    },
+    easeInCubic: function (t) {
+      return t * t * t;
+    },
+    easeOutCubic: function (t) {
+      return 1 + --t * t * t;
+    },
+    easeInOutCubic: function (t) {
+      return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+    },
+    easeInQuart: function (t) {
+      return t * t * t * t;
+    },
+    easeOutQuart: function (t) {
+      return 1 - --t * t * t * t;
+    },
+    easeInOutQuart: function (t) {
+      return t < 0.5 ? 8 * t * t * t * t : 1 - 8 * --t * t * t * t;
+    },
+    easeInQuint: function (t) {
+      return t * t * t * t * t;
+    },
+    easeOutQuint: function (t) {
+      return 1 + --t * t * t * t * t;
+    },
+    easeInOutQuint: function (t) {
+      return t < 0.5 ? 16 * t * t * t * t * t : 1 + 16 * --t * t * t * t * t;
+    }
   };
 
   // ------------------------------------------------------------------------------------------- //
@@ -140,8 +164,8 @@
     if (deltaTime < animation.duration) {
       progress = getEasedProgress(deltaTime, animation.duration, animation.easingFunction);
       remaining = 1 - progress;
-      animation.currentValue = interpolate(animation.startValue, animation.endValue, remaining,
-        progress);
+      animation.currentValue =
+          interpolate(animation.startValue, animation.endValue, remaining, progress);
       animationFinished = false;
     } else {
       animation.currentValue = animation.endValue;
@@ -168,8 +192,8 @@
     if (deltaTime < animation.duration) {
       progress = getEasedProgress(deltaTime, animation.duration, animation.easingFunction);
       remaining = 1 - progress;
-      animation.currentValue = interpolate(animation.startValue, animation.endValue, remaining,
-          progress);
+      animation.currentValue =
+          interpolate(animation.startValue, animation.endValue, remaining, progress);
       animationFinished = false;
     } else {
       animation.currentValue = animation.endValue;
@@ -259,8 +283,8 @@
     if (deltaTime < animation.duration) {
       progress = getEasedProgress(deltaTime, animation.duration, animation.easingFunction);
       remaining = 1 - progress;
-      animation.currentValue = interpolate(animation.startValue, animation.endValue, remaining,
-          progress);
+      animation.currentValue =
+          interpolate(animation.startValue, animation.endValue, remaining, progress);
       animationFinished = false;
     } else {
       animation.currentValue = animation.endValue;
@@ -365,7 +389,7 @@
    * @function animate~refreshSynchronizations
    */
   function refreshSynchronizations() {
-    currentSynchronizations.forEach(function(synchronization) {
+    currentSynchronizations.forEach(function (synchronization) {
       if (synchronization instanceof ObjectNumericPropertySync) {
         refreshNumericSynchronization(synchronization);
       } else if (synchronization instanceof ObjectHSLAColorPropertySync) {
@@ -382,10 +406,9 @@
    * @param {ObjectNumericPropertySync} synchronization An object representing the synchronization.
    */
   function refreshNumericSynchronization(synchronization) {
-    synchronization.element.setAttribute(
-      synchronization.attribute,
-      synchronization.prefix + synchronization.object[synchronization.property] +
-        synchronization.suffix);
+    synchronization.element.setAttribute(synchronization.attribute,
+        synchronization.prefix + synchronization.object[synchronization.property] +
+            synchronization.suffix);
   }
 
   /**
@@ -395,9 +418,8 @@
    * synchronization.
    */
   function refreshHSLAColorSynchronization(synchronization) {
-    synchronization.element.setAttribute(
-      synchronization.attribute,
-      hslaColorToString(synchronization.object[synchronization.property]));
+    synchronization.element.setAttribute(synchronization.attribute,
+        hslaColorToString(synchronization.object[synchronization.property]));
   }
 
   /**
@@ -407,9 +429,8 @@
    * synchronization.
    */
   function refreshRGBAColorSynchronization(synchronization) {
-    synchronization.element.setAttribute(
-      synchronization.attribute,
-      rgbaColorToString(synchronization.object[synchronization.property]));
+    synchronization.element.setAttribute(synchronization.attribute,
+        rgbaColorToString(synchronization.object[synchronization.property]));
   }
 
   // ------------------------------------------------------------------------------------------- //
@@ -432,9 +453,8 @@
    * @param {*} [identifier] This will be passed as an argument to the onDoneCallback, and can
    * help the client to identify this particular animation.
    */
-  function NumericAttributeAnimation(element, attribute, startValue, endValue, startTime,
-                                     duration, prefix, suffix, easingFunction, onDoneCallback,
-                                     identifier) {
+  function NumericAttributeAnimation(element, attribute, startValue, endValue, startTime, duration,
+                                     prefix, suffix, easingFunction, onDoneCallback, identifier) {
     this.element = element;
     this.attribute = attribute;
     this.startValue = startValue;
@@ -444,8 +464,9 @@
     this.duration = duration || DEFAULT_DURATION;
     this.prefix = prefix || '';
     this.suffix = suffix || '';
-    this.easingFunction = typeof easingFunction === 'function' ?
-        easingFunction : easingFunctions[easingFunction || 'linear'];
+    this.easingFunction =
+        typeof easingFunction === 'function' ? easingFunction :
+            easingFunctions[easingFunction || 'linear'];
     this.onDoneCallback = onDoneCallback;
     this.identifier = identifier;
   }
@@ -475,8 +496,9 @@
     this.currentColor = startColor;
     this.startTime = startTime || Date.now();
     this.duration = duration || DEFAULT_DURATION;
-    this.easingFunction = typeof easingFunction === 'function' ?
-        easingFunction : easingFunctions[easingFunction || 'linear'];
+    this.easingFunction =
+        typeof easingFunction === 'function' ? easingFunction :
+            easingFunctions[easingFunction || 'linear'];
     this.onDoneCallback = onDoneCallback;
     this.identifier = identifier;
   }
@@ -509,8 +531,9 @@
     this.duration = duration || DEFAULT_DURATION;
     this.prefix = prefix || '';
     this.suffix = suffix || '';
-    this.easingFunction = typeof easingFunction === 'function' ?
-        easingFunction : easingFunctions[easingFunction || 'linear'];
+    this.easingFunction =
+        typeof easingFunction === 'function' ? easingFunction :
+            easingFunctions[easingFunction || 'linear'];
     this.onDoneCallback = onDoneCallback;
     this.identifier = identifier;
   }
@@ -540,8 +563,9 @@
     this.currentColor = startColor;
     this.startTime = startTime || Date.now();
     this.duration = duration || DEFAULT_DURATION;
-    this.easingFunction = typeof easingFunction === 'function' ?
-        easingFunction : easingFunctions[easingFunction || 'linear'];
+    this.easingFunction =
+        typeof easingFunction === 'function' ? easingFunction :
+            easingFunctions[easingFunction || 'linear'];
     this.onDoneCallback = onDoneCallback;
     this.identifier = identifier;
   }
@@ -570,8 +594,9 @@
     this.currentValue = startValue;
     this.startTime = startTime || Date.now();
     this.duration = duration || DEFAULT_DURATION;
-    this.easingFunction = typeof easingFunction === 'function' ?
-      easingFunction : easingFunctions[easingFunction || 'linear'];
+    this.easingFunction =
+        typeof easingFunction === 'function' ? easingFunction :
+            easingFunctions[easingFunction || 'linear'];
     this.onDoneCallback = onDoneCallback;
     this.identifier = identifier;
   }
@@ -658,8 +683,8 @@
    * @returns {NumericAttributeAnimation} The animation object created for this new animation.
    */
   function startNumericAttributeAnimation(element, attribute, startValue, endValue, startTime,
-                                          duration, prefix, suffix, easingFunction,
-                                          onDoneCallback, identifier) {
+                                          duration, prefix, suffix, easingFunction, onDoneCallback,
+                                          identifier) {
     var animation = new NumericAttributeAnimation(element, attribute, startValue, endValue,
         startTime, duration, prefix, suffix, easingFunction, onDoneCallback, identifier);
     currentAnimations.push(animation);
@@ -686,8 +711,8 @@
    */
   function startColorAttributeAnimation(element, attribute, startColor, endColor, startTime,
                                         duration, easingFunction, onDoneCallback, identifier) {
-    var animation = new ColorAttributeAnimation(element, attribute, startColor, endColor,
-        startTime, duration, easingFunction, onDoneCallback, identifier);
+    var animation = new ColorAttributeAnimation(element, attribute, startColor, endColor, startTime,
+        duration, easingFunction, onDoneCallback, identifier);
     currentAnimations.push(animation);
     startAnimationLoop();
     return animation;
@@ -711,11 +736,10 @@
    * help the client to identify this particular animation.
    * @returns {NumericStyleAnimation} The animation object created for this new animation.
    */
-  function startNumericStyleAnimation(element, property, startValue, endValue, startTime,
-                                      duration, prefix, suffix, easingFunction, onDoneCallback,
-                                      identifier) {
-    var animation = new NumericStyleAnimation(element, property, startValue, endValue,
-        startTime, duration, prefix, suffix, easingFunction, onDoneCallback, identifier);
+  function startNumericStyleAnimation(element, property, startValue, endValue, startTime, duration,
+                                      prefix, suffix, easingFunction, onDoneCallback, identifier) {
+    var animation = new NumericStyleAnimation(element, property, startValue, endValue, startTime,
+        duration, prefix, suffix, easingFunction, onDoneCallback, identifier);
     currentAnimations.push(animation);
     startAnimationLoop();
     return animation;
@@ -740,8 +764,8 @@
    */
   function startColorStyleAnimation(element, property, startColor, endColor, startTime, duration,
                                     easingFunction, onDoneCallback, identifier) {
-    var animation = new ColorStyleAnimation(element, property, startColor, endColor,
-        startTime, duration, easingFunction, onDoneCallback, identifier);
+    var animation = new ColorStyleAnimation(element, property, startColor, endColor, startTime,
+        duration, easingFunction, onDoneCallback, identifier);
     currentAnimations.push(animation);
     startAnimationLoop();
     return animation;
@@ -763,10 +787,10 @@
    * help the client to identify this particular animation.
    * @returns {ObjectPropertyAnimation} The animation object created for this new animation.
    */
-  function startObjectPropertyAnimation(object, property, startValue, endValue, startTime,
-                                        duration, easingFunction, onDoneCallback, identifier) {
+  function startObjectPropertyAnimation(object, property, startValue, endValue, startTime, duration,
+                                        easingFunction, onDoneCallback, identifier) {
     var animation = new ObjectPropertyAnimation(object, property, startValue, endValue, startTime,
-      duration, easingFunction, onDoneCallback, identifier);
+        duration, easingFunction, onDoneCallback, identifier);
     currentAnimations.push(animation);
     startAnimationLoop();
     return animation;
@@ -807,10 +831,9 @@
    * @returns {ObjectNumericPropertySync} An object representing the synchronization. This can
    * be passed to the stopSyncingObjectProperty function to stop the synchronization.
    */
-  function startSyncingObjectNumericProperty(object, property, element, attribute, prefix,
-                                             suffix) {
+  function startSyncingObjectNumericProperty(object, property, element, attribute, prefix, suffix) {
     var synchronization = new ObjectNumericPropertySync(object, property, element, attribute,
-      prefix, suffix);
+        prefix, suffix);
     currentSynchronizations.push(synchronization);
     return synchronization;
   }
@@ -888,15 +911,14 @@
    * A cross-browser compatible requestAnimationFrame.
    * @type {Function}
    */
-  var requestAnimationFrame =
-    window.requestAnimationFrame || // the standard
-    window.webkitRequestAnimationFrame || // chrome/safari
-    window.mozRequestAnimationFrame || // firefox
-    window.oRequestAnimationFrame || // opera
-    window.msRequestAnimationFrame || // ie
-    function(callback) { // default
-      window.setTimeout(callback, 16); // 60fps
-    };
+  var requestAnimationFrame = window.requestAnimationFrame || // the standard
+      window.webkitRequestAnimationFrame || // chrome/safari
+      window.mozRequestAnimationFrame || // firefox
+      window.oRequestAnimationFrame || // opera
+      window.msRequestAnimationFrame || // ie
+      function (callback) { // default
+        window.setTimeout(callback, 16); // 60fps
+      };
 
   /**
    * Creates a legal CSS string representation for the given HSLA color.

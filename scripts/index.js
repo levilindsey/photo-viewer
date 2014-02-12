@@ -2,10 +2,9 @@
  * This static module drives the PhotoViewer app.
  * @module index
  */
-(function() {
+(function () {
 
-  var params, util, log, animate, SVGProgressCircle, CSSProgressCircle, PhotoItem, PhotoGroup,
-    photoMetadata, PhotoLightbox, DropdownPhotoGrid, PhotoGridCollection, photoGridCollection;
+  var params, util, log, animate, SVGProgressCircle, CSSProgressCircle, PhotoItem, PhotoGroup, photoMetadata, PhotoLightbox, DropdownPhotoGrid, PhotoGridCollection, photoGridCollection;
 
   // ------------------------------------------------------------------------------------------- //
   // Private static functions
@@ -80,10 +79,10 @@
    */
   function cacheSpriteSheet() {
     var image = new Image();
-    util.listen(image, 'load', function() {
+    util.listen(image, 'load', function () {
       log.i('cacheSpriteSheet', 'success');
     });
-    util.listen(image, 'error', function() {
+    util.listen(image, 'error', function () {
       log.e('cacheSpriteSheet', 'error');
     });
     image.src = params.SPRITES.SRC;
@@ -139,8 +138,8 @@
         }
       } else {
         log.w('openPhotoForQueryString',
-            'Invalid query string photo group parameter: queryString=' + queryString +
-                ', group=' + group);
+            'Invalid query string photo group parameter: queryString=' + queryString + ', group=' +
+                groupName);
       }
     }
   }

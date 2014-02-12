@@ -2,7 +2,7 @@
  * This module defines a constructor for PhotoItem objects.
  * @module photoItem
  */
-(function() {
+(function () {
   // ------------------------------------------------------------------------------------------- //
   // Private static variables
 
@@ -31,7 +31,7 @@
       }
       onSuccess(photo);
     });
-    util.listen(image, 'error', function() {
+    util.listen(image, 'error', function () {
       onError(photo);
     });
     if (targetSize !== 'gridThumbnail') {
@@ -64,7 +64,7 @@
    */
   function addTapEventListener(targetSize, tapHandler) {
     var photo = this;
-    util.addTapEventListener(photo[targetSize].image, function(event) {
+    util.addTapEventListener(photo[targetSize].image, function (event) {
       tapHandler(event, photo);
     }, false);
   }
@@ -113,8 +113,8 @@
    * @param {Number} thumbnailWidth The width of the thumbnail version of the image.
    * @param {Number} thumbnailHeight The height of the thumbnail version of the image.
    */
-  function PhotoItem(index, fullSource, fullWidth, fullHeight, smallSource, smallWidth,
-                     smallHeight, thumbnailSource, thumbnailWidth, thumbnailHeight) {
+  function PhotoItem(index, fullSource, fullWidth, fullHeight, smallSource, smallWidth, smallHeight,
+                     thumbnailSource, thumbnailWidth, thumbnailHeight) {
     this.index = index;
     this.full = {
       image: null,

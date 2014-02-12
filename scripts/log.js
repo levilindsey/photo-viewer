@@ -3,7 +3,7 @@
  * application for descriptive logging.
  * @module log
  */
-(function() {
+(function () {
   // ------------------------------------------------------------------------------------------- //
   // Private static variables
 
@@ -21,10 +21,9 @@
    * @param {string} [message] The message for this log entry.
    */
   function write(severity, methodName, message) {
-    message = '[' + severity + ']; ' +
-      this.moduleName + '.' + methodName + '; ' +
-      (message || '--') + '; ' +
-      util.millisToTimeString(getCurrentRunTime());
+    message =
+        '[' + severity + ']; ' + this.moduleName + '.' + methodName + '; ' + (message || '--') +
+            '; ' + util.millisToTimeString(getCurrentRunTime());
 
     // Record each entry in a queue of fixed-size
     recentEntries.push(message);

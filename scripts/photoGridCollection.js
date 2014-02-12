@@ -2,7 +2,7 @@
  * This module defines a constructor for PhotoGridCollection objects.
  * @module photoGridCollection
  */
-(function() {
+(function () {
   // ------------------------------------------------------------------------------------------- //
   // Private static variables
 
@@ -27,9 +27,10 @@
 
     createBackgroundPulse.call(gridCollection);
 
-    gridCollection.progressCircle = new SVGProgressCircle(gridCollection.elements.svg,
-        params.GRID.PROGRESS_CIRCLE_OFFSET, params.GRID.PROGRESS_CIRCLE_OFFSET,
-        params.GRID.PROGRESS_CIRCLE_DIAMETER, params.GRID.PROGRESS_CIRCLE_DOT_RADIUS);
+    gridCollection.progressCircle =
+        new SVGProgressCircle(gridCollection.elements.svg, params.GRID.PROGRESS_CIRCLE_OFFSET,
+            params.GRID.PROGRESS_CIRCLE_OFFSET, params.GRID.PROGRESS_CIRCLE_DIAMETER,
+            params.GRID.PROGRESS_CIRCLE_DOT_RADIUS);
 
     resize.call(gridCollection);
 
@@ -97,14 +98,17 @@
             (params.GRID.THUMBNAIL_WIDTH + params.GRID.THUMBNAIL_MARGIN));
 
     // Determine how many columns of thumbnails to use
-    columnCount = columnCapacity >= params.GRID.MAX_COLUMN_COUNT ?
-        params.GRID.MAX_COLUMN_COUNT : columnCapacity;
+    columnCount =
+        columnCapacity >= params.GRID.MAX_COLUMN_COUNT ? params.GRID.MAX_COLUMN_COUNT :
+            columnCapacity;
 
     // Calculate the grid collection's expanded and shrunken dimensions
-    gridCollection.expandedWidth = columnCount * params.GRID.THUMBNAIL_WIDTH +
-        (columnCount + 1) * params.GRID.THUMBNAIL_MARGIN;
-    gridCollectionHeight = gridCollection.grids.length * params.GRID.BANNER_HEIGHT +
-        (gridCollection.grids.length - 1) * params.GRID.MARGIN;
+    gridCollection.expandedWidth =
+        columnCount * params.GRID.THUMBNAIL_WIDTH +
+            (columnCount + 1) * params.GRID.THUMBNAIL_MARGIN;
+    gridCollectionHeight =
+        gridCollection.grids.length * params.GRID.BANNER_HEIGHT +
+            (gridCollection.grids.length - 1) * params.GRID.MARGIN;
     gridCollection.shrunkenTop = (viewportSize.h - gridCollectionHeight) / 2;
 
     // Determine whether the grid is in its expanded state or its shrunken state
@@ -168,15 +172,16 @@
     startTime = Date.now();
 
     // Animate both the radius and the opacity together
-    gridCollection.backgroundPulseRadiusAnimation = animate.startNumericAttributeAnimation(
-        gridCollection.elements.pulseCircle, 'r', params.GRID.BACKGROUND_PULSE_INNER_RADIUS,
-        params.GRID.BACKGROUND_PULSE_OUTER_RADIUS, startTime,
-        params.GRID.BACKGROUND_PULSE_PERIOD / 2, null, null, 'easeInQuad', onHalfPulseEnd,
-        gridCollection);
-    gridCollection.backgroundPulseOpacityAnimation = animate.startNumericAttributeAnimation(
-        gridCollection.elements.pulseCircle, 'opacity', params.GRID.BACKGROUND_PULSE_INNER_OPACITY,
-        params.GRID.BACKGROUND_PULSE_OUTER_OPACITY, startTime,
-        params.GRID.BACKGROUND_PULSE_PERIOD / 2, null, null, 'easeInQuad', null, gridCollection);
+    gridCollection.backgroundPulseRadiusAnimation =
+        animate.startNumericAttributeAnimation(gridCollection.elements.pulseCircle, 'r',
+            params.GRID.BACKGROUND_PULSE_INNER_RADIUS, params.GRID.BACKGROUND_PULSE_OUTER_RADIUS,
+            startTime, params.GRID.BACKGROUND_PULSE_PERIOD / 2, null, null, 'easeInQuad',
+            onHalfPulseEnd, gridCollection);
+    gridCollection.backgroundPulseOpacityAnimation =
+        animate.startNumericAttributeAnimation(gridCollection.elements.pulseCircle, 'opacity',
+            params.GRID.BACKGROUND_PULSE_INNER_OPACITY, params.GRID.BACKGROUND_PULSE_OUTER_OPACITY,
+            startTime, params.GRID.BACKGROUND_PULSE_PERIOD / 2, null, null, 'easeInQuad', null,
+            gridCollection);
 
     // Repeat the same pair of animations, but in reverse
     function onHalfPulseEnd(animation, gridCollection) {
@@ -198,12 +203,14 @@
       startTime = animation.startTime + animation.duration;
 
       // Animate both the radius and the opacity together
-      gridCollection.backgroundPulseRadiusAnimation = animate.startNumericAttributeAnimation(
-          animation.element, 'r', startRadius, endRadius, startTime, animation.duration, null,
-          null, animation.easingFunction, onHalfPulseEnd, gridCollection);
-      gridCollection.backgroundPulseOpacityAnimation = animate.startNumericAttributeAnimation(
-          animation.element, 'opacity', startOpacity, endOpacity, startTime, animation.duration,
-          null, null, animation.easingFunction, null, gridCollection);
+      gridCollection.backgroundPulseRadiusAnimation =
+          animate.startNumericAttributeAnimation(animation.element, 'r', startRadius, endRadius,
+              startTime, animation.duration, null, null, animation.easingFunction, onHalfPulseEnd,
+              gridCollection);
+      gridCollection.backgroundPulseOpacityAnimation =
+          animate.startNumericAttributeAnimation(animation.element, 'opacity', startOpacity,
+              endOpacity, startTime, animation.duration, null, null, animation.easingFunction, null,
+              gridCollection);
     }
   }
 
@@ -211,14 +218,32 @@
   function stopBackgroundPulseAnimation() {
     var gridCollection = this;
 
-    animate.stopAnimation(gridCollection.backgroundPulseRadiusAnimation);
-    animate.stopAnimation(gridCollection.backgroundPulseOpacityAnimation);
+    if (gridCollection.backgroundPulseRadiusAnimation) {
+      animate.stopAnimation(gridCollection.backgroundPulseRadiusAnimation);
+      animate.stopAnimation(gridCollection.backgroundPulseOpacityAnimation);
 
-    // Reset the pulse background gradient to its default state
-    gridCollection.elements.pulseCircle.setAttribute('r',
-        '' + params.GRID.BACKGROUND_PULSE_INNER_RADIUS);
-    gridCollection.elements.pulseCircle.setAttribute('opacity',
-        '' + params.GRID.BACKGROUND_PULSE_INNER_OPACITY);
+      // Reset the pulse background gradient to its default state
+      gridCollection.elements.pulseCircle.setAttribute('r',
+          '' + params.GRID.BACKGROUND_PULSE_INNER_RADIUS);
+      gridCollection.elements.pulseCircle.setAttribute('opacity',
+          '' + params.GRID.BACKGROUND_PULSE_INNER_OPACITY);
+
+      gridCollection.backgroundPulseRadiusAnimation = null;
+      gridCollection.backgroundPulseOpacityAnimation = null;
+    }
+  }
+
+  // TODO: jsdoc
+  function stopExpandOrShrinkAnimation() {
+    var gridCollection = this;
+
+    if (gridCollection.topAnimation) {
+      animate.stopAnimation(gridCollection.topAnimation);
+      animate.stopAnimation(gridCollection.widthAnimation);
+
+      gridCollection.topAnimation = null;
+      gridCollection.widthAnimation = null;
+    }
   }
 
   // TODO: jsdoc
@@ -234,16 +259,18 @@
 
     setTapThumbnailPromptsDisplay.call(gridCollection, false);
 
-    // TODO: cancel any prior animations
+    stopExpandOrShrinkAnimation.call(gridCollection);
 
-    animate.startNumericStyleAnimation(gridCollection.elements.container, 'top', pageOffset.y,
-        gridCollection.shrunkenTop, null, params.GRID.ALL_GRIDS_SHRINK_DURATION, null, 'px',
-        'easeInOutQuad', function() {
-          onShrinkEnd.call(gridCollection);
-        }, null);
-    animate.startNumericStyleAnimation(gridCollection.elements.container, 'width',
-        gridCollection.elements.container.clientWidth, params.GRID.SHRUNKEN_GRIDS_WIDTH, null,
-        params.GRID.ALL_GRIDS_SHRINK_DURATION, null, 'px', 'easeInOutQuad', null, null);
+    gridCollection.topAnimation =
+        animate.startNumericStyleAnimation(gridCollection.elements.container, 'top', pageOffset.y,
+            gridCollection.shrunkenTop, null, params.GRID.ALL_GRIDS_SHRINK_DURATION, null, 'px',
+            'easeInOutQuad', function () {
+              onShrinkEnd.call(gridCollection);
+            }, null);
+    gridCollection.widthAnimation =
+        animate.startNumericStyleAnimation(gridCollection.elements.container, 'width',
+            gridCollection.elements.container.clientWidth, params.GRID.SHRUNKEN_GRIDS_WIDTH, null,
+            params.GRID.ALL_GRIDS_SHRINK_DURATION, null, 'px', 'easeInOutQuad', null, null);
   }
 
   // TODO: jsdoc
@@ -301,18 +328,15 @@
 
     pageOffset = util.getPageOffset(gridCollection.elements.container);
 
-    // TODO: cancel any prior animations
-
+    stopExpandOrShrinkAnimation.call(gridCollection);
     stopBackgroundPulseAnimation.call(gridCollection);
 
-    animate.startNumericStyleAnimation(gridCollection.elements.container, 'top', pageOffset.y,
+    gridCollection.topAnimation = animate.startNumericStyleAnimation(gridCollection.elements.container, 'top', pageOffset.y,
         params.GRID.MARGIN, null, params.GRID.ALL_GRIDS_SHRINK_DURATION, null, 'px',
-        'easeInOutQuad', function(animation, gridToOpen) {
-          var t = Date.now();
-          var b = 1;
+        'easeInOutQuad', function (animation, gridToOpen) {
           onExpandEnd.call(gridCollection, gridToOpen);
         }, gridToOpen);
-    animate.startNumericStyleAnimation(gridCollection.elements.container, 'width',
+    gridCollection.widthAnimation = animate.startNumericStyleAnimation(gridCollection.elements.container, 'width',
         gridCollection.elements.container.clientWidth, gridCollection.expandedWidth, null,
         params.GRID.ALL_GRIDS_EXPAND_DURATION, null, 'px', 'easeInOutQuad', null, null);
   }
@@ -322,7 +346,7 @@
     var gridCollection = this;
     log.i('onPhotoGridOpen', 'photoGrid.title=' + grid.photoGroup.title);
 
-    if (gridCollection.currentOpenGrid) {
+    if (gridCollection.currentOpenGrid && grid !== gridCollection.currentOpenGrid) {
       gridCollection.currentOpenGrid.close();
     }
     recordCurrentOpenGrid.call(gridCollection, grid);
@@ -357,16 +381,15 @@
     var gridCollection = this;
 
     // Create the grids
-    photoGroups.forEach(function(photoGroup) {
-      gridCollection.grids.push(
-          new DropdownPhotoGrid(photoGroup, gridCollection));
+    photoGroups.forEach(function (photoGroup) {
+      gridCollection.grids.push(new DropdownPhotoGrid(photoGroup, gridCollection));
     });
     resize.call(gridCollection);
 
     // Re-position the grid collection when the window re-sizes
-    util.listen(window, 'resize', function() {
+    util.listen(window, 'resize', function () {
       resize.call(gridCollection);
-      gridCollection.grids.forEach(function(grid) {
+      gridCollection.grids.forEach(function (grid) {
         grid.resize();
       });
     });
@@ -457,7 +480,7 @@
   function PhotoGridCollection(parent) {
     var gridCollection = this;
 
-    gridCollection.photoLightbox = new PhotoLightbox(null, null, function() {
+    gridCollection.photoLightbox = new PhotoLightbox(null, null, function () {
       onLightboxCloseStart.call(gridCollection);
     });
     gridCollection.parent = parent;
@@ -471,6 +494,8 @@
     gridCollection.shrinking = false;
     gridCollection.backgroundPulseRadiusAnimation = null;
     gridCollection.backgroundPulseOpacityAnimation = null;
+    gridCollection.topAnimation = null;
+    gridCollection.widthAnimation = null;
     gridCollection.expand = expand;
     gridCollection.onGridOpenStart = onGridOpenStart;
     gridCollection.onGridCloseEnd = onGridCloseEnd;

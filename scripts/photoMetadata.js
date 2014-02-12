@@ -2,7 +2,7 @@
  * This module defines a static functions and state for handling photo metadata.
  * @module photoMetadata
  */
-(function() {
+(function () {
   // ------------------------------------------------------------------------------------------- //
   // Private static variables
 
@@ -102,7 +102,7 @@
    * @param {Function} onError This function is called if there was an error parsing the JSON data.
    */
   function downloadAndParsePhotoMetadata(url, onSuccess, onError) {
-    util.sendRequest(url, function(responseText) {
+    util.sendRequest(url, function (responseText) {
       log.i('downloadAndParsePhotoMetadata', 'Metadata successfully downloaded');
       parsePhotoMetadata(responseText, onSuccess, onError);
     }, onError);
