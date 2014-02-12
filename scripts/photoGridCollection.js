@@ -11,7 +11,11 @@
   // ------------------------------------------------------------------------------------------- //
   // Private dynamic functions
 
-  // TODO: jsdoc
+  /**
+   * Creates the DOM elements that form this grid collection, adds them to the DOM, and adds them
+   * to the elements property of this grid collection.
+   * @function PhotoGridCollection~createElements
+   */
   function createElements() {
     var gridCollection, container;
 
@@ -37,7 +41,10 @@
     gridCollection.progressCircle.open();
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoGridCollection~createBackgroundPulse
+   */
   function createBackgroundPulse() {
     var gridCollection, svg, defs, gradient, stop1, stop2, pulseCircle;
 
@@ -85,7 +92,10 @@
     gridCollection.elements.pulseCircle = pulseCircle;
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoGridCollection~resize
+   */
   function resize() {
     var gridCollection, viewportSize, columnCapacity, columnCount, gridCollectionHeight;
 
@@ -142,7 +152,11 @@
         (viewportSize.w - params.GRID.SVG_SIDE_LENGTH) / 2 + 'px';
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoGridCollection~areAllGridsFullyClosed
+   * @returns {Boolean}
+   */
   function areAllGridsFullyClosed() {
     var gridCollection, i, count;
     gridCollection = this;
@@ -154,7 +168,11 @@
     return true;
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoGridCollection~setTapThumbnailPromptsDisplay
+   * @param {Boolean} areDisplayed
+   */
   function setTapThumbnailPromptsDisplay(areDisplayed) {
     var gridCollection, display, i, count;
     gridCollection = this;
@@ -164,7 +182,10 @@
     }
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoGridCollection~startBackgroundPulseAnimation
+   */
   function startBackgroundPulseAnimation() {
     var gridCollection, startTime;
 
@@ -214,7 +235,10 @@
     }
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoGridCollection~stopBackgroundPulseAnimation
+   */
   function stopBackgroundPulseAnimation() {
     var gridCollection = this;
 
@@ -233,7 +257,10 @@
     }
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoGridCollection~stopExpandOrShrinkAnimation
+   */
   function stopExpandOrShrinkAnimation() {
     var gridCollection = this;
 
@@ -246,7 +273,10 @@
     }
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoGridCollection~shrink
+   */
   function shrink() {
     var gridCollection, pageOffset;
 
@@ -273,7 +303,10 @@
             params.GRID.ALL_GRIDS_SHRINK_DURATION, null, 'px', 'easeInOutQuad', null, null);
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoGridCollection~onShrinkEnd
+   */
   function onShrinkEnd() {
     var gridCollection = this;
 
@@ -286,7 +319,11 @@
     }
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoGridCollection~onExpandEnd
+   * @param {DropdownPhotoGrid} gridToOpen
+   */
   function onExpandEnd(gridToOpen) {
     var gridCollection = this;
 
@@ -298,7 +335,11 @@
     }
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoGridCollection~recordCurrentOpenGrid
+   * @param {DropdownPhotoGrid} currentOpenGrid
+   */
   function recordCurrentOpenGrid(currentOpenGrid) {
     var gridCollection, photoGroup;
 
@@ -317,7 +358,11 @@
   // ------------------------------------------------------------------------------------------- //
   // Public dynamic functions
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoGridCollection#expand
+   * @param {DropdownPhotoGrid} gridToOpen
+   */
   function expand(gridToOpen) {
     var gridCollection, pageOffset;
 
@@ -331,17 +376,23 @@
     stopExpandOrShrinkAnimation.call(gridCollection);
     stopBackgroundPulseAnimation.call(gridCollection);
 
-    gridCollection.topAnimation = animate.startNumericStyleAnimation(gridCollection.elements.container, 'top', pageOffset.y,
-        params.GRID.MARGIN, null, params.GRID.ALL_GRIDS_SHRINK_DURATION, null, 'px',
-        'easeInOutQuad', function (animation, gridToOpen) {
-          onExpandEnd.call(gridCollection, gridToOpen);
-        }, gridToOpen);
-    gridCollection.widthAnimation = animate.startNumericStyleAnimation(gridCollection.elements.container, 'width',
-        gridCollection.elements.container.clientWidth, gridCollection.expandedWidth, null,
-        params.GRID.ALL_GRIDS_EXPAND_DURATION, null, 'px', 'easeInOutQuad', null, null);
+    gridCollection.topAnimation =
+        animate.startNumericStyleAnimation(gridCollection.elements.container, 'top', pageOffset.y,
+            params.GRID.MARGIN, null, params.GRID.ALL_GRIDS_SHRINK_DURATION, null, 'px',
+            'easeInOutQuad', function (animation, gridToOpen) {
+              onExpandEnd.call(gridCollection, gridToOpen);
+            }, gridToOpen);
+    gridCollection.widthAnimation =
+        animate.startNumericStyleAnimation(gridCollection.elements.container, 'width',
+            gridCollection.elements.container.clientWidth, gridCollection.expandedWidth, null,
+            params.GRID.ALL_GRIDS_EXPAND_DURATION, null, 'px', 'easeInOutQuad', null, null);
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoGridCollection#onGridOpenStart
+   * @param {DropdownPhotoGrid} grid
+   */
   function onGridOpenStart(grid) {
     var gridCollection = this;
     log.i('onPhotoGridOpen', 'photoGrid.title=' + grid.photoGroup.title);
@@ -352,7 +403,11 @@
     recordCurrentOpenGrid.call(gridCollection, grid);
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoGridCollection#onGridCloseEnd
+   * @param {DropdownPhotoGrid} grid
+   */
   function onGridCloseEnd(grid) {
     var gridCollection = this;
 
@@ -365,7 +420,10 @@
     }
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoGridCollection#onLightboxCloseStart
+   */
   function onLightboxCloseStart() {
     var gridCollection = this;
     recordCurrentOpenGrid.call(gridCollection, gridCollection.currentOpenGrid);
@@ -458,7 +516,16 @@
     log.d('initStaticFields', 'Module initialized');
   }
 
-  // TODO: jsdoc
+  // ------------------------------------------------------------------------------------------- //
+  // Private static functions
+
+  /**
+   *
+   * @function photoGridCollection~getGridByTitle
+   * @param {Array.<DropdownPhotoGrid>} grids
+   * @param {String} title
+   * @returns {DropdownPhotoGrid}
+   */
   function getGridByTitle(grids, title) {
     var i, count;
     for (i = 0, count = grids.length; i < count; i++) {

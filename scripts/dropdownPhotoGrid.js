@@ -11,10 +11,13 @@
   // ------------------------------------------------------------------------------------------- //
   // Private dynamic functions
 
-  // TODO: jsdoc
+  /**
+   * Creates the DOM elements that form this photo grid, adds them to the DOM, and adds them to the
+   * elements property of this photo grid.
+   * @function DropdownPhotoGrid~createElements
+   */
   function createElements() {
-    var photoGrid, container, banner, bannerIcon, bannerTitleContainer, bannerTitleText,
-        tapThumbnailPromptContainer, tapThumbnailPromptText, grid, photoGridInnerContainer, width;
+    var photoGrid, container, banner, bannerIcon, bannerTitleContainer, bannerTitleText, tapThumbnailPromptContainer, tapThumbnailPromptText, grid, photoGridInnerContainer, width;
 
     photoGrid = this;
 
@@ -68,7 +71,10 @@
     resize.call(photoGrid);
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function DropdownPhotoGrid~createThumbnails
+   */
   function createThumbnails() {
     var photoGrid, gridCell;
 
@@ -99,7 +105,10 @@
         });
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function DropdownPhotoGrid~calculateThumbnailRowsAndColumns
+   */
   function calculateThumbnailRowsAndColumns() {
     var photoGrid, photos, i, count, columnIndex, rowIndex;
 
@@ -114,26 +123,46 @@
     }
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function DropdownPhotoGrid~onPhotoGroupSingleLoadSuccess
+   * @param {PhotoGroup} photoGroup
+   * @param {PhotoItem} photo
+   */
   function onPhotoGroupSingleLoadSuccess(photoGroup, photo) {
     //log.v('onPhotoGroupSingleLoadSuccess');
     // TODO: cancel the progress circle (which will need to have been absolutely positioned at this image)
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function DropdownPhotoGrid~onPhotoGroupTotalLoadSuccess
+   * @param {PhotoGroup} photoGroup
+   */
   function onPhotoGroupTotalLoadSuccess(photoGroup) {
     log.i('onPhotoGroupTotalLoadSuccess', 'All photos loaded for group ' + photoGroup.title);
     // TODO:
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function DropdownPhotoGrid~onPhotoGroupTotalLoadError
+   * @param {PhotoGroup} photoGroup
+   * @param {Array.<PhotoItem>} failedPhotos
+   */
   function onPhotoGroupTotalLoadError(photoGroup, failedPhotos) {
     log.e('onPhotoGroupTotalLoadError',
         'Unable to load ' + failedPhotos.length + ' photos for group ' + photoGroup.title);
     // TODO:
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function DropdownPhotoGrid~onPhotoItemTap
+   * @param {Object} event
+   * @param {PhotoGroup} photoGroup
+   * @param {Number} index
+   */
   function onPhotoItemTap(event, photoGroup, index) {
     log.i('onPhotoItemTap', 'PhotoItem=' + photoGroup.photos[index].gridThumbnail.source);
     var photoGrid = this;
@@ -141,7 +170,10 @@
     util.stopPropogation(event);
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function DropdownPhotoGrid~onBannerTap
+   */
   function onBannerTap() {
     var photoGrid = this;
     log.i('onBannerTap', 'isOpen=' + photoGrid.isOpen);
@@ -152,7 +184,10 @@
     }
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function DropdownPhotoGrid~onOpeningFinished
+   */
   function onOpeningFinished() {
     var photoGrid;
 
@@ -177,7 +212,10 @@
     }
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function DropdownPhotoGrid~onClosingFinished
+   */
   function onClosingFinished() {
     var photoGrid;
 
@@ -195,7 +233,10 @@
   // ------------------------------------------------------------------------------------------- //
   // Public dynamic functions
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function DropdownPhotoGrid#open
+   */
   function open() {
     var photoGrid, duration;
 
@@ -230,14 +271,18 @@
     // - for the bouncing thing:
     //   - apply the transition properties manually in javascript
     //     - because I will want smaller height changes to take less time
-    photoGrid.gridHeightAnimation = animate.startNumericStyleAnimation(photoGrid.elements.grid, 'height',
-        photoGrid.elements.grid.clientHeight, photoGrid.gridHeight, null, duration, null, 'px',
-        'easeInOutQuad', function (animation, photoGrid) {
-          onOpeningFinished.call(photoGrid);
-        }, photoGrid);
+    photoGrid.gridHeightAnimation =
+        animate.startNumericStyleAnimation(photoGrid.elements.grid, 'height',
+            photoGrid.elements.grid.clientHeight, photoGrid.gridHeight, null, duration, null, 'px',
+            'easeInOutQuad', function (animation, photoGrid) {
+              onOpeningFinished.call(photoGrid);
+            }, photoGrid);
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function DropdownPhotoGrid#close
+   */
   function close() {
     var photoGrid, duration;
 
@@ -253,16 +298,20 @@
     animate.stopAnimation(photoGrid.gridHeightAnimation);
 
     // TODO: add the bounce
-    photoGrid.gridHeightAnimation = animate.startNumericStyleAnimation(photoGrid.elements.grid, 'height',
-        photoGrid.elements.grid.clientHeight, 0, null, duration, null, 'px', 'easeInOutQuad',
-        function (animation, photoGrid) {
-          onClosingFinished.call(photoGrid);
-        }, photoGrid);
+    photoGrid.gridHeightAnimation =
+        animate.startNumericStyleAnimation(photoGrid.elements.grid, 'height',
+            photoGrid.elements.grid.clientHeight, 0, null, duration, null, 'px', 'easeInOutQuad',
+            function (animation, photoGrid) {
+              onClosingFinished.call(photoGrid);
+            }, photoGrid);
 
     setElementVisibility(photoGrid.elements.tapThumbnailPromptContainer, false, false, null);
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function DropdownPhotoGrid#resize
+   */
   function resize() {
     var photoGrid, columnCapacity, viewportSize;
 
@@ -346,7 +395,12 @@
     }
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function dropdownPhotoGrid~switchOpenCloseIconImageClass
+   * @param {HTMLElement} element
+   * @param {Boolean} open
+   */
   function switchOpenCloseIconImageClass(element, open) {
     var addClass, removeClass;
     if (open) {
@@ -384,7 +438,7 @@
    * @param {PhotoGroup} photoGroup The collection of photo data for this grid.
    * @param {PhotoGridCollection} gridCollection The parent grid collection that this grid is a
    * part of.
-   */// TODO: refactor these function parameters to instead pass in the collection object
+   */
   function DropdownPhotoGrid(photoGroup, gridCollection) {
     var photoGrid = this;
 

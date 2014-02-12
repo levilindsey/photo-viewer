@@ -156,7 +156,11 @@
     util.stopPropogation(event);
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoLightbox~onCloseButtonTap
+   * @param {Object} event
+   */
   function onCloseButtonTap(event) {
     log.i('onCloseButtonTap');
     var photoLightbox = this;
@@ -164,7 +168,11 @@
     util.stopPropogation(event);
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoLightbox~onFullscreenButtonTap
+   * @param {Object} event
+   */
   function onFullscreenButtonTap(event) {
     log.i('onFullscreenButtonTap');
     var photoLightbox = this;
@@ -176,7 +184,10 @@
     util.stopPropogation(event);
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoLightbox~onOverlayButtonHover
+   */
   function onOverlayButtonHover() {
     //log.v('onOverlayButtonHover');
     var photoLightbox = this;
@@ -184,7 +195,10 @@
     photoLightbox.mouseIsOverOverlayButton = true;
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoLightbox~onOverlayButtonHoverEnd
+   */
   function onOverlayButtonHoverEnd() {
     //log.v('onOverlayButtonHoverEnd');
     var photoLightbox = this;
@@ -192,7 +206,10 @@
     photoLightbox.mouseIsOverOverlayButton = false;
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoLightbox~onLightboxPointerMove
+   */
   function onLightboxPointerMove() {
     var photoLightbox = this;
 
@@ -213,7 +230,10 @@
     }, params.LIGHTBOX.POINTER_MOVE_BUTTON_FADE_DELAY);
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoLightbox~onLightboxPointerMoveTimeout
+   */
   function onLightboxPointerMoveTimeout() {
     var photoLightbox = this;
     log.d('onLightboxPointerMoveTimeout',
@@ -227,7 +247,11 @@
     }
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoLightbox~setPhoto
+   * @param {Number} index
+   */
   function setPhoto(index) {
     var photoLightbox, photoItem, mainImageIsNotYetCached, mainTargetSize, smallTargetSize;
 
@@ -301,7 +325,6 @@
     setElementVisibility(photoLightbox.elements.oldSmallImage, false, false);
     setElementVisibility(photoLightbox.elements.oldMainImage, false, false);
 
-    // TODO: jsdoc
     function loadPhotoImage(photoLightbox, isMainImage, targetSize, photoItem) {
       log.d('setPhoto.loadPhotoImage',
           'Sending image load request: ' + photoItem[targetSize].source);
@@ -313,7 +336,13 @@
     }
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoLightbox~onPhotoImageLoadSuccess
+   * @param {Boolean} isMainImage
+   * @param {'full'|'small'|'thumbnail'|'gridThumbnail'} targetSize Which image version just loaded.
+   * @param {PhotoItem} photoItem
+   */
   function onPhotoImageLoadSuccess(isMainImage, targetSize, photoItem) {
     log.i('onPhotoImageLoadSuccess',
         targetSize === 'full' ? photoItem.full.source : photoItem.small.source);
@@ -434,7 +463,6 @@
       }
     }
 
-    // TODO: jsdoc
     function cacheNeighborImage(photoLightbox, targetSize, photoItem) {
       log.v('onPhotoImageLoadSuccess.cacheNeighborImage',
           'Sending image cache request: ' + photoItem[targetSize].source);
@@ -446,7 +474,14 @@
     }
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoLightbox~onPhotoImageLoadError
+   * @param {Boolean} isMainImage
+   * @param {'full'|'small'|'thumbnail'|'gridThumbnail'} targetSize Which image version the error
+   * happened with.
+   * @param {PhotoItem} photoItem
+   */
   function onPhotoImageLoadError(isMainImage, targetSize, photoItem) {
     log.e('onPhotoImageLoadError',
         targetSize === 'full' ? photoItem.full.source : photoItem.small.source);
@@ -457,19 +492,35 @@
     // TODO: display an error image and/or retry loading the image
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoLightbox~onNeighborPhotoCacheSuccess
+   * @param {'full'|'small'|'thumbnail'|'gridThumbnail'} targetSize Which image version was cached
+   * successfully.
+   * @param {PhotoItem} photoItem
+   */
   function onNeighborPhotoCacheSuccess(targetSize, photoItem) {
     log.v('onNeighborPhotoCacheSuccess',
         targetSize === 'full' ? photoItem.full.source : photoItem.small.source);
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoLightbox~onNeighborPhotoCacheError
+   * @param {'full'|'small'|'thumbnail'|'gridThumbnail'} targetSize Which image version the error
+   * happened with.
+   * @param {PhotoItem} photoItem
+   */
   function onNeighborPhotoCacheError(targetSize, photoItem) {
     log.e('onNeighborPhotoCacheError',
         targetSize === 'full' ? photoItem.full.source : photoItem.small.source);
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoLightbox~onNewImageTransitionEnd
+   * @param {Object} event
+   */
   function onNewImageTransitionEnd(event) {
     log.d('onNewImageTransitionEnd', 'property=' + event.propertyName);
     var photoLightbox;
@@ -486,7 +537,11 @@
     util.toggleClass(photoLightbox.elements.oldMainImage, 'visible', false);
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoLightbox~onLightboxTransitionEnd
+   * @param {Object} event
+   */
   function onLightboxTransitionEnd(event) {
     var photoLightbox = this;
 
@@ -526,7 +581,10 @@
     }
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoLightbox~expandToFullScreen
+   */
   function expandToFullScreen() {
     var photoLightbox = this;
     photoLightbox.inFullscreenMode = true;
@@ -534,7 +592,10 @@
     util.requestFullscreen(photoLightbox.elements.lightbox);
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoLightbox~reduceFromFullScreen
+   */
   function reduceFromFullScreen() {
     var photoLightbox = this;
     photoLightbox.inFullscreenMode = false;
@@ -542,7 +603,11 @@
     util.cancelFullScreen();
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoLightbox~onFullScreenChange
+   * @param {Boolean} expandedToFullScreen
+   */
   function onFullScreenChange(expandedToFullScreen) {
     log.i('onFullScreenChange', 'expandedToFullScreen=' + expandedToFullScreen);
     var photoLightbox = this;
@@ -552,7 +617,10 @@
     }
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoLightbox~adjustForFullScreenChange
+   */
   function adjustForFullScreenChange() {
     var photoLightbox = this;
     if (photoLightbox.inFullscreenMode) {
@@ -568,7 +636,11 @@
     setPhoto.call(photoLightbox, photoLightbox.currentIndex);
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoLightbox~setOverlayButtonsVisibility
+   * @param {Boolean} visible
+   */
   function setOverlayButtonsVisibility(visible) {
     var photoLightbox = this;
     setElementVisibility(photoLightbox.elements.closeButton, visible, false);
@@ -578,7 +650,10 @@
     setElementVisibility(photoLightbox.elements.nextButton, visible, false);
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoLightbox~resize
+   */
   function resize() {
     var photoLightbox, lightboxElement, boundingBox, viewportSize;
 
@@ -611,7 +686,11 @@
         (parseInt(lightboxElement.style.width) - params.LIGHTBOX.SVG_SIDE_LENGTH) / 2 + 'px';
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoLightbox~setLightboxButtonsDisplay
+   * @param {Boolean} areDisplayed
+   */
   function setLightboxButtonsDisplay(areDisplayed) {
     var photoLightbox, display;
     photoLightbox = this;
@@ -634,7 +713,11 @@
     }
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoLightbox~recordCurrentPhoto
+   * @param {Number} index
+   */
   function recordCurrentPhoto(index) {
     var photoLightbox, photoGroup;
 
@@ -648,7 +731,12 @@
   // ------------------------------------------------------------------------------------------- //
   // Public dynamic functions
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoLightbox#open
+   * @param {PhotoGroup} photoGroup
+   * @param {Number} index
+   */
   function open(photoGroup, index) {
     var photoLightbox, photoItem, body, pageOffset, bodyTapEventListener;
 
@@ -695,7 +783,10 @@
     setPhoto.call(photoLightbox, photoLightbox.currentIndex);
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function PhotoLightbox#close
+   */
   function close() {
     var photoLightbox, photoItem, body, pageOffset;
 
@@ -798,18 +889,32 @@
     util.toggleClass(element, oldClass, !switchToNew);
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function photoLightbox~getPreviousPhotoItemIndex
+   * @param {PhotoLightbox} photoLightbox
+   * @returns {Number}
+   */
   function getPreviousPhotoItemIndex(photoLightbox) {
     return (photoLightbox.currentIndex - 1 + photoLightbox.photoGroup.photos.length) %
         photoLightbox.photoGroup.photos.length;
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function photoLightbox~getNextPhotoItemIndex
+   * @param {PhotoLightbox} photoLightbox
+   * @returns {Number}
+   */
   function getNextPhotoItemIndex(photoLightbox) {
     return (photoLightbox.currentIndex + 1) % photoLightbox.photoGroup.photos.length;
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function photoLightbox~getCenteredBoundingBox
+   * @returns {{x: number, y: number, w: number, h: number}}
+   */
   function getCenteredBoundingBox() {
     var w, h, viewportSize;
     w = params.LIGHTBOX.WIDTH;
@@ -823,7 +928,15 @@
     };
   }
 
-  // TODO: jsdoc
+  /**
+   *
+   * @function photoLightbox~resizeMainImage
+   * @param {HTMLElement} element
+   * @param {Number} smallWidth
+   * @param {Number} smallHeight
+   * @param {Boolean} isFullScreen
+   * @param {PhotoLightbox} photoLightbox
+   */
   function resizeMainImage(element, smallWidth, smallHeight, isFullScreen, photoLightbox) {
     var photoAspectRatio, parentAspectRatio, scaledWidth, scaledHeight, lightboxWidth, lightboxHeight;
 
