@@ -817,6 +817,141 @@
     return results === null ? null : decodeURIComponent(results[1].replace(/\+/g, ' '));
   }
 
+  /**
+   * Sets the CSS transition duration style of the given element.
+   * @function util.setTransitionDurationSeconds
+   * @param {HTMLElement} element The element.
+   * @param {Number} value The duration.
+   */
+  function setTransitionDurationSeconds(element, value) {
+    element.style.transitionDuration = value + 's';
+    element.style.WebkitTransitionDuration = value + 's';
+    element.style.MozTransitionDuration = value + 's';
+    element.style.msTransitionDuration = value + 's';
+    element.style.OTransitionDuration = value + 's';
+  }
+
+  /**
+   * Sets the CSS transition delay style of the given element.
+   * @function util.setTransitionDelaySeconds
+   * @param {HTMLElement} element The element.
+   * @param {Number} value The delay.
+   */
+  function setTransitionDelaySeconds(element, value) {
+    element.style.transitionDelay = value + 's';
+    element.style.WebkitTransitionDelay = value + 's';
+    element.style.MozTransitionDelay = value + 's';
+    element.style.msTransitionDelay = value + 's';
+    element.style.OTransitionDelay = value + 's';
+  }
+
+  /**
+   * Sets the CSS transition-timing-function style of the given element with the given cubic-
+   * bezier points.
+   * @function util.setTransitionCubicBezierTimingFunction
+   * @param {HTMLElement} element The element.
+   * @param {{p1x: Number, p1y: Number, p2x: Number, p2y: Number}} bezierPts The cubic-bezier
+   * points to use for this timing function.
+   */
+  function setTransitionCubicBezierTimingFunction(element, bezierPts) {
+    var value = 'cubic-bezier(' + bezierPts.p1x + ',' + bezierPts.p1y + ',' + bezierPts.p2x + ',' +
+        bezierPts.p2y + ')';
+    element.style.transitionTimingFunction = value;
+    element.style.WebkitTransitionTimingFunction = value;
+    element.style.MozTransitionTimingFunction = value;
+    element.style.msTransitionTimingFunction = value;
+    element.style.OTransitionTimingFunction = value;
+  }
+
+  /**
+   * Returns a pseudo-random number between the given lower and upper bounds and according to a
+   * uniform distribution.
+   * @function util.getRandom
+   * @param {Number} lowerBound The lower bound.
+   * @param {Number} upperBound The upper bound.
+   * @returns {Number} The random number.
+   */
+  function getRandom(lowerBound, upperBound) {
+    return Math.random() * (upperBound - lowerBound) + lowerBound;
+  }
+
+  /**
+   * Calculates an eased progress value.
+   * @function util.getEasedProgress
+   * @param {Number} deltaTime The elapsed time since the start.
+   * @param {Number} duration The duration.
+   * @param {Function} easingFunction The easing function to use.
+   * @returns {Number} The eased progress value.
+   */
+  function getEasedProgress(deltaTime, duration, easingFunction) {
+    return easingFunction(deltaTime / duration);
+  }
+
+  /**
+   * Interpolates the given values using the given weights.
+   * @function util.interpolate
+   * @param {Number} value1 The first value.
+   * @param {Number} value2 The second value.
+   * @param {Number} weight1 The weight of the first value.
+   * @param {Number} weight2 The weight of the second value.
+   * @returns {Number} The interpolated value.
+   */
+  function interpolate(value1, value2, weight1, weight2) {
+    return value1 * weight1 + value2 * weight2;
+  }
+
+  // A collection of different types of easing functions.
+  var easingFunctions = {
+    linear: function (t) {
+      return t;
+    },
+    easeInQuad: function (t) {
+      return t * t;
+    },
+    easeOutQuad: function (t) {
+      return t * (2 - t);
+    },
+    easeInOutQuad: function (t) {
+      return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+    },
+    easeInCubic: function (t) {
+      return t * t * t;
+    },
+    easeOutCubic: function (t) {
+      return 1 + --t * t * t;
+    },
+    easeInOutCubic: function (t) {
+      return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+    },
+    easeInQuart: function (t) {
+      return t * t * t * t;
+    },
+    easeOutQuart: function (t) {
+      return 1 - --t * t * t * t;
+    },
+    easeInOutQuart: function (t) {
+      return t < 0.5 ? 8 * t * t * t * t : 1 - 8 * --t * t * t * t;
+    },
+    easeInQuint: function (t) {
+      return t * t * t * t * t;
+    },
+    easeOutQuint: function (t) {
+      return 1 + --t * t * t * t * t;
+    },
+    easeInOutQuint: function (t) {
+      return t < 0.5 ? 16 * t * t * t * t * t : 1 + 16 * --t * t * t * t * t;
+    }
+  };
+
+  /**
+   * Gets an easing function by name. Defaults to linear if given an invalid name.
+   * @param {String} easingFunctionName The name of an easing function.
+   * @returns {Function} The easing function.
+   */
+  function getEasingFunction(easingFunctionName) {
+    return easingFunctions[easingFunctionName] || easingFunctions['linear'];
+  }
+
   // ------------------------------------------------------------------------------------------- //
   // Expose this module
 
@@ -842,6 +977,13 @@
     getTextWidth: getTextWidth,
     encodeQueryString: encodeQueryString,
     getQueryStringParameterValue: getQueryStringParameterValue,
+    setTransitionDurationSeconds: setTransitionDurationSeconds,
+    setTransitionDelaySeconds: setTransitionDelaySeconds,
+    setTransitionCubicBezierTimingFunction: setTransitionCubicBezierTimingFunction,
+    getRandom: getRandom,
+    getEasedProgress: getEasedProgress,
+    interpolate: interpolate,
+    getEasingFunction: getEasingFunction,
     XHR: null,
     listen: null,
     stopListening: null,

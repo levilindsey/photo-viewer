@@ -8,53 +8,10 @@
 
   var DEFAULT_DURATION = 1000;
 
-  var animate, params, util, log, easingFunctions, currentlyLooping, currentAnimations, currentSynchronizations;
+  var animate, params, util, log, currentlyLooping, currentAnimations, currentSynchronizations;
 
   currentAnimations = [];
   currentSynchronizations = [];
-
-  // A collection of different types of easing functions.
-  easingFunctions = {
-    linear: function (t) {
-      return t;
-    },
-    easeInQuad: function (t) {
-      return t * t;
-    },
-    easeOutQuad: function (t) {
-      return t * (2 - t);
-    },
-    easeInOutQuad: function (t) {
-      return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-    },
-    easeInCubic: function (t) {
-      return t * t * t;
-    },
-    easeOutCubic: function (t) {
-      return 1 + --t * t * t;
-    },
-    easeInOutCubic: function (t) {
-      return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
-    },
-    easeInQuart: function (t) {
-      return t * t * t * t;
-    },
-    easeOutQuart: function (t) {
-      return 1 - --t * t * t * t;
-    },
-    easeInOutQuart: function (t) {
-      return t < 0.5 ? 8 * t * t * t * t : 1 - 8 * --t * t * t * t;
-    },
-    easeInQuint: function (t) {
-      return t * t * t * t * t;
-    },
-    easeOutQuint: function (t) {
-      return 1 + --t * t * t * t * t;
-    },
-    easeInOutQuint: function (t) {
-      return t < 0.5 ? 16 * t * t * t * t * t : 1 + 16 * --t * t * t * t * t;
-    }
-  };
 
   // ------------------------------------------------------------------------------------------- //
   // Private static functions
@@ -162,10 +119,10 @@
     deltaTime = currentTime - animation.startTime;
 
     if (deltaTime < animation.duration) {
-      progress = getEasedProgress(deltaTime, animation.duration, animation.easingFunction);
+      progress = util.getEasedProgress(deltaTime, animation.duration, animation.easingFunction);
       remaining = 1 - progress;
       animation.currentValue =
-          interpolate(animation.startValue, animation.endValue, remaining, progress);
+          util.interpolate(animation.startValue, animation.endValue, remaining, progress);
       animationFinished = false;
     } else {
       animation.currentValue = animation.endValue;
@@ -190,10 +147,10 @@
     deltaTime = currentTime - animation.startTime;
 
     if (deltaTime < animation.duration) {
-      progress = getEasedProgress(deltaTime, animation.duration, animation.easingFunction);
+      progress = util.getEasedProgress(deltaTime, animation.duration, animation.easingFunction);
       remaining = 1 - progress;
       animation.currentValue =
-          interpolate(animation.startValue, animation.endValue, remaining, progress);
+          util.interpolate(animation.startValue, animation.endValue, remaining, progress);
       animationFinished = false;
     } else {
       animation.currentValue = animation.endValue;
@@ -219,12 +176,12 @@
     deltaTime = currentTime - animation.startTime;
 
     if (deltaTime < animation.duration) {
-      progress = getEasedProgress(deltaTime, animation.duration, animation.easingFunction);
+      progress = util.getEasedProgress(deltaTime, animation.duration, animation.easingFunction);
       remaining = 1 - progress;
-      h = interpolate(animation.startColor.h, animation.endColor.h, remaining, progress);
-      s = interpolate(animation.startColor.s, animation.endColor.s, remaining, progress);
-      l = interpolate(animation.startColor.l, animation.endColor.l, remaining, progress);
-      a = interpolate(animation.startColor.a, animation.endColor.a, remaining, progress);
+      h = util.interpolate(animation.startColor.h, animation.endColor.h, remaining, progress);
+      s = util.interpolate(animation.startColor.s, animation.endColor.s, remaining, progress);
+      l = util.interpolate(animation.startColor.l, animation.endColor.l, remaining, progress);
+      a = util.interpolate(animation.startColor.a, animation.endColor.a, remaining, progress);
       animation.currentColor = new HSLAColor(h, s, l, a);
       animationFinished = false;
     } else {
@@ -250,12 +207,12 @@
     deltaTime = currentTime - animation.startTime;
 
     if (deltaTime < animation.duration) {
-      progress = getEasedProgress(deltaTime, animation.duration, animation.easingFunction);
+      progress = util.getEasedProgress(deltaTime, animation.duration, animation.easingFunction);
       remaining = 1 - progress;
-      r = interpolate(animation.startColor.r, animation.endColor.r, remaining, progress);
-      g = interpolate(animation.startColor.g, animation.endColor.g, remaining, progress);
-      b = interpolate(animation.startColor.b, animation.endColor.b, remaining, progress);
-      a = interpolate(animation.startColor.a, animation.endColor.a, remaining, progress);
+      r = util.interpolate(animation.startColor.r, animation.endColor.r, remaining, progress);
+      g = util.interpolate(animation.startColor.g, animation.endColor.g, remaining, progress);
+      b = util.interpolate(animation.startColor.b, animation.endColor.b, remaining, progress);
+      a = util.interpolate(animation.startColor.a, animation.endColor.a, remaining, progress);
       animation.currentColor = new RGBAColor(r, g, b, a);
       animationFinished = false;
     } else {
@@ -281,10 +238,10 @@
     deltaTime = currentTime - animation.startTime;
 
     if (deltaTime < animation.duration) {
-      progress = getEasedProgress(deltaTime, animation.duration, animation.easingFunction);
+      progress = util.getEasedProgress(deltaTime, animation.duration, animation.easingFunction);
       remaining = 1 - progress;
       animation.currentValue =
-          interpolate(animation.startValue, animation.endValue, remaining, progress);
+          util.interpolate(animation.startValue, animation.endValue, remaining, progress);
       animationFinished = false;
     } else {
       animation.currentValue = animation.endValue;
@@ -310,12 +267,12 @@
     deltaTime = currentTime - animation.startTime;
 
     if (deltaTime < animation.duration) {
-      progress = getEasedProgress(deltaTime, animation.duration, animation.easingFunction);
+      progress = util.getEasedProgress(deltaTime, animation.duration, animation.easingFunction);
       remaining = 1 - progress;
-      h = interpolate(animation.startColor.h, animation.endColor.h, remaining, progress);
-      s = interpolate(animation.startColor.s, animation.endColor.s, remaining, progress);
-      l = interpolate(animation.startColor.l, animation.endColor.l, remaining, progress);
-      a = interpolate(animation.startColor.a, animation.endColor.a, remaining, progress);
+      h = util.interpolate(animation.startColor.h, animation.endColor.h, remaining, progress);
+      s = util.interpolate(animation.startColor.s, animation.endColor.s, remaining, progress);
+      l = util.interpolate(animation.startColor.l, animation.endColor.l, remaining, progress);
+      a = util.interpolate(animation.startColor.a, animation.endColor.a, remaining, progress);
       animation.currentColor = new HSLAColor(h, s, l, a);
       animationFinished = false;
     } else {
@@ -341,12 +298,12 @@
     deltaTime = currentTime - animation.startTime;
 
     if (deltaTime < animation.duration) {
-      progress = getEasedProgress(deltaTime, animation.duration, animation.easingFunction);
+      progress = util.getEasedProgress(deltaTime, animation.duration, animation.easingFunction);
       remaining = 1 - progress;
-      r = interpolate(animation.startColor.r, animation.endColor.r, remaining, progress);
-      g = interpolate(animation.startColor.g, animation.endColor.g, remaining, progress);
-      b = interpolate(animation.startColor.b, animation.endColor.b, remaining, progress);
-      a = interpolate(animation.startColor.a, animation.endColor.a, remaining, progress);
+      r = util.interpolate(animation.startColor.r, animation.endColor.r, remaining, progress);
+      g = util.interpolate(animation.startColor.g, animation.endColor.g, remaining, progress);
+      b = util.interpolate(animation.startColor.b, animation.endColor.b, remaining, progress);
+      a = util.interpolate(animation.startColor.a, animation.endColor.a, remaining, progress);
       animation.currentColor = new RGBAColor(r, g, b, a);
       animationFinished = false;
     } else {
@@ -357,31 +314,6 @@
     animation.element.style[animation.property] = rgbaColorToString(animation.currentColor);
 
     return animationFinished;
-  }
-
-  /**
-   * Calculates an eased progress value.
-   * @function animate~getEasedProgress
-   * @param {Number} deltaTime The elapsed time since the start of the animation.
-   * @param {Number} duration The duration of the animation.
-   * @param {Function} easingFunction The easing function to use.
-   * @returns {Number} The eased progress value.
-   */
-  function getEasedProgress(deltaTime, duration, easingFunction) {
-    return easingFunction(deltaTime / duration);
-  }
-
-  /**
-   * Interpolates the given values using the given weights.
-   * @function animate~interpolate
-   * @param {Number} value1 The first value.
-   * @param {Number} value2 The second value.
-   * @param {Number} weight1 The weight of the first value.
-   * @param {Number} weight2 The weight of the second value.
-   * @returns {Number} The interpolated value.
-   */
-  function interpolate(value1, value2, weight1, weight2) {
-    return value1 * weight1 + value2 * weight2;
   }
 
   /**
@@ -466,7 +398,7 @@
     this.suffix = suffix || '';
     this.easingFunction =
         typeof easingFunction === 'function' ? easingFunction :
-            easingFunctions[easingFunction || 'linear'];
+            util.getEasingFunction(easingFunction);
     this.onDoneCallback = onDoneCallback;
     this.identifier = identifier;
   }
@@ -498,7 +430,7 @@
     this.duration = duration || DEFAULT_DURATION;
     this.easingFunction =
         typeof easingFunction === 'function' ? easingFunction :
-            easingFunctions[easingFunction || 'linear'];
+            util.getEasingFunction(easingFunction);
     this.onDoneCallback = onDoneCallback;
     this.identifier = identifier;
   }
@@ -533,7 +465,7 @@
     this.suffix = suffix || '';
     this.easingFunction =
         typeof easingFunction === 'function' ? easingFunction :
-            easingFunctions[easingFunction || 'linear'];
+            util.getEasingFunction(easingFunction);
     this.onDoneCallback = onDoneCallback;
     this.identifier = identifier;
   }
@@ -565,7 +497,7 @@
     this.duration = duration || DEFAULT_DURATION;
     this.easingFunction =
         typeof easingFunction === 'function' ? easingFunction :
-            easingFunctions[easingFunction || 'linear'];
+            util.getEasingFunction(easingFunction);
     this.onDoneCallback = onDoneCallback;
     this.identifier = identifier;
   }
@@ -596,7 +528,7 @@
     this.duration = duration || DEFAULT_DURATION;
     this.easingFunction =
         typeof easingFunction === 'function' ? easingFunction :
-            easingFunctions[easingFunction || 'linear'];
+            util.getEasingFunction(easingFunction);
     this.onDoneCallback = onDoneCallback;
     this.identifier = identifier;
   }

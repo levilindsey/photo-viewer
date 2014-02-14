@@ -56,7 +56,7 @@
   moduleParams.BANNER_HEIGHT = 50;
   moduleParams.SHRUNKEN_GRIDS_WIDTH = 230;
 
-  moduleParams.HEIGHT_CHANGE_RATE = 0.001; // pixels / milliseconds
+  moduleParams.OPEN_CLOSE_DURATION = 1.5; // seconds
   moduleParams.ALL_GRIDS_EXPAND_DURATION = 200; // milliseconds
   moduleParams.ALL_GRIDS_SHRINK_DURATION = 400; // milliseconds
 
@@ -69,7 +69,7 @@
   moduleParams.BACKGROUND_PULSE_INNER_RADIUS = 175;
   moduleParams.BACKGROUND_PULSE_OUTER_RADIUS = 250;
   moduleParams.BACKGROUND_PULSE_INNER_OPACITY = 0; // from 0 to 1
-  moduleParams.BACKGROUND_PULSE_OUTER_OPACITY = 0.25; // from 0 to 1
+  moduleParams.BACKGROUND_PULSE_OUTER_OPACITY = 0.35; // from 0 to 1
   moduleParams.BACKGROUND_PULSE_PERIOD = 3000; // milliseconds per half-pulse
 
   moduleParams.SVG_SIDE_LENGTH =
@@ -77,6 +77,36 @@
           moduleParams.BACKGROUND_PULSE_OUTER_RADIUS * 2 : moduleParams.PROGRESS_CIRCLE_DIAMETER;
   moduleParams.PROGRESS_CIRCLE_OFFSET =
       (moduleParams.SVG_SIDE_LENGTH - moduleParams.PROGRESS_CIRCLE_DIAMETER) / 2;
+
+  // --- Dropdown photo grid bounce parameters --- //
+
+  moduleParams = {};
+  params.GRID.BOUNCE = moduleParams;
+
+  moduleParams.BOTTOM_ROW_BEZIER_PTS = {
+    p1x: .5,
+    p1y: 0,
+    p2x: .75,
+    p2y: 1.15
+  };
+  moduleParams.TOP_ROW_BEZIER_PTS = {
+    p1x: 1,
+    p1y: 0,
+    p2x: .75,
+    p2y: 1.85
+  };
+
+  moduleParams.BOTTOM_ROW_DURATION_RATIO = 1;
+  moduleParams.TOP_ROW_DURATION_RATIO = 1;
+
+  moduleParams.BOTTOM_ROW_DELAY_RATIO = 0;
+  moduleParams.TOP_ROW_DELAY_RATIO = 0.25;
+
+  moduleParams.MIN_DURATION_RATIO_OFFSET = -0.04;
+  moduleParams.MAX_DURATION_RATIO_OFFSET = 0.04;
+
+  moduleParams.MIN_DELAY_RATIO_OFFSET = 0;
+  moduleParams.MAX_DELAY_RATIO_OFFSET = 0.06;
 
   // --- Progress circle parameters --- //
 

@@ -4,7 +4,7 @@
  */
 (function () {
 
-  var params, util, log, animate, SVGProgressCircle, CSSProgressCircle, PhotoItem, PhotoGroup, photoMetadata, PhotoLightbox, DropdownPhotoGrid, PhotoGridCollection, photoGridCollection;
+  var params, util, log, animate, SVGProgressCircle, CSSProgressCircle, PhotoItem, PhotoGroup, photoMetadata, PhotoLightbox, PhotoGridCell, DropdownPhotoGrid, PhotoGridCollection, photoGridCollection;
 
   // ------------------------------------------------------------------------------------------- //
   // Private static functions
@@ -40,6 +40,7 @@
     PhotoGroup = app.PhotoGroup;
     photoMetadata = app.photoMetadata;
     PhotoLightbox = app.PhotoLightbox;
+    PhotoGridCell = app.PhotoGridCell;
     DropdownPhotoGrid = app.DropdownPhotoGrid;
     PhotoGridCollection = app.PhotoGridCollection;
 
@@ -50,6 +51,7 @@
     PhotoGroup.initStaticFields();
     photoMetadata.init();
     PhotoLightbox.initStaticFields();
+    PhotoGridCell.initStaticFields();
     DropdownPhotoGrid.initStaticFields();
     PhotoGridCollection.initStaticFields();
 
