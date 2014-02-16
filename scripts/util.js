@@ -501,6 +501,7 @@
    * @param {String} url The URL to send the GET request to.
    * @param {Function} onSuccess The function to call when a response is successfully received.
    * @param {Function} [onError] The function to call when the request does not complete successfully.
+   * @returns {Object} The XHR object used to send the request.
    */
   function sendRequest(url, onSuccess, onError) {
     var xhr;
@@ -538,6 +539,66 @@
     } catch (e) {
       onError('Unable to send the request');
     }
+
+    return xhr;
+  }
+
+  /**
+   *
+   * @function util.loadImageViaXHR
+   * @param {String} src
+   * @param {HTMLElement} imageElement
+   * @param {Function} onSuccess
+   * @param {Function} onError
+   * @param {Function} onProgress
+   * @returns {Object} The XHR object used to send the request.
+   */
+  function loadImageViaXHR(src, imageElement, onSuccess, onError, onProgress) {
+    var xhr, encodedImage;
+
+    onError = onError || function (msg) {
+    };
+
+    xhr = new util.XHR();
+
+    // Prepare to handle the response
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          // Encode and add the image to the DOM
+          encodedImage = base64Encode(xhr.responseText);
+          imageElement.setAttribute('src', 'data:image/jpg;base64,' + encodedImage);
+
+          onSuccess();
+        } else {
+          if (onError) {
+            onError('Server responded with code ' + xhr.status + ' and message ' +
+                xhr.responseText);
+          }
+        }
+      }
+    };
+    util.listen(xhr, 'progress', onProgress);
+
+    // Initialize the request
+    try {
+      xhr.open('GET', src);
+    } catch (e) {
+      if (onError) {
+        onError('Unable to open the request');
+      }
+    }
+
+    xhr.overrideMimeType('text/plain; charset=x-user-defined');
+
+    // Send the request
+    try {
+      xhr.send(null);
+    } catch (e) {
+      onError('Unable to send the request');
+    }
+
+    return xhr;
   }
 
   /**
@@ -968,6 +1029,53 @@
     }
   }
 
+  /**
+   * This function is borrowed from an Adobe article at:
+   * http://blogs.adobe.com/webplatform/2012/01/13/html5-image-progress-events/
+   * @param {String} input
+   * @returns {String}
+   */
+  function base64Encode(input)
+  {
+    var b64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+    var output = '';
+    var i = 0;
+
+    while (i < input.length)
+    {
+      //all three "& 0xff" added below are there to fix a known bug
+      //with bytes returned by xhr.responseText
+      var byte1 = input.charCodeAt(i++) & 0xff;
+      var byte2 = input.charCodeAt(i++) & 0xff;
+      var byte3 = input.charCodeAt(i++) & 0xff;
+
+      var enc1 = byte1 >> 2;
+      var enc2 = ((byte1 & 3) << 4) | (byte2 >> 4);
+
+      var enc3, enc4;
+      if (isNaN(byte2))
+      {
+        enc3 = enc4 = 64;
+      }
+      else
+      {
+        enc3 = ((byte2 & 15) << 2) | (byte3 >> 6);
+        if (isNaN(byte3))
+        {
+          enc4 = 64;
+        }
+        else
+        {
+          enc4 = byte3 & 63;
+        }
+      }
+
+      output += b64.charAt(enc1) + b64.charAt(enc2) + b64.charAt(enc3) + b64.charAt(enc4);
+    }
+
+    return output;
+  }
+
   // ------------------------------------------------------------------------------------------- //
   // Expose this module
 
@@ -978,6 +1086,7 @@
   util = {
     init: init,
     sendRequest: sendRequest,
+    loadImageViaXHR: loadImageViaXHR,
     dateObjToDateTimeString: dateObjToDateTimeString,
     millisToTimeString: millisToTimeString,
     listenToMultipleForMultiple: listenToMultipleForMultiple,
@@ -1001,6 +1110,7 @@
     interpolate: interpolate,
     getEasingFunction: getEasingFunction,
     removeChildrenWithClass: removeChildrenWithClass,
+    base64Encode: base64Encode,
     XHR: null,
     listen: null,
     stopListening: null,

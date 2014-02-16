@@ -4,7 +4,7 @@
  */
 (function () {
 
-  var params, util, log, animate, SVGProgressCircle, CSSProgressCircle, PhotoItem, PhotoGroup, photoMetadata, PhotoLightbox, PhotoGridCell, DropdownPhotoGrid, PhotoGridCollection, photoGridCollection;
+  var params, util, log, animate, ProgressCircle, PhotoItem, PhotoGroup, photoMetadata, PhotoLightbox, PhotoGridCell, DropdownPhotoGrid, PhotoGridCollection, photoGridCollection;
 
   // ------------------------------------------------------------------------------------------- //
   // Private static functions
@@ -34,8 +34,7 @@
     var body;
 
     animate = app.animate;
-    SVGProgressCircle = app.SVGProgressCircle;
-    CSSProgressCircle = app.CSSProgressCircle;
+    ProgressCircle = app.ProgressCircle;
     PhotoItem = app.PhotoItem;
     PhotoGroup = app.PhotoGroup;
     photoMetadata = app.photoMetadata;
@@ -45,8 +44,7 @@
     PhotoGridCollection = app.PhotoGridCollection;
 
     animate.init();
-    SVGProgressCircle.initStaticFields();
-    //CSSProgressCircle.initStaticFields(); // TODO: ...
+    ProgressCircle.initStaticFields();
     PhotoItem.initStaticFields();
     PhotoGroup.initStaticFields();
     photoMetadata.init();
@@ -110,7 +108,7 @@
    */
   function onParsePhotoMetadataError(errorMessage) {
     log.e('onParsePhotoMetadataError', 'Unable to load/parse metadata: ' + errorMessage);
-    // TODO:
+    // TODO: display an alert
   }
 
   /**

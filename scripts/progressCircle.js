@@ -304,6 +304,16 @@
     }
   }
 
+  /**
+   * @function ProgressCircle#updateProgress
+   * @param {Number} loaded
+   * @param {Number} total
+   */
+  function updateProgress(loaded, total) {
+    // TODO: add a message to the center of the progress circle and update it here
+    log.w('updateProgress', loaded + '/' + total);
+  }
+
   // ------------------------------------------------------------------------------------------- //
   // Public static functions
 
@@ -332,63 +342,24 @@
    * @param {Number} diameter The diameter of the overall progress circle.
    * @param {Number} dotRadius The radius to give the individual dots.
    */
-  function SVGProgressCircle(svgElement, left, top, diameter, dotRadius) {
-    this.svgElement = svgElement;
-    this.left = left;
-    this.top = top;
-    this.diameter = diameter;
-    this.dotRadius = dotRadius;
-    this.dots = null;
-    this.open = open;
-    this.close = close;
-  }
+  function ProgressCircle(svgElement, left, top, diameter, dotRadius) {
+    var progressCircle = this;
 
-  // TODO: jsdoc
-  function CSSProgressCircle() {
-    // TODO: something like this...? but with six colorful dots that shift colors
-//  .spinner {
-//      height:60px;
-//      width:60px;
-//      margin:0px auto;
-//      position:relative;
-//      -webkit-animation: rotation .6s infinite linear;
-//      -moz-animation: rotation .6s infinite linear;
-//      -o-animation: rotation .6s infinite linear;
-//      animation: rotation .6s infinite linear;
-//      border-left:6px solid rgba(0,174,239,.15);
-//      border-right:6px solid rgba(0,174,239,.15);
-//      border-bottom:6px solid rgba(0,174,239,.15);
-//      border-top:6px solid rgba(0,174,239,.8);
-//      border-radius:100%;
-//    }
-//
-//    @-webkit-keyframes rotation {
-//      from {-webkit-transform: rotate(0deg);}
-//      to {-webkit-transform: rotate(359deg);}
-//    }
-//
-//    @-moz-keyframes rotation {
-//      from {-moz-transform: rotate(0deg);}
-//      to {-moz-transform: rotate(359deg);}
-//    }
-//
-//    @-o-keyframes rotation {
-//      from {-o-transform: rotate(0deg);}
-//      to {-o-transform: rotate(359deg);}
-//    }
-//
-//    @keyframes rotation {
-//      from {transform: rotate(0deg);}
-//      to {transform: rotate(359deg);}
-//    }
+    progressCircle.svgElement = svgElement;
+    progressCircle.left = left;
+    progressCircle.top = top;
+    progressCircle.diameter = diameter;
+    progressCircle.dotRadius = dotRadius;
+    progressCircle.dots = null;
+    progressCircle.open = open;
+    progressCircle.close = close;
+    progressCircle.updateProgress = updateProgress;
   }
 
   // Expose this module
   if (!window.app) window.app = {};
-  window.app.SVGProgressCircle = SVGProgressCircle;
-  SVGProgressCircle.initStaticFields = initStaticFields;
-  window.app.CSSProgressCircle = CSSProgressCircle;
-  CSSProgressCircle.initStaticFields = initStaticFields;
+  window.app.ProgressCircle = ProgressCircle;
+  ProgressCircle.initStaticFields = initStaticFields;
 
   console.log('progressCircle module loaded');
 })();

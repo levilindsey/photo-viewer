@@ -6,7 +6,7 @@
   // ------------------------------------------------------------------------------------------- //
   // Private static variables
 
-  var params, util, log, animate, SVGProgressCircle, PhotoItem;
+  var params, util, log, ProgressCircle, PhotoItem;
 
   // ------------------------------------------------------------------------------------------- //
   // Private dynamic functions
@@ -264,6 +264,9 @@
         photoLightbox.elements.lightbox, false, true);
     photoLightbox.mainImageFailed = false;
 
+    // Cancel the old image download if it has not finished
+    cancelImageDownload(photoLightbox.photoGroup.photos[photoLightbox.currentIndex]);
+
     recordCurrentPhoto.call(photoLightbox, index);
 
     // Stop listening for the end of any transition that may still be running for the old main
@@ -331,13 +334,21 @@
     setElementVisibility(photoLightbox.elements.oldMainImage, false, false);
 
     function loadPhotoImage(photoLightbox, isMainImage, targetSize, photoItem) {
+      var onProgress;
+
       log.d('setPhoto.loadPhotoImage',
           'Sending image load request: ' + photoItem[targetSize].source);
+
+      onProgress = isMainImage && !photoItem[targetSize].isCached ?
+          function (photoItem, loaded, total) {
+            onPhotoImageLoadProgress.call(photoLightbox, targetSize, photoItem, loaded, total);
+          } : null;
+
       photoItem.loadImage(targetSize, function (photoItem) {
         onPhotoImageLoadSuccess.call(photoLightbox, isMainImage, targetSize, photoItem);
       }, function (photoItem) {
         onPhotoImageLoadError.call(photoLightbox, isMainImage, targetSize, photoItem);
-      });
+      }, onProgress);
     }
   }
 
@@ -525,6 +536,25 @@
       photoLightbox.mainImageFailed = true;
       PhotoItem.setLoadError(photoItem, photoLightbox.elements.lightbox, true, true);
       photoLightbox.progressCircle.close();
+    }
+  }
+
+  /**
+   * @function PhotoLightbox~onPhotoImageLoadProgress
+   * @param {'full'|'small'|'thumbnail'|'gridThumbnail'} targetSize Which image version just loaded.
+   * @param {PhotoItem} photoItem
+   * @param {Number} loaded
+   * @param {Number} total
+   */
+  function onPhotoImageLoadProgress(targetSize, photoItem, loaded, total) {
+    //log.v('onPhotoImageLoadProgress');
+    var photoLightbox = this;
+
+    // Do NOT update the progress if the viewer has already skipped past the image or switched
+    // in/out of full-screen mode
+    if (photoItem === photoLightbox.photoGroup.photos[photoLightbox.currentIndex] &&
+        (!photoLightbox.inFullscreenMode || targetSize === 'full')) {
+      photoLightbox.progressCircle.updateProgress(loaded, total);
     }
   }
 
@@ -1021,6 +1051,22 @@
     element.style.height = scaledHeight + 'px';
   }
 
+  /**
+   *
+   * @function photoLightbox~cancelImageDownload
+   * @param {PhotoItem} photoItem
+   */
+  function cancelImageDownload(photoItem) {
+    if (photoItem.full.xhr) {
+      photoItem.full.xhr.abort();
+      photoItem.full.xhr = null;
+    }
+    if (photoItem.small.xhr) {
+      photoItem.small.xhr.abort();
+      photoItem.small.xhr = null;
+    }
+  }
+
   // ------------------------------------------------------------------------------------------- //
   // Public static functions
 
@@ -1032,8 +1078,7 @@
     params = app.params;
     util = app.util;
     log = new app.Log('photoLightbox');
-    animate = app.animate;
-    SVGProgressCircle = app.SVGProgressCircle;
+    ProgressCircle = app.ProgressCircle;
     PhotoItem = app.PhotoItem;
     log.d('initStaticFields', 'Module initialized');
   }
@@ -1071,7 +1116,7 @@
     createElements.call(photoLightbox, width, height);
 
     photoLightbox.progressCircle =
-        new SVGProgressCircle(photoLightbox.elements.svg, 0, 0,
+        new ProgressCircle(photoLightbox.elements.svg, 0, 0,
             params.LIGHTBOX.PROGRESS_CIRCLE_DIAMETER, params.LIGHTBOX.PROGRESS_CIRCLE_DOT_RADIUS);
 
     // Re-position the lightbox when the window re-sizes

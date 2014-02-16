@@ -67,7 +67,7 @@ declare -a imagedirs
 declare -a imagefiles
 
 # Get the sub-directories
-imagedirs=(`find "$maindir" -maxdepth 1 -type d`)
+imagedirs=(`find "$maindir" -maxdepth 1 -type d | sort`)
 pos=$(( ${#imagedirs[*]} - 1 ))
 lastimagedir=${imagedirs[$pos]}
 firstimagedir=${imagedirs[0]}
@@ -98,7 +98,7 @@ do
     mkdir -p "$fulldir"
 
     # Get the files in this sub-directory
-    imagefiles=(`find "$imagedir" -maxdepth 1 -type f`)
+    imagefiles=(`find "$imagedir" -maxdepth 1 -type f | sort`)
     pos=$(( ${#imagefiles[*]} - 1 ))
     lastimagefile=${imagefiles[$pos]}
 

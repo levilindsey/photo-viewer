@@ -6,7 +6,7 @@
   // ------------------------------------------------------------------------------------------- //
   // Private static variables
 
-  var params, util, log, animate, PhotoLightbox, DropdownPhotoGrid, SVGProgressCircle;
+  var params, util, log, animate, PhotoLightbox, DropdownPhotoGrid, ProgressCircle;
 
   // ------------------------------------------------------------------------------------------- //
   // Private dynamic functions
@@ -32,7 +32,7 @@
     createBackgroundPulse.call(gridCollection);
 
     gridCollection.progressCircle =
-        new SVGProgressCircle(gridCollection.elements.svg, params.GRID.PROGRESS_CIRCLE_OFFSET,
+        new ProgressCircle(gridCollection.elements.svg, params.GRID.PROGRESS_CIRCLE_OFFSET,
             params.GRID.PROGRESS_CIRCLE_OFFSET, params.GRID.PROGRESS_CIRCLE_DIAMETER,
             params.GRID.PROGRESS_CIRCLE_DOT_RADIUS);
 
@@ -512,7 +512,7 @@
     animate = app.animate;
     PhotoLightbox = app.PhotoLightbox;
     DropdownPhotoGrid = app.DropdownPhotoGrid;
-    SVGProgressCircle = app.SVGProgressCircle;
+    ProgressCircle = app.ProgressCircle;
     log.d('initStaticFields', 'Module initialized');
   }
 

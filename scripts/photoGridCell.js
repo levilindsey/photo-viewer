@@ -21,7 +21,7 @@
   function createElement(parent, photo) {
     var cell, element;
     cell = this;
-    element = util.createElement('div', parent, null, ['gridCell']);
+    element = util.createElement('div', parent, null, ['gridCell', 'nonLoaded']);
     element.style.display = 'none';
     element.appendChild(photo.gridThumbnail.image);
     cell.element = element;

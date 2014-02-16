@@ -19,25 +19,47 @@
    * photo to cache.
    * @param {Function} onSuccess An event listener called if the image is cached successfully.
    * @param {Function} onError An event listener called if an error occurs while caching the image.
+   * @param {Function} [onProgress] An event listener called for each progress update while loading
+   * the image.
    * @returns {HTMLElement} The image DOM element that is used to cache the image.
    */
-  function cacheImage(targetSize, onSuccess, onError) {
-    var photo, image;
+  function cacheImage(targetSize, onSuccess, onError, onProgress) {
+    var photo, image, src, onSuccessWrapper, onErrorWrapper, onProgressWrapper;
+
     photo = this;
     image = new Image();
-    util.listen(image, 'load', function () {
+
+    src = targetSize !== 'gridThumbnail' ? photo[targetSize].source : photo.thumbnail.source;
+
+    onSuccessWrapper = function () {
+      if (photo[targetSize].xhr) {
+        photo[targetSize].xhr = null;
+      }
       if (targetSize !== 'gridThumbnail') {
         photo[targetSize].isCached = true;
       }
       onSuccess(photo);
-    });
-    util.listen(image, 'error', function () {
+    };
+
+    onErrorWrapper = function () {
+      if (photo[targetSize].xhr) {
+        photo[targetSize].xhr = null;
+      }
       onError(photo);
-    });
-    if (targetSize !== 'gridThumbnail') {
-      image.src = photo[targetSize].source;
+    };
+
+    onProgressWrapper = function (event) {
+      onProgress(photo, event.loaded, event.total);
+    };
+
+    if (!onProgress) {
+      // Load the image in the normal way, by setting the img element's src attribute
+      util.listen(image, 'load', onSuccessWrapper);
+      util.listen(image, 'error', onErrorWrapper);
+      image.src = src;
     } else {
-      image.src = photo.thumbnail.source;
+      // Load the image via XHR, so we can track its progress
+      photo[targetSize].xhr = util.loadImageViaXHR(src, image, onSuccessWrapper, onErrorWrapper, onProgressWrapper);
     }
     return image;
   }
@@ -49,10 +71,12 @@
    * photo to load.
    * @param {Function} onSuccess An event listener called if the image is loaded successfully.
    * @param {Function} onError An event listener called if an error occurs while loading the image.
+   * @param {Function} [onProgress] An event listener called for each progress update while loading
+   * the image.
    */
-  function loadImage(targetSize, onSuccess, onError) {
+  function loadImage(targetSize, onSuccess, onError, onProgress) {
     var photo = this;
-    photo[targetSize].image = cacheImage.call(photo, targetSize, onSuccess, onError);
+    photo[targetSize].image = cacheImage.call(photo, targetSize, onSuccess, onError, onProgress);
   }
 
   /**
@@ -104,8 +128,6 @@
    * @param {Boolean} isLightbox
    */
   function setLoadError(photoItem, parent, isError, isLightbox) {
-    var errorElement;
-
     // Add or remove an error message element
     if (isError) {
       util.createElement('div', parent, null, ['imageErrorMessage']);
@@ -154,6 +176,7 @@
     photoItem.full = {
       image: null,
       isCached: false,
+      xhr: null,
       source: fullSource,
       width: fullWidth,
       height: fullHeight
@@ -161,6 +184,7 @@
     photoItem.small = {
       image: null,
       isCached: false,
+      xhr: null,
       source: smallSource,
       width: smallWidth,
       height: smallHeight

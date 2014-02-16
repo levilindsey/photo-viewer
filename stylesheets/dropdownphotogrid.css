@@ -193,6 +193,10 @@ body {
   transition-property: top;
 }
 
+.gridCell.nonLoaded {
+  background: #303030;
+}
+
 .gridCell>img {
   display: block;
   position: absolute;

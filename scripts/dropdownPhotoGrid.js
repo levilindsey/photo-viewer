@@ -6,7 +6,7 @@
   // ------------------------------------------------------------------------------------------- //
   // Private static variables
 
-  var params, util, log, animate, PhotoGridCell, PhotoItem;
+  var params, util, log, PhotoGridCell, PhotoItem;
 
   // ------------------------------------------------------------------------------------------- //
   // Private dynamic functions
@@ -112,6 +112,7 @@
     //log.v('onPhotoGroupSingleLoadSuccess');
     var photoGrid = this;
     PhotoItem.setLoadError(photo, photoGrid.cells[photo.index].element, false, false);
+    util.toggleClass(photoGrid.cells[photo.index].element, 'nonLoaded', false);
   }
 
   /**
@@ -500,7 +501,6 @@
     params = app.params;
     util = app.util;
     log = new app.Log('dropdownPhotoGrid');
-    animate = app.animate;
     PhotoGridCell = app.PhotoGridCell;
     PhotoItem = app.PhotoItem;
     log.d('initStaticFields', 'Module initialized');
