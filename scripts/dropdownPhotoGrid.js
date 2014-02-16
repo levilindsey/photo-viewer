@@ -6,7 +6,7 @@
   // ------------------------------------------------------------------------------------------- //
   // Private static variables
 
-  var params, util, log, animate, PhotoGridCell;
+  var params, util, log, animate, PhotoGridCell, PhotoItem;
 
   // ------------------------------------------------------------------------------------------- //
   // Private dynamic functions
@@ -50,7 +50,7 @@
     tapThumbnailPromptText.innerHTML = params.L18N.EN.TAP_THUMBNAIL_PROMPT;
 
     grid = util.createElement('div', container, null, ['photoGrid']);
-    util.listenForTransitionEnd(grid, function() {
+    util.listenForTransitionEnd(grid, function () {
       onOpenCloseEnd.call(photoGrid);
     });
     util.setTransitionCubicBezierTimingFunction(grid, params.GRID.BOUNCE.BOTTOM_ROW_BEZIER_PTS);
@@ -65,8 +65,7 @@
       banner: banner,
       bannerIcon: bannerIcon,
       tapThumbnailPromptContainer: tapThumbnailPromptContainer,
-      grid: grid,
-      gridCells: null
+      grid: grid
     };
   }
 
@@ -78,11 +77,13 @@
     var photoGrid, gridCell;
 
     photoGrid = this;
-    photoGrid.elements.gridCells = [];
+    photoGrid.cells = [];
 
     // Load the thumbnails
     photoGrid.photoGroup.loadImages('gridThumbnail', function (photoGroup, photo) {
-      onPhotoGroupSingleLoadSuccess.call(photoGrid, photoGroup, photo);
+      onPhotoGroupSingleLoadSuccess.call(photoGrid, photo);
+    }, function (photoGroup, photo) {
+      onPhotoGroupSingleLoadError.call(photoGrid, photo);
     }, function (photoGroup) {
       onPhotoGroupTotalLoadSuccess.call(photoGrid, photoGroup);
     }, function (photoGroup, failedPhotos) {
@@ -92,7 +93,7 @@
     // Create the thumbnail elements and add them to the DOM
     photoGrid.photoGroup.photos.forEach(function (photo) {
       gridCell = new PhotoGridCell(photoGrid.elements.grid, photo);
-      photoGrid.elements.gridCells.push(gridCell);
+      photoGrid.cells.push(gridCell);
     });
 
     // Listen for thumbnail taps
@@ -105,12 +106,23 @@
   /**
    *
    * @function DropdownPhotoGrid~onPhotoGroupSingleLoadSuccess
-   * @param {PhotoGroup} photoGroup
    * @param {PhotoItem} photo
    */
-  function onPhotoGroupSingleLoadSuccess(photoGroup, photo) {
+  function onPhotoGroupSingleLoadSuccess(photo) {
     //log.v('onPhotoGroupSingleLoadSuccess');
-    // TODO: cancel the progress circle (which will need to have been absolutely positioned at this image)
+    var photoGrid = this;
+    PhotoItem.setLoadError(photo, photoGrid.cells[photo.index].element, false, false);
+  }
+
+  /**
+   *
+   * @function DropdownPhotoGrid~onPhotoGroupSingleLoadError
+   * @param {PhotoItem} photo
+   */
+  function onPhotoGroupSingleLoadError(photo) {
+    log.w('onPhotoGroupSingleLoadError');
+    var photoGrid = this;
+    PhotoItem.setLoadError(photo, photoGrid.cells[photo.index].element, true, false);
   }
 
   /**
@@ -120,7 +132,6 @@
    */
   function onPhotoGroupTotalLoadSuccess(photoGroup) {
     log.i('onPhotoGroupTotalLoadSuccess', 'All photos loaded for group ' + photoGroup.title);
-    // TODO:
   }
 
   /**
@@ -130,9 +141,8 @@
    * @param {Array.<PhotoItem>} failedPhotos
    */
   function onPhotoGroupTotalLoadError(photoGroup, failedPhotos) {
-    log.e('onPhotoGroupTotalLoadError',
+    log.w('onPhotoGroupTotalLoadError',
         'Unable to load ' + failedPhotos.length + ' photos for group ' + photoGroup.title);
-    // TODO:
   }
 
   /**
@@ -168,9 +178,7 @@
    * @function DropdownPhotoGrid~onOpeningFinished
    */
   function onOpeningFinished() {
-    var photoGrid;
-
-    photoGrid = this;
+    var photoGrid = this;
 
     // Ensure that nothing interrupted this animation while it was running
     if (photoGrid.opening && !photoGrid.closing) {
@@ -196,9 +204,7 @@
    * @function DropdownPhotoGrid~onClosingFinished
    */
   function onClosingFinished() {
-    var photoGrid;
-
-    photoGrid = this;
+    var photoGrid = this;
 
     // Ensure that nothing interrupted this animation while it was running
     if (photoGrid.closing && !photoGrid.opening) {
@@ -213,12 +219,12 @@
    * @function SpringGrid~onOpenCloseEnd
    */
   function onOpenCloseEnd() {
-    var grid = this;
+    var photoGrid = this;
 
-    if (grid.isOpen) {
-      onOpeningFinished();
+    if (photoGrid.isOpen) {
+      onOpeningFinished.call(photoGrid);
     } else {
-      onClosingFinished();
+      onClosingFinished.call(photoGrid);
     }
   }
 
@@ -255,7 +261,7 @@
 
     photoGrid.elements.grid.style.height = photoGrid.gridHeight + 'px';
 
-    photoGrid.elements.gridCells.forEach(function(cell) {
+    photoGrid.cells.forEach(function (cell) {
       cell.animateToOpen(params.GRID.OPEN_CLOSE_DURATION);
     });
   }
@@ -277,7 +283,7 @@
 
     photoGrid.elements.grid.style.height = '0';
 
-    photoGrid.elements.gridCells.forEach(function(cell) {
+    photoGrid.cells.forEach(function (cell) {
       cell.animateToClosed(params.GRID.OPEN_CLOSE_DURATION);
     });
 
@@ -303,13 +309,16 @@
     photoGrid.columnCount =
         columnCapacity >= params.GRID.MAX_COLUMN_COUNT ? params.GRID.MAX_COLUMN_COUNT :
             columnCapacity;
-    photoGrid.rowCount = parseInt(0.99999 + photoGrid.photoGroup.photos.length / photoGrid.columnCount);
+    photoGrid.rowCount =
+        parseInt(0.99999 + photoGrid.photoGroup.photos.length / photoGrid.columnCount);
 
     // Set the grid's width and height
     photoGrid.gridHeight =
         photoGrid.rowCount * params.GRID.THUMBNAIL_HEIGHT +
             (photoGrid.rowCount + 1) * params.GRID.THUMBNAIL_MARGIN;
-    width = photoGrid.columnCount * params.GRID.THUMBNAIL_WIDTH + (photoGrid.columnCount + 1) * params.GRID.THUMBNAIL_MARGIN;
+    width =
+        photoGrid.columnCount * params.GRID.THUMBNAIL_WIDTH +
+            (photoGrid.columnCount + 1) * params.GRID.THUMBNAIL_MARGIN;
 
     photoGrid.elements.grid.style.height = photoGrid.isOpen ? photoGrid.gridHeight + 'px' : '0';
     photoGrid.elements.grid.style.width = width + 'px';
@@ -325,15 +334,15 @@
   function updateCellRowsAndColumns() {
     var photoGrid, i, count, column, row;
     photoGrid = this;
-    for (i = 0, count = photoGrid.elements.gridCells.length; i < count; i++) {
+    for (i = 0, count = photoGrid.cells.length; i < count; i++) {
       column = i % photoGrid.columnCount;
       row = parseInt(i / photoGrid.columnCount);
 
       photoGrid.photoGroup.photos[i].gridThumbnail.columnIndex = column;
-      photoGrid.photoGroup.photos[i].gridThumbnail.rowIndex = row;// TODO: !!! remove the photoGroup collection from this class?
+      photoGrid.photoGroup.photos[i].gridThumbnail.rowIndex = row;
 
-      updateCellPositions(photoGrid.elements.gridCells[i], photoGrid, row, column);
-      updateCellTransitionParameters(photoGrid.elements.gridCells[i], photoGrid, row);
+      updateCellPositions(photoGrid.cells[i], photoGrid.gridHeight, row, column);
+      updateCellTransitionParameters(photoGrid.cells[i], photoGrid.rowCount, row);
     }
   }
 
@@ -415,16 +424,20 @@
    * Updates the given cell's position values according to the given row and column.
    * @function springGrid~updateCellPositions
    * @param {PhotoGridCell} cell The cell to update.
-   * @param {DropdownPhotoGrid} grid The grid containing the cell.
+   * @param {Number} gridHeight The height of the grid containing the cell.
    * @param {Number} row The row index the cell is in.
    * @param {Number} column The column index the cell is in.
    */
-  function updateCellPositions(cell, grid, row, column) {
+  function updateCellPositions(cell, gridHeight, row, column) {
     var x, closedY, openY;
 
-    x = column * (params.GRID.THUMBNAIL_WIDTH + params.GRID.THUMBNAIL_MARGIN) + params.GRID.THUMBNAIL_MARGIN;
-    openY = row * (params.GRID.THUMBNAIL_HEIGHT + params.GRID.THUMBNAIL_MARGIN) + params.GRID.THUMBNAIL_MARGIN;
-    closedY = openY - grid.gridHeight;
+    x =
+        column * (params.GRID.THUMBNAIL_WIDTH + params.GRID.THUMBNAIL_MARGIN) +
+            params.GRID.THUMBNAIL_MARGIN;
+    openY =
+        row * (params.GRID.THUMBNAIL_HEIGHT + params.GRID.THUMBNAIL_MARGIN) +
+            params.GRID.THUMBNAIL_MARGIN;
+    closedY = openY - gridHeight;
 
     cell.setPositions(x, closedY, openY);
   }
@@ -433,25 +446,41 @@
    * Updates the given cell's transition parameters according to the given row and column.
    * @function springGrid~updateCellTransitionParameters
    * @param {PhotoGridCell} cell The cell to update.
-   * @param {DropdownPhotoGrid} grid The grid containing the cell.
+   * @param {Number} rowCount The total number of rows in the grid.
    * @param {Number} row The row index the cell is in.
    */
-  function updateCellTransitionParameters(cell, grid, row) {
+  function updateCellTransitionParameters(cell, rowCount, row) {
     var rowBaseDurationRatio, cellDurationRatioOffset, durationRatio, rowBaseDelayRatio, cellDelayRatioOffset, delayRatio, rowBaseP1x, rowBaseP1y, rowBaseP2x, rowBaseP2y, bezierPts, minWeight, maxWeight;
 
-    minWeight = row / (grid.rowCount - 1);
+    minWeight = row / (rowCount - 1);
     maxWeight = 1 - minWeight;
 
-    rowBaseDurationRatio = util.interpolate(params.GRID.BOUNCE.BOTTOM_ROW_DURATION_RATIO, params.GRID.BOUNCE.TOP_ROW_DURATION_RATIO, minWeight, maxWeight);
-    cellDurationRatioOffset = util.getRandom(params.GRID.BOUNCE.MIN_DURATION_RATIO_OFFSET, params.GRID.BOUNCE.MAX_DURATION_RATIO_OFFSET);
+    rowBaseDurationRatio =
+        util.interpolate(params.GRID.BOUNCE.BOTTOM_ROW_DURATION_RATIO,
+            params.GRID.BOUNCE.TOP_ROW_DURATION_RATIO, minWeight, maxWeight);
+    cellDurationRatioOffset =
+        util.getRandom(params.GRID.BOUNCE.MIN_DURATION_RATIO_OFFSET,
+            params.GRID.BOUNCE.MAX_DURATION_RATIO_OFFSET);
 
-    rowBaseDelayRatio = util.interpolate(params.GRID.BOUNCE.BOTTOM_ROW_DELAY_RATIO, params.GRID.BOUNCE.TOP_ROW_DELAY_RATIO, minWeight, maxWeight);
-    cellDelayRatioOffset = util.getRandom(params.GRID.BOUNCE.MIN_DELAY_RATIO_OFFSET, params.GRID.BOUNCE.MAX_DELAY_RATIO_OFFSET);
+    rowBaseDelayRatio =
+        util.interpolate(params.GRID.BOUNCE.BOTTOM_ROW_DELAY_RATIO,
+            params.GRID.BOUNCE.TOP_ROW_DELAY_RATIO, minWeight, maxWeight);
+    cellDelayRatioOffset =
+        util.getRandom(params.GRID.BOUNCE.MIN_DELAY_RATIO_OFFSET,
+            params.GRID.BOUNCE.MAX_DELAY_RATIO_OFFSET);
 
-    rowBaseP1x = util.interpolate(params.GRID.BOUNCE.BOTTOM_ROW_BEZIER_PTS.p1x, params.GRID.BOUNCE.TOP_ROW_BEZIER_PTS.p1x, minWeight, maxWeight);
-    rowBaseP1y = util.interpolate(params.GRID.BOUNCE.BOTTOM_ROW_BEZIER_PTS.p1y, params.GRID.BOUNCE.TOP_ROW_BEZIER_PTS.p1y, minWeight, maxWeight);
-    rowBaseP2x = util.interpolate(params.GRID.BOUNCE.BOTTOM_ROW_BEZIER_PTS.p2x, params.GRID.BOUNCE.TOP_ROW_BEZIER_PTS.p2x, minWeight, maxWeight);
-    rowBaseP2y = util.interpolate(params.GRID.BOUNCE.BOTTOM_ROW_BEZIER_PTS.p2y, params.GRID.BOUNCE.TOP_ROW_BEZIER_PTS.p2y, minWeight, maxWeight);
+    rowBaseP1x =
+        util.interpolate(params.GRID.BOUNCE.BOTTOM_ROW_BEZIER_PTS.p1x,
+            params.GRID.BOUNCE.TOP_ROW_BEZIER_PTS.p1x, minWeight, maxWeight);
+    rowBaseP1y =
+        util.interpolate(params.GRID.BOUNCE.BOTTOM_ROW_BEZIER_PTS.p1y,
+            params.GRID.BOUNCE.TOP_ROW_BEZIER_PTS.p1y, minWeight, maxWeight);
+    rowBaseP2x =
+        util.interpolate(params.GRID.BOUNCE.BOTTOM_ROW_BEZIER_PTS.p2x,
+            params.GRID.BOUNCE.TOP_ROW_BEZIER_PTS.p2x, minWeight, maxWeight);
+    rowBaseP2y =
+        util.interpolate(params.GRID.BOUNCE.BOTTOM_ROW_BEZIER_PTS.p2y,
+            params.GRID.BOUNCE.TOP_ROW_BEZIER_PTS.p2y, minWeight, maxWeight);
 
     durationRatio = rowBaseDurationRatio + cellDurationRatioOffset;
     delayRatio = rowBaseDelayRatio + cellDelayRatioOffset;
@@ -473,6 +502,7 @@
     log = new app.Log('dropdownPhotoGrid');
     animate = app.animate;
     PhotoGridCell = app.PhotoGridCell;
+    PhotoItem = app.PhotoItem;
     log.d('initStaticFields', 'Module initialized');
   }
 
@@ -489,6 +519,7 @@
   function DropdownPhotoGrid(photoGroup, gridCollection) {
     var photoGrid = this;
 
+    photoGrid.cells = null;
     photoGrid.photoGroup = photoGroup;
     photoGrid.gridCollection = gridCollection;
     photoGrid.parent = gridCollection.elements.container;

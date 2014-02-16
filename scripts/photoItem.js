@@ -96,6 +96,39 @@
     log.d('initStaticFields', 'Module initialized');
   }
 
+  /**
+   * @function PhotoItem.setLoadError
+   * @param {PhotoItem} photoItem
+   * @param {HTMLElement} parent
+   * @param {Boolean} isError
+   * @param {Boolean} isLightbox
+   */
+  function setLoadError(photoItem, parent, isError, isLightbox) {
+    var errorElement;
+
+    // Add or remove an error message element
+    if (isError) {
+      util.createElement('div', parent, null, ['imageErrorMessage']);
+    } else {
+      util.removeChildrenWithClass(parent, 'imageErrorMessage');
+    }
+
+    // Show or hide the image
+    if (isLightbox) {
+      if (photoItem.thumbnail.image) {
+        util.toggleClass(photoItem.thumbnail.image, 'failedImage', isError);
+      }
+      if (photoItem.small.image) {
+        util.toggleClass(photoItem.small.image, 'failedImage', isError);
+      }
+      if (photoItem.full.image) {
+        util.toggleClass(photoItem.full.image, 'failedImage', isError);
+      }
+    } else {
+      util.toggleClass(photoItem.gridThumbnail.image, 'failedImage', isError);
+    }
+  }
+
   // ------------------------------------------------------------------------------------------- //
   // Expose this module's constructor
 
@@ -115,44 +148,47 @@
    */
   function PhotoItem(index, fullSource, fullWidth, fullHeight, smallSource, smallWidth, smallHeight,
                      thumbnailSource, thumbnailWidth, thumbnailHeight) {
-    this.index = index;
-    this.full = {
+    var photoItem = this;
+
+    photoItem.index = index;
+    photoItem.full = {
       image: null,
       isCached: false,
       source: fullSource,
       width: fullWidth,
       height: fullHeight
     };
-    this.small = {
+    photoItem.small = {
       image: null,
       isCached: false,
       source: smallSource,
       width: smallWidth,
       height: smallHeight
     };
-    this.thumbnail = {
+    photoItem.thumbnail = {
       image: null,
       isCached: false,
       source: thumbnailSource,
       width: thumbnailWidth,
       height: thumbnailHeight
     };
-    this.gridThumbnail = {
+    photoItem.gridThumbnail = {
       image: null,
       columnIndex: -1,
       rowIndex: -1
     };
 
-    this.cacheImage = cacheImage;
-    this.loadImage = loadImage;
-    this.addTapEventListener = addTapEventListener;
-    this.getPageOffset = getPageOffset;
+    photoItem.cacheImage = cacheImage;
+    photoItem.loadImage = loadImage;
+    photoItem.addTapEventListener = addTapEventListener;
+    photoItem.getPageOffset = getPageOffset;
   }
 
   // Expose this module
   if (!window.app) window.app = {};
   window.app.PhotoItem = PhotoItem;
   PhotoItem.initStaticFields = initStaticFields;
+  PhotoItem.setLoadError = setLoadError;
 
   console.log('photoItem module loaded');
 })();

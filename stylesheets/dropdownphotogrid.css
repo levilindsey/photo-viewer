@@ -216,3 +216,20 @@ svg {
   top: 0; right: 0; bottom: 0; left: 0;
   z-index: 0;
 }
+
+.gridCell .imageErrorMessage:before {
+  content: ':( This image is feeling shy today.';
+  display: block;
+  position: absolute;
+  margin: auto;
+  width: 80%;
+  height: 80%;
+  top: 0; right: 0; bottom: 0; left: 0;
+  font-size: 16px;
+  text-align: center;
+  color: #D09090;
+}
+
+body .gridCell img.failedImage {
+  display: none;
+}

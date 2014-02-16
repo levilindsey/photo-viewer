@@ -6,7 +6,7 @@
   // ------------------------------------------------------------------------------------------- //
   // Private static variables
 
-  var params, util, log, animate, SVGProgressCircle;
+  var params, util, log, animate, SVGProgressCircle, PhotoItem;
 
   // ------------------------------------------------------------------------------------------- //
   // Private dynamic functions
@@ -259,6 +259,11 @@
     photoItem = photoLightbox.photoGroup.photos[index];
     mainImageIsNotYetCached = true;
 
+    // Remove any error message that may be present
+    PhotoItem.setLoadError(photoLightbox.photoGroup.photos[photoLightbox.currentIndex],
+        photoLightbox.elements.lightbox, false, true);
+    photoLightbox.mainImageFailed = false;
+
     recordCurrentPhoto.call(photoLightbox, index);
 
     // Stop listening for the end of any transition that may still be running for the old main
@@ -413,6 +418,8 @@
           util.listenForTransitionEnd(photoLightbox.elements.newMainImage,
               photoLightbox.newImageTransitionEndEventListener);
 
+          util.removeChildrenWithClass(photoLightbox.elements.lightbox, 'newMainImage');
+
           // Add the new main image to the DOM
           photoLightbox.elements.lightbox.appendChild(photoLightbox.elements.newMainImage);
 
@@ -446,6 +453,8 @@
         photoLightbox.elements.newSmallImage = photoItem[targetSize].image;
 
         setElementVisibility(photoLightbox.elements.newSmallImage, false, false);
+
+        util.removeChildrenWithClass(photoLightbox.elements.lightbox, 'newSmallImage');
 
         // Add the new small image to the DOM
         photoLightbox.elements.lightbox.appendChild(photoLightbox.elements.newSmallImage);
@@ -483,13 +492,40 @@
    * @param {PhotoItem} photoItem
    */
   function onPhotoImageLoadError(isMainImage, targetSize, photoItem) {
-    log.e('onPhotoImageLoadError',
-        targetSize === 'full' ? photoItem.full.source : photoItem.small.source);
-    var photoLightbox;
+    var photoLightbox, hideImage;
 
     photoLightbox = this;
+    hideImage = false;
 
-    // TODO: display an error image and/or retry loading the image
+    log.w('onPhotoImageLoadError',
+        'src=' + (targetSize === 'full' ? photoItem.full.source : photoItem.small.source) +
+            ', isMain=' + isMainImage + ', targetSize=' + targetSize);
+
+    // Do NOT hide this image if the viewer has already skipped past it
+    if (photoItem !== photoLightbox.photoGroup.photos[photoLightbox.currentIndex]) {
+      log.w('onPhotoImageLoadError', 'Image is no longer current');
+    } else {
+      // Check which image just failed
+      if (isMainImage) {
+        // We only want to hide the main image version that is appropriate for the current
+        // fullscreen mode
+        if (!photoLightbox.inFullscreenMode || targetSize === 'full') {
+          hideImage = true;
+        } else {
+          // Do NOT hide this image if the viewer has toggled fullscreens
+          log.w('onPhotoImageLoadError',
+              'Not hiding image, because we are in fullscreen' + isMainImage +
+                  ', inFullscreenMode=' + photoLightbox.inFullscreenMode + ', targetSize=' +
+                  targetSize);
+        }
+      }
+    }
+
+    if (hideImage) {
+      photoLightbox.mainImageFailed = true;
+      PhotoItem.setLoadError(photoItem, photoLightbox.elements.lightbox, true, true);
+      photoLightbox.progressCircle.close();
+    }
   }
 
   /**
@@ -512,7 +548,7 @@
    * @param {PhotoItem} photoItem
    */
   function onNeighborPhotoCacheError(targetSize, photoItem) {
-    log.e('onNeighborPhotoCacheError',
+    log.w('onNeighborPhotoCacheError',
         targetSize === 'full' ? photoItem.full.source : photoItem.small.source);
   }
 
@@ -568,7 +604,8 @@
         }
 
         // If we are still loading the main image, show the progress circle
-        if (util.containsClass(photoLightbox.elements.newMainImage, 'hidden')) {
+        if (util.containsClass(photoLightbox.elements.newMainImage, 'hidden') &&
+            !photoLightbox.mainImageFailed) {
           photoLightbox.progressCircle.open();
         }
       } else {
@@ -601,6 +638,9 @@
     photoLightbox.inFullscreenMode = false;
     adjustForFullScreenChange.call(photoLightbox);
     util.cancelFullScreen();
+
+    // We will not have been updating the query string while the viewer was in full-screen mode
+    app.updateQueryString(photoLightbox.photoGroup, photoLightbox.currentIndex);
   }
 
   /**
@@ -725,7 +765,10 @@
     photoLightbox.currentIndex = index;
     photoGroup = photoLightbox.photoGroup;
 
-    app.updateQueryString(photoGroup, index);
+    // The browser will exit full-screen mode if we change the active URL
+    if (!photoLightbox.inFullscreenMode) {
+      app.updateQueryString(photoGroup, index);
+    }
   }
 
   // ------------------------------------------------------------------------------------------- //
@@ -991,6 +1034,7 @@
     log = new app.Log('photoLightbox');
     animate = app.animate;
     SVGProgressCircle = app.SVGProgressCircle;
+    PhotoItem = app.PhotoItem;
     log.d('initStaticFields', 'Module initialized');
   }
 
@@ -1018,6 +1062,7 @@
     photoLightbox.pointerMoveTimeout = null;
     photoLightbox.buttonsHaveBeenVisible = false;
     photoLightbox.mouseIsOverOverlayButton = false;
+    photoLightbox.mainImageFailed = false;
     photoLightbox.opening = false;
     photoLightbox.closing = false;
     photoLightbox.open = open;

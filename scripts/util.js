@@ -717,7 +717,7 @@
    * @returns {Boolean} True if the child did indeed belong to the parent.
    */
   function removeChildIfPresent(parent, child) {
-    if (child.parentNode === parent) {
+    if (child && child.parentNode === parent) {
       parent.removeChild(child);
       return true;
     }
@@ -952,6 +952,22 @@
     return easingFunctions[easingFunctionName] || easingFunctions['linear'];
   }
 
+  /**
+   * Removes any children elements from the given parent that have the given class.
+   * @function util.removeChildrenWithClass
+   * @param {HTMLElement} parent The parent to remove children from.
+   * @param {String} className The class to match.
+   */
+  function removeChildrenWithClass(parent, className) {
+    var matchingChildren, i, count;
+
+    matchingChildren = parent.querySelectorAll('.' + className);
+
+    for (i = 0, count = matchingChildren.length; i < count; i++) {
+      parent.removeChild(matchingChildren[i]);
+    }
+  }
+
   // ------------------------------------------------------------------------------------------- //
   // Expose this module
 
@@ -984,6 +1000,7 @@
     getEasedProgress: getEasedProgress,
     interpolate: interpolate,
     getEasingFunction: getEasingFunction,
+    removeChildrenWithClass: removeChildrenWithClass,
     XHR: null,
     listen: null,
     stopListening: null,

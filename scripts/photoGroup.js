@@ -15,30 +15,36 @@
    * Cache the given image version of each of the photos in this collection.
    * @function photoGroup#cacheImages
    * @param {'full'|'small'|'thumbnail'|'gridThumbnail'} targetSize Which image version to cache.
-   * @param {Function} onSingleSuccess An event listener called if all of the images are cached
+   * @param {Function} onSingleSuccess An event listener called once for each successfully loaded
+   * image.
+   * @param {Function} onSingleError An event listener called once for each error that occurs while
+   * loading all of the images.
+   * @param {Function} onTotalSuccess An event listener called once if all of the images are loaded
    * successfully.
-   * @param {Function} onTotalSuccess An event listener called once if any errors occur while
-   * caching all of the images.
-   * @param {Function} onTotalError An event listener called once for each error that occurs while
-   * caching all of the images.
+   * @param {Function} onTotalError An event listener called once if any errors occur while
+   * loading all of the images.
    */
-  function cacheImages(targetSize, onSingleSuccess, onTotalSuccess, onTotalError) {
-    loadOrCacheIMages.call(this, targetSize, onSingleSuccess, onTotalSuccess, onTotalError, true);
+  function cacheImages(targetSize, onSingleSuccess, onSingleError, onTotalSuccess, onTotalError) {
+    loadOrCacheIMages.call(this, targetSize, onSingleSuccess, onSingleError, onTotalSuccess,
+        onTotalError, true);
   }
 
   /**
    * Load the given image version of each of the photos in this collection.
    * @function photoGroup#loadImages
    * @param {'full'|'small'|'thumbnail'|'gridThumbnail'} targetSize Which image version to load.
-   * @param {Function} onSingleSuccess An event listener called if all of the images are loaded
-   * successfully.
-   * @param {Function} onTotalSuccess An event listener called once if any errors occur while
+   * @param {Function} onSingleSuccess An event listener called once for each successfully loaded
+   * image.
+   * @param {Function} onSingleError An event listener called once for each error that occurs while
    * loading all of the images.
-   * @param {Function} onTotalError An event listener called once for each error that occurs while
+   * @param {Function} onTotalSuccess An event listener called once if all of the images are loaded
+   * successfully.
+   * @param {Function} onTotalError An event listener called once if any errors occur while
    * loading all of the images.
    */
-  function loadImages(targetSize, onSingleSuccess, onTotalSuccess, onTotalError) {
-    loadOrCacheIMages.call(this, targetSize, onSingleSuccess, onTotalSuccess, onTotalError, false);
+  function loadImages(targetSize, onSingleSuccess, onSingleError, onTotalSuccess, onTotalError) {
+    loadOrCacheIMages.call(this, targetSize, onSingleSuccess, onSingleError, onTotalSuccess,
+        onTotalError, false);
   }
 
   /**
@@ -47,16 +53,19 @@
    * @function photoGroup#loadOrCacheIMages
    * @param {'full'|'small'|'thumbnail'|'gridThumbnail'} targetSize Which image version to
    * load/cache.
-   * @param {Function} onSingleSuccess An event listener called if all of the images are loaded
-   * successfully.
-   * @param {Function} onTotalSuccess An event listener called once if any errors occur while
+   * @param {Function} onSingleSuccess An event listener called once for each successfully loaded
+   * image.
+   * @param {Function} onSingleError An event listener called once for each error that occurs while
    * loading all of the images.
-   * @param {Function} onTotalError An event listener called once for each error that occurs while
+   * @param {Function} onTotalSuccess An event listener called once if all of the images are loaded
+   * successfully.
+   * @param {Function} onTotalError An event listener called once if any errors occur while
    * loading all of the images.
    * @param {Boolean} onlyCache If true, then the images will be cached and not "loaded" (i.e.,
    * references to the images will not be kept).
    */
-  function loadOrCacheIMages(targetSize, onSingleSuccess, onTotalSuccess, onTotalError, onlyCache) {
+  function loadOrCacheIMages(targetSize, onSingleSuccess, onSingleError, onTotalSuccess,
+                             onTotalError, onlyCache) {
     var loadedCount, failedPhotos, photoGroup, photoFunction;
 
     photoGroup = this;
@@ -80,6 +89,7 @@
 
     function onImageLoadError(photo) {
       failedPhotos.push(photo);
+      onSingleError(photoGroup, photo);
       if (failedPhotos.length + loadedCount === photoGroup.photos.length) {
         onTotalError(photoGroup, failedPhotos);
       }
