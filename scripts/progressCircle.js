@@ -303,7 +303,7 @@
 
   /**
    * Starts the animation of the progress circle.
-   * @function ProgressCircle#open
+   * @function progressCircle#open
    */
   function open() {
     var progressCircle = this;
@@ -321,7 +321,7 @@
 
   /**
    * Starts the closing animation of the progress circle.
-   * @function ProgressCircle#close
+   * @function progressCircle#close
    */
   function close() {
     var progressCircle, startTime;
@@ -362,7 +362,7 @@
   }
 
   /**
-   * @function ProgressCircle#updateProgress
+   * @function progressCircle#updateProgress
    * @param {Number} loaded
    * @param {Number} total
    */
@@ -380,7 +380,7 @@
 
   /**
    * Initializes some static state for this module.
-   * @function ProgressCircle.initStaticFields
+   * @function progressCircle.initStaticFields
    */
   function initStaticFields() {
     params = app.params;

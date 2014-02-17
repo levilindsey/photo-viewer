@@ -14,7 +14,7 @@
   /**
    * Creates the DOM element for this grid cell, adding its child content element to it, and
    * adding it to its parent element.
-   * @function PhotoGridCell~createElement
+   * @function photoGridCell~createElement
    * @param {HTMLElement} parent The parent element that contains this grid cell.
    * @param {PhotoItem} photo The photo item that this grid cell contains.
    */
@@ -30,7 +30,7 @@
   /**
    * Computes and sets the CSS transition parameters for this grid cell according to the given
    * overall grid transition duration.
-   * @function PhotoGridCell~setUpCSSTransitions
+   * @function photoGridCell~setUpCSSTransitions
    */
   function setUpCSSTransitions(duration) {
     var cell = this;
@@ -47,7 +47,7 @@
   /**
    * Starts the animation to move this grid cell from its current position to its position within
    * the open grid.
-   * @function PhotoGridCell#animateToOpen
+   * @function photoGridCell#animateToOpen
    */
   function animateToOpen(duration) {
     var cell = this;
@@ -59,7 +59,7 @@
   /**
    * Starts the animation to move this grid cell from its current position to its position within
    * the closed grid.
-   * @function PhotoGridCell#animateToClosed
+   * @function photoGridCell#animateToClosed
    */
   function animateToClosed(duration) {
     var cell = this;
@@ -70,7 +70,7 @@
 
   /**
    * Sets the open and closed positions of this cell.
-   * @function PhotoGridCell#setPositions
+   * @function photoGridCell#setPositions
    * @param {Number} x The x coordinate of this grid cell.
    * @param {Number} closedY The y coordinate of this grid cell when the grid is closed.
    * @param {Number} openY The y coordinate of this grid cell when the grid is open.
@@ -88,7 +88,7 @@
 
   /**
    * Sets the transition parameters of this cell.
-   * @function PhotoGridCell#setTransitionParameters
+   * @function photoGridCell#setTransitionParameters
    * @param {Number} durationRatio A ratio describing the transition duration of this grid cell
    * relative to the overall grid transition duration.
    * @param {Number} delayRatio A ratio describing the transition delay of this grid cell relative
@@ -108,7 +108,7 @@
 
   /**
    * Initializes some static state for this module.
-   * @function PhotoGridCell.initStaticFields
+   * @function photoGridCell.initStaticFields
    */
   function initStaticFields() {
     params = app.params;

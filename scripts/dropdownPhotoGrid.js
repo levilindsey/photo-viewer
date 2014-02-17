@@ -14,7 +14,7 @@
   /**
    * Creates the DOM elements that form this photo grid, adds them to the DOM, and adds them to the
    * elements property of this photo grid.
-   * @function DropdownPhotoGrid~createElements
+   * @function dropdownPhotoGrid~createElements
    */
   function createElements() {
     var photoGrid, container, banner, bannerIcon, bannerTitleContainer, bannerTitleText, tapThumbnailPromptContainer, tapThumbnailPromptText, grid, width;
@@ -71,7 +71,7 @@
 
   /**
    *
-   * @function DropdownPhotoGrid~createThumbnails
+   * @function dropdownPhotoGrid~createThumbnails
    */
   function createThumbnails() {
     var photoGrid, gridCell;
@@ -105,7 +105,7 @@
 
   /**
    *
-   * @function DropdownPhotoGrid~onPhotoGroupSingleLoadSuccess
+   * @function dropdownPhotoGrid~onPhotoGroupSingleLoadSuccess
    * @param {PhotoItem} photo
    */
   function onPhotoGroupSingleLoadSuccess(photo) {
@@ -117,7 +117,7 @@
 
   /**
    *
-   * @function DropdownPhotoGrid~onPhotoGroupSingleLoadError
+   * @function dropdownPhotoGrid~onPhotoGroupSingleLoadError
    * @param {PhotoItem} photo
    */
   function onPhotoGroupSingleLoadError(photo) {
@@ -128,7 +128,7 @@
 
   /**
    *
-   * @function DropdownPhotoGrid~onPhotoGroupTotalLoadSuccess
+   * @function dropdownPhotoGrid~onPhotoGroupTotalLoadSuccess
    * @param {PhotoGroup} photoGroup
    */
   function onPhotoGroupTotalLoadSuccess(photoGroup) {
@@ -137,7 +137,7 @@
 
   /**
    *
-   * @function DropdownPhotoGrid~onPhotoGroupTotalLoadError
+   * @function dropdownPhotoGrid~onPhotoGroupTotalLoadError
    * @param {PhotoGroup} photoGroup
    * @param {Array.<PhotoItem>} failedPhotos
    */
@@ -148,7 +148,7 @@
 
   /**
    *
-   * @function DropdownPhotoGrid~onPhotoItemTap
+   * @function dropdownPhotoGrid~onPhotoItemTap
    * @param {Object} event
    * @param {PhotoGroup} photoGroup
    * @param {Number} index
@@ -162,7 +162,7 @@
 
   /**
    *
-   * @function DropdownPhotoGrid~onBannerTap
+   * @function dropdownPhotoGrid~onBannerTap
    */
   function onBannerTap() {
     var photoGrid = this;
@@ -176,7 +176,7 @@
 
   /**
    *
-   * @function DropdownPhotoGrid~onOpeningFinished
+   * @function dropdownPhotoGrid~onOpeningFinished
    */
   function onOpeningFinished() {
     var photoGrid = this;
@@ -202,7 +202,7 @@
 
   /**
    *
-   * @function DropdownPhotoGrid~onClosingFinished
+   * @function dropdownPhotoGrid~onClosingFinished
    */
   function onClosingFinished() {
     var photoGrid = this;
@@ -217,7 +217,7 @@
   }
 
   /**
-   * @function SpringGrid~onOpenCloseEnd
+   * @function dropdownPhotoGrid~onOpenCloseEnd
    */
   function onOpenCloseEnd() {
     var photoGrid = this;
@@ -234,7 +234,7 @@
 
   /**
    *
-   * @function DropdownPhotoGrid#open
+   * @function dropdownPhotoGrid#open
    */
   function open() {
     var photoGrid = this;
@@ -269,7 +269,7 @@
 
   /**
    *
-   * @function DropdownPhotoGrid#close
+   * @function dropdownPhotoGrid#close
    */
   function close() {
     var photoGrid = this;
@@ -289,11 +289,14 @@
     });
 
     setElementVisibility(photoGrid.elements.tapThumbnailPromptContainer, false, false, null);
+
+    // Clear extra small-sized images from memory
+    photoGrid.photoGroup.clearImages('small');
   }
 
   /**
    *
-   * @function DropdownPhotoGrid#resize
+   * @function dropdownPhotoGrid#resize
    */
   function resize() {
     var photoGrid, columnCapacity, viewportSize, width;
@@ -330,7 +333,7 @@
   /**
    * Calculates which row and column each cell belongs to and updates the cells' position and
    * transition parameters accordingly.
-   * @function SpringGrid~updateCellRowsAndColumns
+   * @function dropdownPhotoGrid~updateCellRowsAndColumns
    */
   function updateCellRowsAndColumns() {
     var photoGrid, i, count, column, row;
@@ -349,7 +352,7 @@
 
   /**
    * Opens the photo at the given index within this grid's photo group.
-   * @function DropdownPhotoGrid#openPhoto
+   * @function dropdownPhotoGrid#openPhoto
    * @param {Number} index The index of the photo to open.
    * @returns {Boolean} True if the photo was opened successfully.
    */
@@ -423,7 +426,7 @@
 
   /**
    * Updates the given cell's position values according to the given row and column.
-   * @function springGrid~updateCellPositions
+   * @function dropdownPhotoGrid~updateCellPositions
    * @param {PhotoGridCell} cell The cell to update.
    * @param {Number} gridHeight The height of the grid containing the cell.
    * @param {Number} row The row index the cell is in.
@@ -445,7 +448,7 @@
 
   /**
    * Updates the given cell's transition parameters according to the given row and column.
-   * @function springGrid~updateCellTransitionParameters
+   * @function dropdownPhotoGrid~updateCellTransitionParameters
    * @param {PhotoGridCell} cell The cell to update.
    * @param {Number} rowCount The total number of rows in the grid.
    * @param {Number} row The row index the cell is in.
@@ -495,7 +498,7 @@
 
   /**
    * Initializes some static state for this module.
-   * @function DropdownPhotoGrid.initStaticFields
+   * @function dropdownPhotoGrid.initStaticFields
    */
   function initStaticFields() {
     params = app.params;

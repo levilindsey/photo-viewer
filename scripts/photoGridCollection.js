@@ -14,7 +14,7 @@
   /**
    * Creates the DOM elements that form this grid collection, adds them to the DOM, and adds them
    * to the elements property of this grid collection.
-   * @function PhotoGridCollection~createElements
+   * @function photoGridCollection~createElements
    */
   function createElements() {
     var gridCollection, container, progressCircleContainer;
@@ -49,7 +49,7 @@
 
   /**
    *
-   * @function PhotoGridCollection~createBackgroundPulse
+   * @function photoGridCollection~createBackgroundPulse
    */
   function createBackgroundPulse() {
     var gridCollection, defs, gradient, stop1, stop2, pulseCircle;
@@ -94,7 +94,7 @@
 
   /**
    *
-   * @function PhotoGridCollection~resize
+   * @function photoGridCollection~resize
    */
   function resize() {
     var gridCollection, viewportSize, columnCapacity, columnCount, gridCollectionHeight;
@@ -154,7 +154,7 @@
 
   /**
    *
-   * @function PhotoGridCollection~areAllGridsFullyClosed
+   * @function photoGridCollection~areAllGridsFullyClosed
    * @returns {Boolean}
    */
   function areAllGridsFullyClosed() {
@@ -170,7 +170,7 @@
 
   /**
    *
-   * @function PhotoGridCollection~setTapThumbnailPromptsDisplay
+   * @function photoGridCollection~setTapThumbnailPromptsDisplay
    * @param {Boolean} areDisplayed
    */
   function setTapThumbnailPromptsDisplay(areDisplayed) {
@@ -184,7 +184,7 @@
 
   /**
    *
-   * @function PhotoGridCollection~startBackgroundPulseAnimation
+   * @function photoGridCollection~startBackgroundPulseAnimation
    */
   function startBackgroundPulseAnimation() {
     var gridCollection, startTime;
@@ -237,7 +237,7 @@
 
   /**
    *
-   * @function PhotoGridCollection~stopBackgroundPulseAnimation
+   * @function photoGridCollection~stopBackgroundPulseAnimation
    */
   function stopBackgroundPulseAnimation() {
     var gridCollection = this;
@@ -259,7 +259,7 @@
 
   /**
    *
-   * @function PhotoGridCollection~stopExpandOrShrinkAnimation
+   * @function photoGridCollection~stopExpandOrShrinkAnimation
    */
   function stopExpandOrShrinkAnimation() {
     var gridCollection = this;
@@ -275,7 +275,7 @@
 
   /**
    *
-   * @function PhotoGridCollection~shrink
+   * @function photoGridCollection~shrink
    */
   function shrink() {
     var gridCollection, pageOffset;
@@ -305,7 +305,7 @@
 
   /**
    *
-   * @function PhotoGridCollection~onShrinkEnd
+   * @function photoGridCollection~onShrinkEnd
    */
   function onShrinkEnd() {
     var gridCollection = this;
@@ -321,7 +321,7 @@
 
   /**
    *
-   * @function PhotoGridCollection~onExpandEnd
+   * @function photoGridCollection~onExpandEnd
    * @param {DropdownPhotoGrid} gridToOpen
    */
   function onExpandEnd(gridToOpen) {
@@ -337,7 +337,7 @@
 
   /**
    *
-   * @function PhotoGridCollection~recordCurrentOpenGrid
+   * @function photoGridCollection~recordCurrentOpenGrid
    * @param {DropdownPhotoGrid} currentOpenGrid
    */
   function recordCurrentOpenGrid(currentOpenGrid) {
@@ -360,7 +360,7 @@
 
   /**
    *
-   * @function PhotoGridCollection#expand
+   * @function photoGridCollection#expand
    * @param {DropdownPhotoGrid} gridToOpen
    */
   function expand(gridToOpen) {
@@ -390,7 +390,7 @@
 
   /**
    *
-   * @function PhotoGridCollection#onGridOpenStart
+   * @function photoGridCollection#onGridOpenStart
    * @param {DropdownPhotoGrid} grid
    */
   function onGridOpenStart(grid) {
@@ -405,7 +405,7 @@
 
   /**
    *
-   * @function PhotoGridCollection#onGridCloseEnd
+   * @function photoGridCollection#onGridCloseEnd
    * @param {DropdownPhotoGrid} grid
    */
   function onGridCloseEnd(grid) {
@@ -422,7 +422,7 @@
 
   /**
    *
-   * @function PhotoGridCollection#onLightboxCloseStart
+   * @function photoGridCollection#onLightboxCloseStart
    */
   function onLightboxCloseStart() {
     var gridCollection = this;
@@ -431,7 +431,7 @@
 
   /**
    * Creates the photo grids and adds them to the DOM.
-   * @function PhotoGridCollection#onPhotoMetadataParsed
+   * @function photoGridCollection#onPhotoMetadataParsed
    * @param {Array.<PhotoGroup>} photoGroups The collection of photo data collections to represent
    * in this grid collection.
    */
@@ -458,7 +458,7 @@
 
   /**
    * Opens the grid whose photo group has the given name.
-   * @function PhotoGridCollection#openPhoto
+   * @function photoGridCollection#openPhoto
    * @param {String} groupName The name of the photo group to open.
    * @returns {Boolean} True if the grid was opened successfully.
    */
@@ -478,7 +478,7 @@
 
   /**
    * Opens the photo at the given index within the current grid's photo group.
-   * @function PhotoGridCollection#openPhoto
+   * @function photoGridCollection#openPhoto
    * @param {Number} index The index of the photo to open.
    * @param {String} [groupName] The name of the photo group to open.
    * @returns {Boolean} True if the photo was opened successfully.
@@ -503,7 +503,7 @@
 
   /**
    * Initializes some static state for this module.
-   * @function PhotoGridCollection.initStaticFields
+   * @function photoGridCollection.initStaticFields
    */
   function initStaticFields() {
     params = app.params;

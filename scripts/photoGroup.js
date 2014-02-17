@@ -112,12 +112,25 @@
     });
   }
 
+  /**
+   * Removes all extra images from memory according to the given parameters.
+   * @function photoGroup#clearImages
+   * @param {'full'|'small'|'thumbnail'|'gridThumbnail'} targetSize Which image version to clear.
+   */
+  function clearImages(targetSize) {
+    var photoGroup = this;
+
+    photoGroup.photos.forEach(function(photo) {
+      photo[targetSize].image = null;
+    });
+  }
+
   // ------------------------------------------------------------------------------------------- //
   // Public static functions
 
   /**
    * Initializes some static state for this module.
-   * @function PhotoGroup.initStaticFields
+   * @function photoGroup.initStaticFields
    */
   function initStaticFields() {
     params = app.params;
@@ -137,12 +150,15 @@
    * @param {Array.<PhotoItem>} photos The photo items that comprise this group.
    */
   function PhotoGroup(title, photos) {
-    this.title = title;
-    this.photos = photos;
+    var photoGroup = this;
 
-    this.cacheImages = cacheImages;
-    this.loadImages = loadImages;
-    this.addPhotoItemTapEventListeners = addPhotoItemTapEventListeners;
+    photoGroup.title = title;
+    photoGroup.photos = photos;
+
+    photoGroup.cacheImages = cacheImages;
+    photoGroup.loadImages = loadImages;
+    photoGroup.addPhotoItemTapEventListeners = addPhotoItemTapEventListeners;
+    photoGroup.clearImages = clearImages;
   }
 
   // Expose this module
