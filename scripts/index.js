@@ -78,22 +78,26 @@
    * @function index~checkBrowserCompatibility
    */
   function checkBrowserCompatibility() {
-    var body, noJavaScriptMessage, badBrowserMessage;
+    if (!util.isBrowserCompatible) {
+      showErrorMessage(params.L18N.EN.BAD_BROWSER_MESSAGE);
+    }
+  }
+
+  /**
+   * Adds an error message ribbon overtop of the document body. This message can be closed by
+   * tapping on it.
+   * @param {String} message The text to show in the error display.
+   */
+  function showErrorMessage(message) {
+    var body, errorMessageElement;
 
     body = document.getElementsByTagName('body')[0];
 
-    if (!util.isBrowserCompatible) {
-      // Add a bad-browser message
-      badBrowserMessage = util.createElement('div', body, 'badBrowserMsg', null);
-      badBrowserMessage.innerHTML = params.L18N.EN.BAD_BROWSER_MESSAGE;
-      badBrowserMessage.onclick = function () {
-        body.removeChild(badBrowserMessage);
-      };
-    }
-
-    // Remove the no-JavaScript message
-    noJavaScriptMessage = document.getElementById('noJavaScriptMsg');
-    body.removeChild(noJavaScriptMessage);
+    errorMessageElement = util.createElement('div', body, null, ['errorMessage']);
+    errorMessageElement.innerHTML = message;
+    errorMessageElement.onclick = function () {
+      body.removeChild(errorMessageElement);
+    };
   }
 
   /**
@@ -131,7 +135,7 @@
    */
   function onParsePhotoMetadataError(errorMessage) {
     log.e('onParsePhotoMetadataError', 'Unable to load/parse metadata: ' + errorMessage);
-    alert(':( Unable to download the metadata for the images.');
+    showErrorMessage(params.L18N.EN.METADATA_ERROR_MESSAGE);
   }
 
   /**

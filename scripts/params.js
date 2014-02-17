@@ -133,6 +133,8 @@
   moduleParams.RADIUS_PULSE_HALF_PERIOD = params.PROGRESS_CIRCLE.RADIUS_PULSE_PERIOD * 0.5; // milliseconds per half pulse
   moduleParams.BRIGHTNESS_PULSE_HALF_PERIOD = params.PROGRESS_CIRCLE.BRIGHTNESS_PULSE_PERIOD * 0.5; // milliseconds per half pulse
 
+  moduleParams.OPEN_OPACITY_CHANGE_DURATION = 400; // milliseconds per half pulse
+
   // --- Log parameters --- //
 
   moduleParams = {};
@@ -160,6 +162,7 @@
 
   moduleParams.BAD_BROWSER_MESSAGE =
       ':( Sorry, but some of the fancy features of this app may not work on your browser. You should really upgrade to a newer version.';
+  moduleParams.METADATA_ERROR_MESSAGE = ':( Unable to download or parse the metadata for the images.';
 
   // --- Miscellaneous parameters --- //
 

@@ -308,7 +308,11 @@
   function open() {
     var progressCircle = this;
 
-    // TODO: refactor this so that it doesn't re-create the elements each time?
+    progressCircle.opacityAnimation =
+        animate.startNumericStyleAnimation(progressCircle.elements.svg, 'opacity', 0, 1, null,
+            params.PROGRESS_CIRCLE.OPEN_OPACITY_CHANGE_DURATION, null, null, 'easeInQuad', null,
+            null);
+
     if (!progressCircle.dots) {
       progressCircle.dots =
           createDots(progressCircle.elements.svg, params.PROGRESS_CIRCLE.DOT_COUNT,
@@ -439,6 +443,7 @@
     var progressCircle = this;
 
     progressCircle.parent = parent;
+    progressCircle.elements = null;
     progressCircle.showPercent = showPercent;
     progressCircle.left = (containerSideLength - diameter) / 2;
     progressCircle.top = (containerSideLength - diameter) / 2;
@@ -448,7 +453,7 @@
     progressCircle.open = open;
     progressCircle.close = close;
     progressCircle.updateProgress = updateProgress;
-    progressCircle.elements = null;
+    progressCircle.opacityAnimation = null;
 
     createElements.call(progressCircle, parent, containerSideLength);
   }

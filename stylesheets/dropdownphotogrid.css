@@ -8,7 +8,7 @@ body {
   font-family: Arial, sans-serif;
 }
 
-#badBrowserMsg, #noJavaScriptMsg {
+.errorMessage {
   display: block;
   position: relative;
   width: 100%;

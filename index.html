@@ -10,9 +10,17 @@
     <title>Photo Viewer</title>
   </head>
   <body>
-    <div id="noJavaScriptMsg">
+    <div id="noJavaScriptMsg" class="errorMessage">
       :( Sorry, but this fancy web app requires JavaScript.
     </div>
+
+    <script>
+      // Remove the no-JavaScript message
+      var body, noJavaScriptMessage;
+      body = document.getElementsByTagName('body')[0];
+      noJavaScriptMessage = document.getElementById('noJavaScriptMsg');
+      body.removeChild(noJavaScriptMessage);
+    </script>
 
     <script type="text/javascript" src="scripts/params.js"></script>
     <script type="text/javascript" src="scripts/util.js"></script>
