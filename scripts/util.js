@@ -609,7 +609,7 @@
     xhr = new util.XHR();
 
     // Prepare to handle the response
-    xhr.onload = function () {
+    util.listen(xhr, 'load', function () {
       var imageObjectURL;
 
       if (xhr.readyState === 4) {
@@ -628,14 +628,15 @@
           }
         }
       }
-    };
-    xhr.onprogress = function (event) {
+    });
+    util.listen(xhr, 'progress', function (event) {
       if (event.lengthComputable) {
+        log.v('loadImageViaXHR.OnProgress', event.loaded + '/' + event.total);
         onProgress(event.loaded / event.total);
       } else {
         log.w('loadImageViaXHR.OnProgress', 'Length is not computable');
       }
-    };
+    });
 
     // Initialize the request
     try {
