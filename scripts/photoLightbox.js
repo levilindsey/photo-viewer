@@ -111,9 +111,12 @@
           onOverlayButtonHoverEnd.call(photoLightbox, event);
         });
 
-    progressCircleContainer = util.createElement('div', lightbox, null, ['progressCircleContainer']);
-    progressCircleContainer.style.width = params.LIGHTBOX.PROGRESS_CIRCLE_CONTAINER_SIDE_LENGTH + 'px';
-    progressCircleContainer.style.height = params.LIGHTBOX.PROGRESS_CIRCLE_CONTAINER_SIDE_LENGTH + 'px';
+    progressCircleContainer =
+        util.createElement('div', lightbox, null, ['progressCircleContainer']);
+    progressCircleContainer.style.width =
+        params.LIGHTBOX.PROGRESS_CIRCLE_CONTAINER_SIDE_LENGTH + 'px';
+    progressCircleContainer.style.height =
+        params.LIGHTBOX.PROGRESS_CIRCLE_CONTAINER_SIDE_LENGTH + 'px';
 
     photoLightbox.elements = {
       lightbox: lightbox,
@@ -338,8 +341,8 @@
       log.d('setPhoto.loadPhotoImage',
           'Sending image load request: ' + photoItem[targetSize].source);
 
-      onProgress = isMainImage && !photoItem[targetSize].isCached ?
-          function (photoItem, loaded, total) {
+      onProgress =
+          isMainImage && !photoItem[targetSize].isCached ? function (photoItem, loaded, total) {
             onPhotoImageLoadProgress.call(photoLightbox, targetSize, photoItem, loaded, total);
           } : null;
 
@@ -489,7 +492,8 @@
         onNeighborPhotoCacheSuccess.call(photoLightbox, targetSize, photoItem);
       }, function (photoItem) {
         onNeighborPhotoCacheError.call(photoLightbox, targetSize, photoItem);
-      }, function () {});
+      }, function () {
+      });
     }
   }
 
@@ -771,9 +775,11 @@
 
     // Center the progress circle
     photoLightbox.elements.progressCircleContainer.style.top =
-        (parseInt(lightboxElement.style.height) - params.LIGHTBOX.PROGRESS_CIRCLE_CONTAINER_SIDE_LENGTH) / 2 + 'px';
+        (parseInt(lightboxElement.style.height) -
+            params.LIGHTBOX.PROGRESS_CIRCLE_CONTAINER_SIDE_LENGTH) / 2 + 'px';
     photoLightbox.elements.progressCircleContainer.style.left =
-        (parseInt(lightboxElement.style.width) - params.LIGHTBOX.PROGRESS_CIRCLE_CONTAINER_SIDE_LENGTH) / 2 + 'px';
+        (parseInt(lightboxElement.style.width) -
+            params.LIGHTBOX.PROGRESS_CIRCLE_CONTAINER_SIDE_LENGTH) / 2 + 'px';
   }
 
   /**

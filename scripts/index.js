@@ -61,6 +61,7 @@
     photoMetadata.downloadAndParsePhotoMetadata(params.PHOTO_METADATA.URL,
         onParsePhotoMetadataSuccess, onParsePhotoMetadataError);
     cacheSpriteSheet();
+    checkBrowserCompatibility();
   }
 
   /**
@@ -71,6 +72,28 @@
     log.i('onDocumentLoad');
 
     reset();
+  }
+
+  /**
+   * @function index~checkBrowserCompatibility
+   */
+  function checkBrowserCompatibility() {
+    var body, noJavaScriptMessage, badBrowserMessage;
+
+    body = document.getElementsByTagName('body')[0];
+
+    if (!util.isBrowserCompatible) {
+      // Add a bad-browser message
+      badBrowserMessage = util.createElement('div', body, 'badBrowserMsg', null);
+      badBrowserMessage.innerHTML = params.L18N.EN.BAD_BROWSER_MESSAGE;
+      badBrowserMessage.onclick = function () {
+        body.removeChild(badBrowserMessage);
+      };
+    }
+
+    // Remove the no-JavaScript message
+    noJavaScriptMessage = document.getElementById('noJavaScriptMsg');
+    body.removeChild(noJavaScriptMessage);
   }
 
   /**

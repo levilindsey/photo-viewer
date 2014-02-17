@@ -17,16 +17,22 @@
       util.XHR = window.XMLHttpRequest;
     } else {
       util.XHR = function () {
+        var activeXObject;
         try {
-          return new ActiveXObject('Msxml2.XMLHTTP.6.0');
+          activeXObject = new ActiveXObject('Msxml2.XMLHTTP.6.0');
+          return activeXObject;
         } catch (e1) {
         }
         try {
-          return new ActiveXObject('Msxml2.XMLHTTP.3.0');
+          activeXObject = new ActiveXObject('Msxml2.XMLHTTP.3.0');
+          util.isBrowserCompatible = false;
+          return activeXObject;
         } catch (e2) {
         }
         try {
-          return new ActiveXObject('Msxml2.XMLHTTP');
+          activeXObject = new ActiveXObject('Msxml2.XMLHTTP');
+          util.isBrowserCompatible = false;
+          return activeXObject;
         } catch (e3) {
         }
         throw new Error('This browser does not support XMLHttpRequest.');
@@ -46,10 +52,12 @@
         element.addEventListener(eventName, handler, false);
       };
     } else if (body.attachEvent) {
+      util.isBrowserCompatible = false;
       util.listen = function (element, eventName, handler) {
         element.attachEvent('on' + eventName, handler);
       };
     } else {
+      util.isBrowserCompatible = false;
       util.listen = function (element, eventName, handler) {
         element['on' + eventName] = handler;
       };
@@ -68,10 +76,12 @@
         element.removeEventListener(eventName, handler, false);
       };
     } else if (body.detachEvent) {
+      util.isBrowserCompatible = false;
       util.stopListening = function (element, eventName, handler) {
         element.detachEvent('on' + eventName, handler);
       };
     } else {
+      util.isBrowserCompatible = false;
       util.stopListening = function (element, eventName) {
         element['on' + eventName] = null;
       };
@@ -187,6 +197,7 @@
       if (event.stopPropagation) {
         event.stopPropagation();
       } else {
+        util.isBrowserCompatible = false;
         event.cancelBubble = true;
       }
     };
@@ -202,6 +213,7 @@
       if (event.preventDefault) {
         event.preventDefault();
       } else {
+        util.isBrowserCompatible = false;
         event.returnValue = false;
       }
     };
@@ -238,6 +250,7 @@
         util.stopListening(element, transitionEndEventName, handler);
       };
     } else {
+      util.isBrowserCompatible = false;
       util.listenForTransitionEnd = function () {
         log.e('This browser does not support the transitionend event.');
       };
@@ -255,19 +268,19 @@
    */
   function setUpGetScrollTopAndLeft() {
     var body;
-    if (typeof pageYOffset !== 'undefined') {
-      util.getScrollTop = function () {
-        return pageYOffset;
-      };
-      util.getScrollLeft = function () {
-        return pageXOffset;
-      };
-    } else if (document.documentElement) {
+    if (document.documentElement) {
       util.getScrollTop = function () {
         return document.documentElement.scrollTop;
       };
       util.getScrollLeft = function () {
         return document.documentElement.scrollLeft;
+      };
+    } else if (typeof pageYOffset !== 'undefined') {
+      util.getScrollTop = function () {
+        return pageYOffset;
+      };
+      util.getScrollLeft = function () {
+        return pageXOffset;
       };
     } else {
       body = document.getElementsByTagName('body')[0];
@@ -474,6 +487,8 @@
   function init() {
     params = app.params;
     log = new app.Log('util');
+
+    util.isBrowserCompatible = true;
 
     checkIfMobileBrowser();
     checkIfSmallScreen();
@@ -1046,14 +1061,12 @@
    * @param {String} input
    * @returns {String}
    */
-  function base64Encode(input)
-  {
+  function base64Encode(input) {
     var b64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
     var output = '';
     var i = 0;
 
-    while (i < input.length)
-    {
+    while (i < input.length) {
       //all three "& 0xff" added below are there to fix a known bug
       //with bytes returned by xhr.responseText
       var byte1 = input.charCodeAt(i++) & 0xff;
@@ -1064,19 +1077,13 @@
       var enc2 = ((byte1 & 3) << 4) | (byte2 >> 4);
 
       var enc3, enc4;
-      if (isNaN(byte2))
-      {
+      if (isNaN(byte2)) {
         enc3 = enc4 = 64;
-      }
-      else
-      {
+      } else {
         enc3 = ((byte2 & 15) << 2) | (byte3 >> 6);
-        if (isNaN(byte3))
-        {
+        if (isNaN(byte3)) {
           enc4 = 64;
-        }
-        else
-        {
+        } else {
           enc4 = byte3 & 63;
         }
       }
@@ -1141,7 +1148,8 @@
     addPointerMoveEventListener: null,
     removePointerMoveEventListener: null,
     isMobileBrowser: false,
-    isSmallScreen: false
+    isSmallScreen: false,
+    isBrowserCompatible: false
   };
 
   // Expose this module

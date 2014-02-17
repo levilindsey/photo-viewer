@@ -22,7 +22,8 @@
     gridCollection = this;
 
     container = util.createElement('div', gridCollection.parent, null, ['gridCollectionContainer']);
-    progressCircleContainer = util.createElement('div', gridCollection.parent, null, ['progressCircleContainer']);
+    progressCircleContainer =
+        util.createElement('div', gridCollection.parent, null, ['progressCircleContainer']);
     progressCircleContainer.style.width = params.GRID.PROGRESS_CIRCLE_CONTAINER_SIDE_LENGTH + 'px';
     progressCircleContainer.style.height = params.GRID.PROGRESS_CIRCLE_CONTAINER_SIDE_LENGTH + 'px';
 
@@ -33,7 +34,10 @@
       svg: null
     };
 
-    gridCollection.progressCircle = new ProgressCircle(progressCircleContainer, params.GRID.PROGRESS_CIRCLE_CONTAINER_SIDE_LENGTH, params.GRID.PROGRESS_CIRCLE_DIAMETER, params.GRID.PROGRESS_CIRCLE_DOT_RADIUS, false);
+    gridCollection.progressCircle =
+        new ProgressCircle(progressCircleContainer,
+            params.GRID.PROGRESS_CIRCLE_CONTAINER_SIDE_LENGTH, params.GRID.PROGRESS_CIRCLE_DIAMETER,
+            params.GRID.PROGRESS_CIRCLE_DOT_RADIUS, false);
     gridCollection.elements.svg = gridCollection.progressCircle.elements.svg;
 
     createBackgroundPulse.call(gridCollection);

@@ -76,7 +76,8 @@
       moduleParams.BACKGROUND_PULSE_OUTER_RADIUS * 2 > moduleParams.PROGRESS_CIRCLE_DIAMETER ?
           moduleParams.BACKGROUND_PULSE_OUTER_RADIUS * 2 : moduleParams.PROGRESS_CIRCLE_DIAMETER;
   moduleParams.PROGRESS_CIRCLE_OFFSET =
-      (moduleParams.PROGRESS_CIRCLE_CONTAINER_SIDE_LENGTH - moduleParams.PROGRESS_CIRCLE_DIAMETER) / 2;
+      (moduleParams.PROGRESS_CIRCLE_CONTAINER_SIDE_LENGTH - moduleParams.PROGRESS_CIRCLE_DIAMETER) /
+          2;
 
   // --- Dropdown photo grid bounce parameters --- //
 
@@ -156,6 +157,9 @@
   params.L18N.EN = moduleParams;
 
   moduleParams.TAP_THUMBNAIL_PROMPT = '(tap to expand thumbnail)';
+
+  moduleParams.BAD_BROWSER_MESSAGE =
+      ':( Sorry, but some of the fancy features of this app may not work on your browser. You should really upgrade to a newer version.';
 
   // --- Miscellaneous parameters --- //
 

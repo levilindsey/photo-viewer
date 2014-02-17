@@ -59,7 +59,8 @@
       image.src = src;
     } else {
       // Load the image via XHR, so we can track its progress
-      photo[targetSize].xhr = util.loadImageViaXHR(src, image, onSuccessWrapper, onErrorWrapper, onProgressWrapper);
+      photo[targetSize].xhr =
+          util.loadImageViaXHR(src, image, onSuccessWrapper, onErrorWrapper, onProgressWrapper);
     }
     return image;
   }

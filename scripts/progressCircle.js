@@ -232,6 +232,9 @@
     dot.svgElement.removeChild(dot.element);
   }
 
+  /**
+   * @function progressCircle~openPercentDisplay
+   */
   function openPercentDisplay() {
     var progressCircle = this;
 
@@ -242,6 +245,9 @@
     }
   }
 
+  /**
+   * @function progressCircle~closePercentDisplay
+   */
   function closePercentDisplay() {
     var progressCircle = this;
 
@@ -304,7 +310,10 @@
 
     // TODO: refactor this so that it doesn't re-create the elements each time?
     if (!progressCircle.dots) {
-      progressCircle.dots = createDots(progressCircle.elements.svg, params.PROGRESS_CIRCLE.DOT_COUNT, progressCircle.left, progressCircle.top, progressCircle.diameter, progressCircle.dotRadius);
+      progressCircle.dots =
+          createDots(progressCircle.elements.svg, params.PROGRESS_CIRCLE.DOT_COUNT,
+              progressCircle.left, progressCircle.top, progressCircle.diameter,
+              progressCircle.dotRadius);
     }
 
     openPercentDisplay.call(progressCircle);
