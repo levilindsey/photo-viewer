@@ -19,7 +19,7 @@
    * @param {Number} [height] The height of this lightbox when not in full-screen mode.
    */
   function createElements(width, height) {
-    var photoLightbox, body, lightbox, oldMainImage, newMainImage, newSmallImage, oldSmallImage, backgroundHaze, closeButton, reduceFromFullButton, expandToFullButton, previousButton, nextButton, newImageTransitionEndEventListener, svg;
+    var photoLightbox, body, lightbox, oldMainImage, newMainImage, newSmallImage, oldSmallImage, backgroundHaze, closeButton, reduceFromFullButton, expandToFullButton, previousButton, nextButton, newImageTransitionEndEventListener, progressCircleContainer;
 
     photoLightbox = this;
     body = document.getElementsByTagName('body')[0];
@@ -111,10 +111,9 @@
           onOverlayButtonHoverEnd.call(photoLightbox, event);
         });
 
-    svg = document.createElementNS(params.SVG_NAMESPACE, 'svg');
-    svg.style.width = params.LIGHTBOX.PROGRESS_CIRCLE_DIAMETER + 'px';
-    svg.style.height = params.LIGHTBOX.PROGRESS_CIRCLE_DIAMETER + 'px';
-    lightbox.appendChild(svg);
+    progressCircleContainer = util.createElement('div', lightbox, null, ['progressCircleContainer']);
+    progressCircleContainer.style.width = params.LIGHTBOX.PROGRESS_CIRCLE_CONTAINER_SIDE_LENGTH + 'px';
+    progressCircleContainer.style.height = params.LIGHTBOX.PROGRESS_CIRCLE_CONTAINER_SIDE_LENGTH + 'px';
 
     photoLightbox.elements = {
       lightbox: lightbox,
@@ -128,7 +127,7 @@
       expandToFullButton: expandToFullButton,
       previousButton: previousButton,
       nextButton: nextButton,
-      svg: svg
+      progressCircleContainer: progressCircleContainer
     };
   }
 
@@ -264,8 +263,8 @@
         photoLightbox.elements.lightbox, false, true);
     photoLightbox.mainImageFailed = false;
 
-    // Cancel the old image download if it has not finished
-    cancelImageDownload(photoLightbox.photoGroup.photos[photoLightbox.currentIndex]);
+    // Cancel any current image downloads (except a download for the current image)
+    cancelCurrentImageDownloads.call(photoLightbox, index);
 
     recordCurrentPhoto.call(photoLightbox, index);
 
@@ -490,7 +489,7 @@
         onNeighborPhotoCacheSuccess.call(photoLightbox, targetSize, photoItem);
       }, function (photoItem) {
         onNeighborPhotoCacheError.call(photoLightbox, targetSize, photoItem);
-      });
+      }, function () {});
     }
   }
 
@@ -555,6 +554,27 @@
     if (photoItem === photoLightbox.photoGroup.photos[photoLightbox.currentIndex] &&
         (!photoLightbox.inFullscreenMode || targetSize === 'full')) {
       photoLightbox.progressCircle.updateProgress(loaded, total);
+    }
+  }
+
+  /**
+   * Cancel any current image downloads, except downloads for the image at the given new index.
+   * @function PhotoLightbox~cancelImageDownload
+   * @param {Number} newIndex
+   */
+  function cancelCurrentImageDownloads(newIndex) {
+    var photoLightbox, previousIndex, nextIndex;
+
+    photoLightbox = this;
+    previousIndex = getPreviousPhotoItemIndex(photoLightbox);
+    nextIndex = getNextPhotoItemIndex(photoLightbox);
+
+    cancelImageDownload(photoLightbox.photoGroup.photos[photoLightbox.currentIndex]);
+    if (newIndex !== previousIndex) {
+      cancelImageDownload(photoLightbox.photoGroup.photos[previousIndex]);
+    }
+    if (newIndex !== nextIndex) {
+      cancelImageDownload(photoLightbox.photoGroup.photos[nextIndex]);
     }
   }
 
@@ -749,11 +769,11 @@
       }
     }
 
-    // Center the svg
-    photoLightbox.elements.svg.style.top =
-        (parseInt(lightboxElement.style.height) - params.LIGHTBOX.SVG_SIDE_LENGTH) / 2 + 'px';
-    photoLightbox.elements.svg.style.left =
-        (parseInt(lightboxElement.style.width) - params.LIGHTBOX.SVG_SIDE_LENGTH) / 2 + 'px';
+    // Center the progress circle
+    photoLightbox.elements.progressCircleContainer.style.top =
+        (parseInt(lightboxElement.style.height) - params.LIGHTBOX.PROGRESS_CIRCLE_CONTAINER_SIDE_LENGTH) / 2 + 'px';
+    photoLightbox.elements.progressCircleContainer.style.left =
+        (parseInt(lightboxElement.style.width) - params.LIGHTBOX.PROGRESS_CIRCLE_CONTAINER_SIDE_LENGTH) / 2 + 'px';
   }
 
   /**
@@ -1058,11 +1078,11 @@
    */
   function cancelImageDownload(photoItem) {
     if (photoItem.full.xhr) {
-      photoItem.full.xhr.abort();
+      util.abortXHR(photoItem.full.xhr);
       photoItem.full.xhr = null;
     }
     if (photoItem.small.xhr) {
-      photoItem.small.xhr.abort();
+      util.abortXHR(photoItem.small.xhr);
       photoItem.small.xhr = null;
     }
   }
@@ -1116,8 +1136,10 @@
     createElements.call(photoLightbox, width, height);
 
     photoLightbox.progressCircle =
-        new ProgressCircle(photoLightbox.elements.svg, 0, 0,
-            params.LIGHTBOX.PROGRESS_CIRCLE_DIAMETER, params.LIGHTBOX.PROGRESS_CIRCLE_DOT_RADIUS);
+        new ProgressCircle(photoLightbox.elements.progressCircleContainer,
+            params.LIGHTBOX.PROGRESS_CIRCLE_CONTAINER_SIDE_LENGTH,
+            params.LIGHTBOX.PROGRESS_CIRCLE_DIAMETER, params.LIGHTBOX.PROGRESS_CIRCLE_DOT_RADIUS,
+            true);
 
     // Re-position the lightbox when the window re-sizes
     util.listen(window, 'resize', function () {

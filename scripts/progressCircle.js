@@ -12,6 +12,30 @@
   // Private static functions
 
   /**
+   * Creates the main DOM elements that form this progress circle, adds them to the DOM, and adds
+   * them to the elements property of this progress circle.
+   * @function progressCircle~createElements
+   * @param {HTMLElement} parent The parent element that this progress circle is a descendant of.
+   * @param {Number} containerSideLength The side length of the container.
+   */
+  function createElements(parent, containerSideLength) {
+    var progressCircle, svg, percentDisplay;
+
+    progressCircle = this;
+
+    svg = document.createElementNS(params.SVG_NAMESPACE, 'svg');
+    parent.appendChild(svg);
+
+    percentDisplay = util.createElement('div', parent, null, ['percentDisplay']);
+    percentDisplay.style.lineHeight = containerSideLength + 'px';
+
+    progressCircle.elements = {
+      svg: svg,
+      percentDisplay: percentDisplay
+    };
+  }
+
+  /**
    * Creates all of the individual dots, which comprise this progress circle, and starts their
    * animations.
    * @function progressCircle~createDots
@@ -208,6 +232,22 @@
     dot.svgElement.removeChild(dot.element);
   }
 
+  function openPercentDisplay() {
+    var progressCircle = this;
+
+    if (progressCircle.showPercent) {
+      progressCircle.elements.percentDisplay.innerHTML = '0%';
+
+      setElementVisibility(progressCircle.elements.percentDisplay, true, false, null);
+    }
+  }
+
+  function closePercentDisplay() {
+    var progressCircle = this;
+
+    setElementVisibility(progressCircle.elements.percentDisplay, false, false, null);
+  }
+
   // ------------------------------------------------------------------------------------------- //
   // Private classes
 
@@ -229,17 +269,18 @@
    */
   function ProgressDot(svgElement, color, dotBaseCenterX, dotBaseCenterY, dotInnerPulseCenterY,
                        dotRadius, revolutionAngleRad, progressCircleCenterY) {
+    var progressDot = this;
 
-    this.svgElement = svgElement;
-    this.element = document.createElementNS(params.SVG_NAMESPACE, 'circle');
-    this.color = color;
-    this.dotBaseCenterX = dotBaseCenterX;
-    this.dotBaseCenterY = dotBaseCenterY;
-    this.dotInnerPulseCenterY = dotInnerPulseCenterY;
-    this.dotRadius = dotRadius;
-    this.revolutionAngleRad = revolutionAngleRad;
-    this.progressCircleCenterY = progressCircleCenterY;
-    this.animations = {
+    progressDot.svgElement = svgElement;
+    progressDot.element = document.createElementNS(params.SVG_NAMESPACE, 'circle');
+    progressDot.color = color;
+    progressDot.dotBaseCenterX = dotBaseCenterX;
+    progressDot.dotBaseCenterY = dotBaseCenterY;
+    progressDot.dotInnerPulseCenterY = dotInnerPulseCenterY;
+    progressDot.dotRadius = dotRadius;
+    progressDot.revolutionAngleRad = revolutionAngleRad;
+    progressDot.progressCircleCenterY = progressCircleCenterY;
+    progressDot.animations = {
       dotRevolution: null,
       colorRevolution: null,
       brightnessHalfPulseS: null,
@@ -248,7 +289,7 @@
       windDownShrink: null,
       windDownFade: null
     };
-    this.colorSynchronization = null;
+    progressDot.colorSynchronization = null;
   }
 
   // ------------------------------------------------------------------------------------------- //
@@ -259,12 +300,14 @@
    * @function ProgressCircle#open
    */
   function open() {
+    var progressCircle = this;
+
     // TODO: refactor this so that it doesn't re-create the elements each time?
-    if (!this.dots) {
-      this.dots =
-          createDots(this.svgElement, params.PROGRESS_CIRCLE.DOT_COUNT, this.left, this.top,
-              this.diameter, this.dotRadius);
+    if (!progressCircle.dots) {
+      progressCircle.dots = createDots(progressCircle.elements.svg, params.PROGRESS_CIRCLE.DOT_COUNT, progressCircle.left, progressCircle.top, progressCircle.diameter, progressCircle.dotRadius);
     }
+
+    openPercentDisplay.call(progressCircle);
   }
 
   /**
@@ -272,10 +315,13 @@
    * @function ProgressCircle#close
    */
   function close() {
-    var startTime = Date.now();
+    var progressCircle, startTime;
+
+    progressCircle = this;
+    startTime = Date.now();
 
     if (this.dots) {
-      this.dots.forEach(function (dot) {
+      progressCircle.dots.forEach(function (dot) {
         var a;
 
         // Stop the original animations that conflict with the closing animations
@@ -300,8 +346,10 @@
                 params.PROGRESS_CIRCLE.WIND_DOWN_PERIOD, null, null, 'linear', null, dot);
       });
 
-      this.dots = null;
+      progressCircle.dots = null;
     }
+
+    closePercentDisplay.call(progressCircle);
   }
 
   /**
@@ -310,8 +358,12 @@
    * @param {Number} total
    */
   function updateProgress(loaded, total) {
-    // TODO: add a message to the center of the progress circle and update it here
-    log.w('updateProgress', loaded + '/' + total);
+    var progressCircle, text;
+
+    progressCircle = this;
+    text = parseInt(loaded / total * 100) + '%';
+
+    progressCircle.elements.percentDisplay.innerHTML = text;
   }
 
   // ------------------------------------------------------------------------------------------- //
@@ -329,31 +381,67 @@
     log.d('initStaticFields', 'Module initialized');
   }
 
+  /**
+   * Adds or removes the hidden and visible classes from the given element, in order for it to be
+   * visible or hidden, as specified. These two classes have corresponding CSS rules regarding
+   * visibility and transitions.
+   * @function progressCircle~setElementVisibility
+   * @param {HTMLElement} element The element to show or hide.
+   * @param {Boolean} visible If true, then the element will be made visible.
+   * @param {Boolean} [delay] If true, then there will be a slight delay before the element's
+   * classes are changed. This is important, because if a CSS transition is added to an element
+   * immediately after changing the element's display, or adding it to the DOM, then there will be
+   * problems with the transition.
+   * @param {Function} [callback] This function will be called after the delay.
+   */
+  function setElementVisibility(element, visible, delay, callback) {
+    util.toggleClass(element, 'hidden', !visible);
+
+    if (delay) {
+      setTimeout(function () {
+        setVisibility();
+      }, params.ADD_CSS_TRANSITION_DELAY);
+    } else {
+      setVisibility();
+    }
+
+    function setVisibility() {
+      util.toggleClass(element, 'visible', visible);
+      if (callback) {
+        callback();
+      }
+    }
+  }
+
   // ------------------------------------------------------------------------------------------- //
   // Expose this module's constructor
 
   /**
    * @constructor
    * @global
-   * @param {HTMLElement} svgElement The SVG container element to add the elements of this
-   * progress circle to.
-   * @param {Number} left The left-side x-coordinate of the progress circle.
-   * @param {Number} top The top-side y-coordinate of the progress circle.
+   * @param {HTMLElement} parent The container element to add the elements of this progress circle
+   * to.
+   * @param {Number} containerSideLength The side length of the container.
    * @param {Number} diameter The diameter of the overall progress circle.
    * @param {Number} dotRadius The radius to give the individual dots.
+   * @param {Boolean} showPercent If true, then the progress percentage will be shown.
    */
-  function ProgressCircle(svgElement, left, top, diameter, dotRadius) {
+  function ProgressCircle(parent, containerSideLength, diameter, dotRadius, showPercent) {
     var progressCircle = this;
 
-    progressCircle.svgElement = svgElement;
-    progressCircle.left = left;
-    progressCircle.top = top;
+    progressCircle.parent = parent;
+    progressCircle.showPercent = showPercent;
+    progressCircle.left = (containerSideLength - diameter) / 2;
+    progressCircle.top = (containerSideLength - diameter) / 2;
     progressCircle.diameter = diameter;
     progressCircle.dotRadius = dotRadius;
     progressCircle.dots = null;
     progressCircle.open = open;
     progressCircle.close = close;
     progressCircle.updateProgress = updateProgress;
+    progressCircle.elements = null;
+
+    createElements.call(progressCircle, parent, containerSideLength);
   }
 
   // Expose this module

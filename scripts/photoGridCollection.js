@@ -17,24 +17,26 @@
    * @function PhotoGridCollection~createElements
    */
   function createElements() {
-    var gridCollection, container;
+    var gridCollection, container, progressCircleContainer;
 
     gridCollection = this;
 
     container = util.createElement('div', gridCollection.parent, null, ['gridCollectionContainer']);
+    progressCircleContainer = util.createElement('div', gridCollection.parent, null, ['progressCircleContainer']);
+    progressCircleContainer.style.width = params.GRID.PROGRESS_CIRCLE_CONTAINER_SIDE_LENGTH + 'px';
+    progressCircleContainer.style.height = params.GRID.PROGRESS_CIRCLE_CONTAINER_SIDE_LENGTH + 'px';
 
     gridCollection.elements = {
       container: container,
-      svg: null,
-      pulseCircle: null
+      progressCircleContainer: progressCircleContainer,
+      pulseCircle: null,
+      svg: null
     };
 
-    createBackgroundPulse.call(gridCollection);
+    gridCollection.progressCircle = new ProgressCircle(progressCircleContainer, params.GRID.PROGRESS_CIRCLE_CONTAINER_SIDE_LENGTH, params.GRID.PROGRESS_CIRCLE_DIAMETER, params.GRID.PROGRESS_CIRCLE_DOT_RADIUS, false);
+    gridCollection.elements.svg = gridCollection.progressCircle.elements.svg;
 
-    gridCollection.progressCircle =
-        new ProgressCircle(gridCollection.elements.svg, params.GRID.PROGRESS_CIRCLE_OFFSET,
-            params.GRID.PROGRESS_CIRCLE_OFFSET, params.GRID.PROGRESS_CIRCLE_DIAMETER,
-            params.GRID.PROGRESS_CIRCLE_DOT_RADIUS);
+    createBackgroundPulse.call(gridCollection);
 
     resize.call(gridCollection);
 
@@ -46,17 +48,12 @@
    * @function PhotoGridCollection~createBackgroundPulse
    */
   function createBackgroundPulse() {
-    var gridCollection, svg, defs, gradient, stop1, stop2, pulseCircle;
+    var gridCollection, defs, gradient, stop1, stop2, pulseCircle;
 
     gridCollection = this;
 
-    svg = document.createElementNS(params.SVG_NAMESPACE, 'svg');
-    svg.style.width = params.GRID.SVG_SIDE_LENGTH + 'px';
-    svg.style.height = params.GRID.SVG_SIDE_LENGTH + 'px';
-    gridCollection.parent.appendChild(svg);
-
     defs = document.createElementNS(params.SVG_NAMESPACE, 'defs');
-    svg.appendChild(defs);
+    gridCollection.elements.svg.appendChild(defs);
 
     gradient = document.createElementNS(params.SVG_NAMESPACE, 'radialGradient');
     gradient.id = 'gridCollectionPulseGradient';
@@ -86,9 +83,8 @@
     pulseCircle.setAttribute('cy', '50%');
     pulseCircle.setAttribute('r', '' + params.GRID.BACKGROUND_PULSE_INNER_RADIUS);
     pulseCircle.setAttribute('opacity', '' + params.GRID.BACKGROUND_PULSE_INNER_OPACITY);
-    svg.appendChild(pulseCircle);
+    gridCollection.elements.svg.appendChild(pulseCircle);
 
-    gridCollection.elements.svg = svg;
     gridCollection.elements.pulseCircle = pulseCircle;
   }
 
@@ -146,10 +142,10 @@
       }
     }
 
-    gridCollection.elements.svg.style.top =
-        (viewportSize.h - params.GRID.SVG_SIDE_LENGTH) / 2 + 'px';
-    gridCollection.elements.svg.style.left =
-        (viewportSize.w - params.GRID.SVG_SIDE_LENGTH) / 2 + 'px';
+    gridCollection.elements.progressCircleContainer.style.top =
+        (viewportSize.h - params.GRID.PROGRESS_CIRCLE_CONTAINER_SIDE_LENGTH) / 2 + 'px';
+    gridCollection.elements.progressCircleContainer.style.left =
+        (viewportSize.w - params.GRID.PROGRESS_CIRCLE_CONTAINER_SIDE_LENGTH) / 2 + 'px';
   }
 
   /**

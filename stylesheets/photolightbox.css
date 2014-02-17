@@ -343,13 +343,6 @@
   background-position: -70px -206px;
 }
 
-.lightbox svg {
-  position: absolute;
-  top: 0; right: 0; bottom: 0; left: 0;
-  z-index: 32030;
-  cursor: pointer;
-}
-
 .lightbox .imageErrorMessage:before {
   content: ':( This image is feeling shy today.';
   display: block;
@@ -365,4 +358,45 @@
 
 body .lightbox img.failedImage {
   display: none;
+}
+
+.progressCircleContainer {
+  cursor: pointer;
+}
+
+.lightbox svg {
+  z-index: 32030;
+  cursor: pointer;
+}
+
+.percentDisplay {
+  width: 100%;
+  font-size: 28px;
+  font-weight: bold;
+  text-align: center;
+  color: #DDDDDD;
+  text-shadow:
+    3px 3px 2px #000000,
+    -3px 3px 2px #000000,
+    3px -3px 2px #000000,
+    -3px -3px 2px #000000;
+  z-index: 32031;
+}
+
+.percentDisplay.visible {
+  opacity: 0.4;
+  visibility: visible;
+  -webkit-transition: visibility 0s linear 0s, opacity 0.37s ease 0s;
+  -moz-transition: visibility 0s linear 0s, opacity 0.37s ease 0s;
+  -o-transition: visibility 0s linear 0s, opacity 0.37s ease 0s;
+  transition: visibility 0s linear 0s, opacity 0.37s ease 0s;
+}
+
+.percentDisplay.hidden {
+  opacity: 0;
+  visibility: hidden;
+  -webkit-transition: visibility 0s linear 0.28s, opacity 0.28s ease 0s;
+  -moz-transition: visibility 0s linear 0.28s, opacity 0.28s ease 0s;
+  -o-transition: visibility 0s linear 0.28s, opacity 0.28s ease 0s;
+  transition: visibility 0s linear 0.28s, opacity 0.28s ease 0s;
 }

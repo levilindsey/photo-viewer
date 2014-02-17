@@ -525,7 +525,7 @@
         if (xhr.status === 200) {
           onSuccess(xhr.responseText);
         } else {
-          if (onError) {
+          if (!xhr.aborted && onError) {
             onError('Server responded with code ' + xhr.status + ' and message ' +
                 xhr.responseText);
           }
@@ -571,7 +571,7 @@
 
           onSuccess();
         } else {
-          if (onError) {
+          if (!xhr.aborted && onError) {
             onError('Server responded with code ' + xhr.status + ' and message ' +
                 xhr.responseText);
           }
@@ -599,6 +599,17 @@
     }
 
     return xhr;
+  }
+
+  /**
+   * Aborts the given request, and adds a property to the object as a flag indicating that this was
+   * stopped from being aborted and not from some other error.
+   * @util util.abortXHR
+   * @param {Object} xhr
+   */
+  function abortXHR(xhr) {
+    xhr.aborted = true;
+    xhr.abort();
   }
 
   /**
@@ -1087,6 +1098,7 @@
     init: init,
     sendRequest: sendRequest,
     loadImageViaXHR: loadImageViaXHR,
+    abortXHR: abortXHR,
     dateObjToDateTimeString: dateObjToDateTimeString,
     millisToTimeString: millisToTimeString,
     listenToMultipleForMultiple: listenToMultipleForMultiple,

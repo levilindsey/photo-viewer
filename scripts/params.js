@@ -37,7 +37,7 @@
   moduleParams.PROGRESS_CIRCLE_DIAMETER = 290;
   moduleParams.PROGRESS_CIRCLE_DOT_RADIUS = 10;
 
-  moduleParams.SVG_SIDE_LENGTH = moduleParams.PROGRESS_CIRCLE_DIAMETER;
+  moduleParams.PROGRESS_CIRCLE_CONTAINER_SIDE_LENGTH = moduleParams.PROGRESS_CIRCLE_DIAMETER;
 
   // --- Dropdown photo grid parameters --- //
 
@@ -72,11 +72,11 @@
   moduleParams.BACKGROUND_PULSE_OUTER_OPACITY = 0.35; // from 0 to 1
   moduleParams.BACKGROUND_PULSE_PERIOD = 3000; // milliseconds per half-pulse
 
-  moduleParams.SVG_SIDE_LENGTH =
+  moduleParams.PROGRESS_CIRCLE_CONTAINER_SIDE_LENGTH =
       moduleParams.BACKGROUND_PULSE_OUTER_RADIUS * 2 > moduleParams.PROGRESS_CIRCLE_DIAMETER ?
           moduleParams.BACKGROUND_PULSE_OUTER_RADIUS * 2 : moduleParams.PROGRESS_CIRCLE_DIAMETER;
   moduleParams.PROGRESS_CIRCLE_OFFSET =
-      (moduleParams.SVG_SIDE_LENGTH - moduleParams.PROGRESS_CIRCLE_DIAMETER) / 2;
+      (moduleParams.PROGRESS_CIRCLE_CONTAINER_SIDE_LENGTH - moduleParams.PROGRESS_CIRCLE_DIAMETER) / 2;
 
   // --- Dropdown photo grid bounce parameters --- //
 
