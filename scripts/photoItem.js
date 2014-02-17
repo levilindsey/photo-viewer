@@ -48,8 +48,8 @@
       onError(photo);
     };
 
-    onProgressWrapper = function (event) {
-      onProgress(photo, event.loaded, event.total);
+    onProgressWrapper = function (progress) {
+      onProgress(photo, progress);
     };
 
     if (!onProgress) {

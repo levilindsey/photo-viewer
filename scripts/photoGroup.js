@@ -68,16 +68,6 @@
                              onTotalError, onlyCache) {
     var loadedCount, failedPhotos, photoGroup, photoFunction;
 
-    photoGroup = this;
-    loadedCount = 0;
-    failedPhotos = [];
-
-    photoFunction = onlyCache ? 'cacheImage' : 'loadImage';
-
-    photoGroup.photos.forEach(function (photo) {
-      photo[photoFunction](targetSize, onImageLoadSuccess, onImageLoadError);
-    });
-
     function onImageLoadSuccess(photo) {
       onSingleSuccess(photoGroup, photo);
       if (++loadedCount === photoGroup.photos.length) {
@@ -94,6 +84,16 @@
         onTotalError(photoGroup, failedPhotos);
       }
     }
+
+    photoGroup = this;
+    loadedCount = 0;
+    failedPhotos = [];
+
+    photoFunction = onlyCache ? 'cacheImage' : 'loadImage';
+
+    photoGroup.photos.forEach(function (photo) {
+      photo[photoFunction](targetSize, onImageLoadSuccess, onImageLoadError);
+    });
   }
 
   /**

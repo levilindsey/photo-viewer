@@ -382,6 +382,14 @@
    * @param {Function} [callback] This function will be called after the delay.
    */
   function setElementVisibility(element, visible, delay, callback) {
+
+    function setVisibility() {
+      util.toggleClass(element, 'visible', visible);
+      if (callback) {
+        callback();
+      }
+    }
+
     util.toggleClass(element, 'hidden', !visible);
 
     if (delay) {
@@ -390,13 +398,6 @@
       }, params.ADD_CSS_TRANSITION_DELAY);
     } else {
       setVisibility();
-    }
-
-    function setVisibility() {
-      util.toggleClass(element, 'visible', visible);
-      if (callback) {
-        callback();
-      }
     }
   }
 

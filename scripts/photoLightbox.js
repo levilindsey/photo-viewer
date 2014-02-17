@@ -256,6 +256,24 @@
   function setPhoto(index) {
     var photoLightbox, photoItem, mainImageIsNotYetCached, mainTargetSize, smallTargetSize;
 
+    function loadPhotoImage(photoLightbox, isMainImage, targetSize, photoItem) {
+      var onProgress;
+
+      log.d('setPhoto.loadPhotoImage',
+        'Sending image load request: ' + photoItem[targetSize].source);
+
+      onProgress =
+        isMainImage && !photoItem[targetSize].isCached ? function (photoItem, progress) {
+          onPhotoImageLoadProgress.call(photoLightbox, targetSize, photoItem, progress);
+        } : null;
+
+      photoItem.loadImage(targetSize, function (photoItem) {
+        onPhotoImageLoadSuccess.call(photoLightbox, isMainImage, targetSize, photoItem);
+      }, function (photoItem) {
+        onPhotoImageLoadError.call(photoLightbox, isMainImage, targetSize, photoItem);
+      }, onProgress);
+    }
+
     photoLightbox = this;
     photoItem = photoLightbox.photoGroup.photos[index];
     mainImageIsNotYetCached = true;
@@ -336,24 +354,6 @@
     // Fade out the old image
     setElementVisibility(photoLightbox.elements.oldSmallImage, false, false);
     setElementVisibility(photoLightbox.elements.oldMainImage, false, false);
-
-    function loadPhotoImage(photoLightbox, isMainImage, targetSize, photoItem) {
-      var onProgress;
-
-      log.d('setPhoto.loadPhotoImage',
-          'Sending image load request: ' + photoItem[targetSize].source);
-
-      onProgress =
-          isMainImage && !photoItem[targetSize].isCached ? function (photoItem, loaded, total) {
-            onPhotoImageLoadProgress.call(photoLightbox, targetSize, photoItem, loaded, total);
-          } : null;
-
-      photoItem.loadImage(targetSize, function (photoItem) {
-        onPhotoImageLoadSuccess.call(photoLightbox, isMainImage, targetSize, photoItem);
-      }, function (photoItem) {
-        onPhotoImageLoadError.call(photoLightbox, isMainImage, targetSize, photoItem);
-      }, onProgress);
-    }
   }
 
   /**
@@ -367,6 +367,17 @@
     log.i('onPhotoImageLoadSuccess',
         targetSize === 'full' ? photoItem.full.source : photoItem.small.source);
     var photoLightbox, stillOnSameImage, previousIndex, nextIndex;
+
+    function cacheNeighborImage(photoLightbox, targetSize, photoItem) {
+      log.v('onPhotoImageLoadSuccess.cacheNeighborImage',
+        'Sending image cache request: ' + photoItem[targetSize].source);
+      photoItem.cacheImage(targetSize, function (photoItem) {
+        onNeighborPhotoCacheSuccess.call(photoLightbox, targetSize, photoItem);
+      }, function (photoItem) {
+        onNeighborPhotoCacheError.call(photoLightbox, targetSize, photoItem);
+      }, function () {
+      });
+    }
 
     photoLightbox = this;
     stillOnSameImage = false;
@@ -481,17 +492,6 @@
           }
         }
       }
-
-      function cacheNeighborImage(photoLightbox, targetSize, photoItem) {
-        log.v('onPhotoImageLoadSuccess.cacheNeighborImage',
-            'Sending image cache request: ' + photoItem[targetSize].source);
-        photoItem.cacheImage(targetSize, function (photoItem) {
-          onNeighborPhotoCacheSuccess.call(photoLightbox, targetSize, photoItem);
-        }, function (photoItem) {
-          onNeighborPhotoCacheError.call(photoLightbox, targetSize, photoItem);
-        }, function () {
-        });
-      }
     }
   }
 
@@ -544,10 +544,9 @@
    * @function photoLightbox~onPhotoImageLoadProgress
    * @param {'full'|'small'|'thumbnail'|'gridThumbnail'} targetSize Which image version just loaded.
    * @param {PhotoItem} photoItem
-   * @param {Number} loaded
-   * @param {Number} total
+   * @param {Number} progress
    */
-  function onPhotoImageLoadProgress(targetSize, photoItem, loaded, total) {
+  function onPhotoImageLoadProgress(targetSize, photoItem, progress) {
     //log.v('onPhotoImageLoadProgress');
     var photoLightbox = this;
 
@@ -555,7 +554,7 @@
     // in/out of full-screen mode
     if (photoItem === photoLightbox.photoGroup.photos[photoLightbox.currentIndex] &&
         (!photoLightbox.inFullscreenMode || targetSize === 'full')) {
-      photoLightbox.progressCircle.updateProgress(loaded, total);
+      photoLightbox.progressCircle.updateProgress(progress);
     }
   }
 
@@ -944,6 +943,14 @@
    * @param {Function} [callback] This function will be called after the delay.
    */
   function setElementVisibility(element, visible, delay, callback) {
+
+    function setVisibility() {
+      util.toggleClass(element, 'visible', visible);
+      if (callback) {
+        callback();
+      }
+    }
+
     util.toggleClass(element, 'hidden', !visible);
 
     if (delay) {
@@ -952,13 +959,6 @@
       }, params.ADD_CSS_TRANSITION_DELAY);
     } else {
       setVisibility();
-    }
-
-    function setVisibility() {
-      util.toggleClass(element, 'visible', visible);
-      if (callback) {
-        callback();
-      }
     }
   }
 

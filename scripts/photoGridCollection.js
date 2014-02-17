@@ -187,21 +187,6 @@
   function startBackgroundPulseAnimation() {
     var gridCollection, startTime;
 
-    gridCollection = this;
-    startTime = Date.now();
-
-    // Animate both the radius and the opacity together
-    gridCollection.backgroundPulseRadiusAnimation =
-        animate.startNumericAttributeAnimation(gridCollection.elements.pulseCircle, 'r',
-            params.GRID.BACKGROUND_PULSE_INNER_RADIUS, params.GRID.BACKGROUND_PULSE_OUTER_RADIUS,
-            startTime, params.GRID.BACKGROUND_PULSE_PERIOD / 2, null, null, 'easeInQuad',
-            onHalfPulseEnd, gridCollection);
-    gridCollection.backgroundPulseOpacityAnimation =
-        animate.startNumericAttributeAnimation(gridCollection.elements.pulseCircle, 'opacity',
-            params.GRID.BACKGROUND_PULSE_INNER_OPACITY, params.GRID.BACKGROUND_PULSE_OUTER_OPACITY,
-            startTime, params.GRID.BACKGROUND_PULSE_PERIOD / 2, null, null, 'easeInQuad', null,
-            gridCollection);
-
     // Repeat the same pair of animations, but in reverse
     function onHalfPulseEnd(animation, gridCollection) {
       var startTime, startRadius, endRadius, startOpacity, endOpacity;
@@ -223,14 +208,29 @@
 
       // Animate both the radius and the opacity together
       gridCollection.backgroundPulseRadiusAnimation =
-          animate.startNumericAttributeAnimation(animation.element, 'r', startRadius, endRadius,
-              startTime, animation.duration, null, null, animation.easingFunction, onHalfPulseEnd,
-              gridCollection);
+        animate.startNumericAttributeAnimation(animation.element, 'r', startRadius, endRadius,
+          startTime, animation.duration, null, null, animation.easingFunction, onHalfPulseEnd,
+          gridCollection);
       gridCollection.backgroundPulseOpacityAnimation =
-          animate.startNumericAttributeAnimation(animation.element, 'opacity', startOpacity,
-              endOpacity, startTime, animation.duration, null, null, animation.easingFunction, null,
-              gridCollection);
+        animate.startNumericAttributeAnimation(animation.element, 'opacity', startOpacity,
+          endOpacity, startTime, animation.duration, null, null, animation.easingFunction, null,
+          gridCollection);
     }
+
+    gridCollection = this;
+    startTime = Date.now();
+
+    // Animate both the radius and the opacity together
+    gridCollection.backgroundPulseRadiusAnimation =
+        animate.startNumericAttributeAnimation(gridCollection.elements.pulseCircle, 'r',
+            params.GRID.BACKGROUND_PULSE_INNER_RADIUS, params.GRID.BACKGROUND_PULSE_OUTER_RADIUS,
+            startTime, params.GRID.BACKGROUND_PULSE_PERIOD / 2, null, null, 'easeInQuad',
+            onHalfPulseEnd, gridCollection);
+    gridCollection.backgroundPulseOpacityAnimation =
+        animate.startNumericAttributeAnimation(gridCollection.elements.pulseCircle, 'opacity',
+            params.GRID.BACKGROUND_PULSE_INNER_OPACITY, params.GRID.BACKGROUND_PULSE_OUTER_OPACITY,
+            startTime, params.GRID.BACKGROUND_PULSE_PERIOD / 2, null, null, 'easeInQuad', null,
+            gridCollection);
   }
 
   /**

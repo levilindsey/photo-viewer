@@ -367,14 +367,13 @@
 
   /**
    * @function progressCircle#updateProgress
-   * @param {Number} loaded
-   * @param {Number} total
+   * @param {Number} progress
    */
-  function updateProgress(loaded, total) {
+  function updateProgress(progress) {
     var progressCircle, text;
 
     progressCircle = this;
-    text = parseInt(loaded / total * 100) + '%';
+    text = parseInt(progress * 100) + '%';
 
     progressCircle.elements.percentDisplay.innerHTML = text;
   }
@@ -408,6 +407,14 @@
    * @param {Function} [callback] This function will be called after the delay.
    */
   function setElementVisibility(element, visible, delay, callback) {
+
+    function setVisibility() {
+      util.toggleClass(element, 'visible', visible);
+      if (callback) {
+        callback();
+      }
+    }
+
     util.toggleClass(element, 'hidden', !visible);
 
     if (delay) {
@@ -416,13 +423,6 @@
       }, params.ADD_CSS_TRANSITION_DELAY);
     } else {
       setVisibility();
-    }
-
-    function setVisibility() {
-      util.toggleClass(element, 'visible', visible);
-      if (callback) {
-        callback();
-      }
     }
   }
 

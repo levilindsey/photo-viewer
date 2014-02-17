@@ -315,10 +315,41 @@
       };
     } else {
       util.getMidTransitionValue = function () {
-        log.e('This browser dose not support getComputedStyle.');
+        log.e('This browser does not support getComputedStyle.');
         return '';
       };
-      log.w('This browser dose not support getComputedStyle.');
+      log.w('This browser does not support getComputedStyle.');
+    }
+  }
+
+  /**
+   * @function util.setUpCreateObjectURL
+   */
+  function setUpCreateObjectURL() {
+    if (window.webkitURL) {
+      util.createObjectURL = function(fileObject) {
+        return window.webkitURL.createObjectURL(fileObject);
+      };
+      util.revokeObjectURL = function(objectURL) {
+        window.webkitURL.revokeObjectURL(objectURL);
+      };
+    } else if (window.URL && window.URL.createObjectURL) {
+      util.createObjectURL = function(fileObject) {
+        return window.URL.createObjectURL(fileObject);
+      };
+      util.revokeObjectURL = function(objectURL) {
+        window.URL.revokeObjectURL(objectURL);
+      };
+    } else {
+      util.createObjectURL = function () {
+        log.e('This browser does not support createObjectURL.');
+        return null;
+      };
+      util.revokeObjectURL = function () {
+        log.e('This browser does not support revokeObjectURL.');
+        return null;
+      };
+      log.w('This browser does not support createObjectURL/revokeObjectURL.');
     }
   }
 
@@ -504,6 +535,7 @@
     setUpGetScrollTopAndLeft();
     setUpAddOnEndFullScreen();
     setUpGetMidTransitionValue();
+    setUpCreateObjectURL();
     setUpMobileBrowserDependantHelpers();
 
     log.d('init', 'Module initialized');
@@ -562,7 +594,7 @@
    *
    * @function util.loadImageViaXHR
    * @param {String} src
-   * @param {HTMLElement} imageElement
+   * @param {Image} imageElement
    * @param {Function} onSuccess
    * @param {Function} onError
    * @param {Function} onProgress
@@ -577,34 +609,45 @@
     xhr = new util.XHR();
 
     // Prepare to handle the response
-    xhr.onreadystatechange = function () {
+    xhr.onload = function () {
+      var imageObjectURL;
+
       if (xhr.readyState === 4) {
         if (xhr.status === 200) {
           // Encode and add the image to the DOM
-          encodedImage = base64Encode(xhr.responseText);
-          imageElement.setAttribute('src', 'data:image/jpg;base64,' + encodedImage);
+          imageObjectURL = util.createObjectURL(xhr.response);
+          imageElement.onload = function () {
+            util.revokeObjectURL(imageObjectURL);
+          };
+          imageElement.src = imageObjectURL;
 
           onSuccess();
         } else {
           if (!xhr.aborted && onError) {
-            onError('Server responded with code ' + xhr.status + ' and message ' +
-                xhr.responseText);
+            onError('Server responded with code ' + xhr.status);
           }
         }
       }
     };
-    util.listen(xhr, 'progress', onProgress);
+    xhr.onprogress = function (event) {
+      if (event.lengthComputable) {
+        onProgress(event.loaded / event.total);
+      } else {
+        log.w('loadImageViaXHR.OnProgress', 'Length is not computable');
+      }
+    };
 
     // Initialize the request
     try {
-      xhr.open('GET', src);
+      xhr.open('GET', src, true);
     } catch (e) {
       if (onError) {
         onError('Unable to open the request');
       }
     }
 
-    xhr.overrideMimeType('text/plain; charset=x-user-defined');
+    //xhr.overrideMimeType('text/plain; charset=x-user-defined');
+    xhr.responseType = 'blob';
 
     // Send the request
     try {
@@ -1055,45 +1098,6 @@
     }
   }
 
-  /**
-   * This function is borrowed from an Adobe article at:
-   * http://blogs.adobe.com/webplatform/2012/01/13/html5-image-progress-events/
-   * @param {String} input
-   * @returns {String}
-   */
-  function base64Encode(input) {
-    var b64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-    var output = '';
-    var i = 0;
-
-    while (i < input.length) {
-      //all three "& 0xff" added below are there to fix a known bug
-      //with bytes returned by xhr.responseText
-      var byte1 = input.charCodeAt(i++) & 0xff;
-      var byte2 = input.charCodeAt(i++) & 0xff;
-      var byte3 = input.charCodeAt(i++) & 0xff;
-
-      var enc1 = byte1 >> 2;
-      var enc2 = ((byte1 & 3) << 4) | (byte2 >> 4);
-
-      var enc3, enc4;
-      if (isNaN(byte2)) {
-        enc3 = enc4 = 64;
-      } else {
-        enc3 = ((byte2 & 15) << 2) | (byte3 >> 6);
-        if (isNaN(byte3)) {
-          enc4 = 64;
-        } else {
-          enc4 = byte3 & 63;
-        }
-      }
-
-      output += b64.charAt(enc1) + b64.charAt(enc2) + b64.charAt(enc3) + b64.charAt(enc4);
-    }
-
-    return output;
-  }
-
   // ------------------------------------------------------------------------------------------- //
   // Expose this module
 
@@ -1129,7 +1133,6 @@
     interpolate: interpolate,
     getEasingFunction: getEasingFunction,
     removeChildrenWithClass: removeChildrenWithClass,
-    base64Encode: base64Encode,
     XHR: null,
     listen: null,
     stopListening: null,
@@ -1147,6 +1150,8 @@
     removeTapEventListener: null,
     addPointerMoveEventListener: null,
     removePointerMoveEventListener: null,
+    revokeObjectURL: null,
+    createObjectURL: null,
     isMobileBrowser: false,
     isSmallScreen: false,
     isBrowserCompatible: false
