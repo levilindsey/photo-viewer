@@ -125,21 +125,19 @@
     if (gridCollection.expanded) {
       // Determine whether the grid is currently animating
       if (gridCollection.expanding) {
-        // Completely restart the animation
-        // TODO:
+        // Update the animation with a new end value
+        gridCollection.widthAnimation.endValue = gridCollection.expandedWidth;
+        gridCollection.topAnimation.endValue = params.GRID.MARGIN;
       } else {
         gridCollection.elements.container.style.width = gridCollection.expandedWidth + 'px';
         gridCollection.elements.container.style.top = params.GRID.MARGIN + 'px';
-
-        // Start an animation to partly open or close the grid so the height can match the new
-        // width
-        // TODO:
       }
     } else {
       // Determine whether the grid is currently animating
       if (gridCollection.shrinking) {
-        // Completely restart the animation
-        // TODO:
+        // Update the animation with a new end value
+        gridCollection.widthAnimation.endValue = params.GRID.SHRUNKEN_GRIDS_WIDTH;
+        gridCollection.topAnimation.endValue = gridCollection.shrunkenTop;
       } else {
         gridCollection.elements.container.style.width = params.GRID.SHRUNKEN_GRIDS_WIDTH + 'px';
         gridCollection.elements.container.style.top = gridCollection.shrunkenTop + 'px';

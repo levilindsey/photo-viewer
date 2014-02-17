@@ -55,11 +55,6 @@
     });
     util.setTransitionCubicBezierTimingFunction(grid, params.GRID.BOUNCE.BOTTOM_ROW_BEZIER_PTS);
 
-    // TODO: !!
-    // - use capturing (as opposed to bubbling) to let the grid element capture taps before the images know about them
-    // - will need to add an additional optional parameter to the util.addTapEventListener for this
-    // - when a tap occurs, and grid.opening === true, invoke calculateThumbnailPositions()
-
     photoGrid.elements = {
       container: container,
       banner: banner,

@@ -64,8 +64,8 @@
   moduleParams.PROGRESS_CIRCLE_DIAMETER = 350;
   moduleParams.PROGRESS_CIRCLE_DOT_RADIUS = 10;
 
-  moduleParams.BACKGROUND_PULSE_STOP_1_COLOR = '#a4fff7';
-  moduleParams.BACKGROUND_PULSE_STOP_2_COLOR = '#a4fff7';
+  moduleParams.BACKGROUND_PULSE_STOP_1_COLOR = '#bafffb';
+  moduleParams.BACKGROUND_PULSE_STOP_2_COLOR = '#bafffb';
   moduleParams.BACKGROUND_PULSE_INNER_RADIUS = 175;
   moduleParams.BACKGROUND_PULSE_OUTER_RADIUS = 250;
   moduleParams.BACKGROUND_PULSE_INNER_OPACITY = 0; // from 0 to 1

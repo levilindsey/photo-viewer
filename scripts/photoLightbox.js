@@ -222,7 +222,6 @@
     } else {
       log.d('onLightboxPointerMove',
           'Showing overlay buttons, and starting new pointer move timeout');
-      photoLightbox.buttonsHaveBeenVisible = true;
       setOverlayButtonsVisibility.call(photoLightbox, true);
     }
 
@@ -418,15 +417,8 @@
 
               photoLightbox.opening = false;
             } else {
-              // TODO: fix this for real (as is, it matches the dimensions of an image that may have completely different aspect ratio...)
-              // Set the initial dimensions of the new image to match that of the old image, so that
-              // we can slide the image to enlarged/shrunken states
-  //            if (photoLightbox.elements.oldMainImage) {
-  //              photoLightbox.elements.newMainImage.style.width =
-  //                  photoLightbox.elements.oldMainImage.style.width;
-  //              photoLightbox.elements.newMainImage.style.height =
-  //                  photoLightbox.elements.oldMainImage.style.height;
-  //            }
+              resizeMainImage(photoLightbox.elements.newMainImage, photoItem.small.width,
+                  photoItem.small.height, photoLightbox.inFullscreenMode, photoLightbox);
             }
 
             // Start the new image as hidden, so we can fade it in
@@ -655,13 +647,10 @@
         // Hide the overlay buttons
         setLightboxButtonsDisplay.call(photoLightbox, true);
 
-        // TODO: this is a hack; fix the root problem of why this function gets called at times other than when we open or close the lightbox
-        if (!photoLightbox.buttonsHaveBeenVisible) {
-          // Have the overlay buttons briefly show at the start
-          setTimeout(function () {
-            onLightboxPointerMove.call(photoLightbox);
-          }, params.ADD_CSS_TRANSITION_DELAY);
-        }
+        // Have the overlay buttons briefly show at the start
+        setTimeout(function () {
+          onLightboxPointerMove.call(photoLightbox);
+        }, params.ADD_CSS_TRANSITION_DELAY);
 
         // If we are still loading the main image, show the progress circle
         if (util.containsClass(photoLightbox.elements.newMainImage, 'hidden') &&
@@ -850,7 +839,6 @@
     photoLightbox.currentIndex = index;
     photoItem = photoLightbox.photoGroup.photos[photoLightbox.currentIndex];
     body = document.getElementsByTagName('body')[0];
-    photoLightbox.buttonsHaveBeenVisible = false;
     photoLightbox.isOpen = true;
     photoLightbox.opening = true;
 
@@ -1139,7 +1127,6 @@
     photoLightbox.bodyTapPreventionCallback = null;
     photoLightbox.newImageTransitionEndEventListener = null;
     photoLightbox.pointerMoveTimeout = null;
-    photoLightbox.buttonsHaveBeenVisible = false;
     photoLightbox.mouseIsOverOverlayButton = false;
     photoLightbox.mainImageFailed = false;
     photoLightbox.isOpen = false;

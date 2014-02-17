@@ -131,7 +131,7 @@
    */
   function onParsePhotoMetadataError(errorMessage) {
     log.e('onParsePhotoMetadataError', 'Unable to load/parse metadata: ' + errorMessage);
-    // TODO: display an alert
+    alert(':( Unable to download the metadata for the images.');
   }
 
   /**
