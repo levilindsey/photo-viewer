@@ -362,6 +362,18 @@ body .lightbox img.failedImage {
 
 .progressCircleContainer {
   cursor: pointer;
+    -webkit-transition:
+        left 0.60s ease 0s,
+        top 0.60s ease 0s;
+    -moz-transition:
+        left 0.60s ease 0s,
+        top 0.60s ease 0s;
+    -o-transition:
+        left 0.60s ease 0s,
+        top 0.60s ease 0s;
+    transition:
+        left 0.60s ease 0s,
+        top 0.60s ease 0s;
 }
 
 .lightbox svg {
