@@ -564,19 +564,12 @@
    * @param {Number} newIndex
    */
   function cancelCurrentImageDownloads(newIndex) {
-    var photoLightbox, previousIndex, nextIndex;
+    var photoLightbox, exceptions;
 
     photoLightbox = this;
-    previousIndex = getPreviousPhotoItemIndex(photoLightbox);
-    nextIndex = getNextPhotoItemIndex(photoLightbox);
+    exceptions = [newIndex];
 
-    cancelImageDownload(photoLightbox.photoGroup.photos[photoLightbox.currentIndex]);
-    if (newIndex !== previousIndex) {
-      cancelImageDownload(photoLightbox.photoGroup.photos[previousIndex]);
-    }
-    if (newIndex !== nextIndex) {
-      cancelImageDownload(photoLightbox.photoGroup.photos[nextIndex]);
-    }
+    photoLightbox.photoGroup.cancelImageDownloads(exceptions);
   }
 
   /**
@@ -1071,22 +1064,6 @@
 
     element.style.width = scaledWidth + 'px';
     element.style.height = scaledHeight + 'px';
-  }
-
-  /**
-   *
-   * @function photoLightbox~cancelImageDownload
-   * @param {PhotoItem} photoItem
-   */
-  function cancelImageDownload(photoItem) {
-    if (photoItem.full.xhr) {
-      util.abortXHR(photoItem.full.xhr);
-      photoItem.full.xhr = null;
-    }
-    if (photoItem.small.xhr) {
-      util.abortXHR(photoItem.small.xhr);
-      photoItem.small.xhr = null;
-    }
   }
 
   // ------------------------------------------------------------------------------------------- //

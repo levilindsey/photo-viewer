@@ -239,6 +239,7 @@
     for (transition in transitions) {
       if (body.style[transition] !== 'undefined') {
         transitionEndEventName = transitions[transition];
+        break;
       }
     }
 
@@ -609,26 +610,11 @@
     xhr = new util.XHR();
 
     // Prepare to handle the response
-    util.listen(xhr, 'load', function () {
-      var imageObjectURL;
 
-      if (xhr.readyState === 4) {
-        if (xhr.status === 200) {
-          // Encode and add the image to the DOM
-          imageObjectURL = util.createObjectURL(xhr.response);
-          imageElement.onload = function () {
-            util.revokeObjectURL(imageObjectURL);
-          };
-          imageElement.src = imageObjectURL;
-
-          onSuccess();
-        } else {
-          if (!xhr.aborted && onError) {
-            onError('Server responded with code ' + xhr.status);
-          }
-        }
-      }
+    util.listen(xhr, 'loadstart', function () {
+      log.v('loadstart');
     });
+
     util.listen(xhr, 'progress', function (event) {
       if (event.lengthComputable) {
         log.v('loadImageViaXHR.OnProgress', event.loaded + '/' + event.total);
@@ -638,6 +624,45 @@
       }
     });
 
+    util.listen(xhr, 'load', function () {
+      log.v('load');
+      var imageObjectURL;
+
+      // Encode and add the image to the DOM
+      imageObjectURL = util.createObjectURL(xhr.response);
+      util.listen(imageElement, 'load', function () {
+        util.revokeObjectURL(imageObjectURL);
+      });
+      imageElement.src = imageObjectURL;
+    });
+
+    util.listen(xhr, 'loadend', function () {
+      log.v('loadend');
+      onSuccess();
+    });
+
+    util.listen(xhr, 'abort', function () {
+      log.v('abort');
+      if (!xhr.aborted && onError) {
+        onError('Abort');
+      }
+    });
+
+    util.listen(xhr, 'error', function () {
+      log.v('error');
+      if (onError) {
+        onError('Error');
+      }
+    });
+
+    util.listen(xhr, 'timeout', function () {
+      log.v('timeout');
+      if (onError) {
+        onError('Timeout');
+      }
+    });
+
+    setTimeout(function() {
     // Initialize the request
     try {
       xhr.open('GET', src, true);
@@ -656,6 +681,7 @@
     } catch (e) {
       onError('Unable to send the request');
     }
+    }, 1);
 
     return xhr;
   }

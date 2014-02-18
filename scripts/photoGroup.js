@@ -118,11 +118,29 @@
    * @param {'full'|'small'|'thumbnail'|'gridThumbnail'} targetSize Which image version to clear.
    */
   function clearImages(targetSize) {
-    var photoGroup = this;
+    var photoGroup, i, count;
+    photoGroup = this;
 
-    photoGroup.photos.forEach(function(photo) {
-      photo[targetSize].image = null;
-    });
+    for (i = 0, count = photoGroup.photos.length; i < count; i++) {
+      photoGroup.photos[i][targetSize].image = null;
+    }
+  }
+
+
+  /**
+   * Cancels any current image downloads. Any index given in the exceptions array will be ignored.
+   * @function photoGroup#cancelImageDownloads
+   * @param {Array.<Number>} [exceptions] Indices of photo items to NOT stop downloading.
+   */
+  function cancelImageDownloads(exceptions) {
+    var photoGroup, i, count;
+    photoGroup = this;
+
+    for (i = 0, count = photoGroup.photos.length; i < count; i++) {
+      if (exceptions && exceptions.indexOf(i) < 0) {
+        photoGroup.photos[i].cancelImageDownload();
+      }
+    }
   }
 
   // ------------------------------------------------------------------------------------------- //
@@ -159,6 +177,7 @@
     photoGroup.loadImages = loadImages;
     photoGroup.addPhotoItemTapEventListeners = addPhotoItemTapEventListeners;
     photoGroup.clearImages = clearImages;
+    photoGroup.cancelImageDownloads = cancelImageDownloads;
   }
 
   // Expose this module

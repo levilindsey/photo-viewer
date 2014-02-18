@@ -107,6 +107,22 @@
     return util.getPageOffset(photo[targetSize].image);
   }
 
+  /**
+   *
+   * @function photoLightbox#cancelImageDownload
+   */
+  function cancelImageDownload() {
+    var photoItem = this;
+    if (photoItem.full.xhr) {
+      util.abortXHR(photoItem.full.xhr);
+      photoItem.full.xhr = null;
+    }
+    if (photoItem.small.xhr) {
+      util.abortXHR(photoItem.small.xhr);
+      photoItem.small.xhr = null;
+    }
+  }
+
   // ------------------------------------------------------------------------------------------- //
   // Public static functions
 
@@ -207,6 +223,7 @@
     photoItem.loadImage = loadImage;
     photoItem.addTapEventListener = addTapEventListener;
     photoItem.getPageOffset = getPageOffset;
+    photoItem.cancelImageDownload = cancelImageDownload;
   }
 
   // Expose this module
