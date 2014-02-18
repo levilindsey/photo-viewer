@@ -562,9 +562,7 @@
     try {
       xhr.open('GET', url);
     } catch (e) {
-      if (onError) {
-        onError('Unable to open the request');
-      }
+      onError('Unable to open the request');
     }
 
     // Prepare to handle the response
@@ -573,7 +571,7 @@
         if (xhr.status === 200) {
           onSuccess(xhr.responseText);
         } else {
-          if (!xhr.aborted && onError) {
+          if (!xhr.aborted) {
             onError('Server responded with code ' + xhr.status + ' and message ' +
                 xhr.responseText);
           }
@@ -602,7 +600,7 @@
    * @returns {Object} The XHR object used to send the request.
    */
   function loadImageViaXHR(src, imageElement, onSuccess, onError, onProgress) {
-    var xhr, encodedImage;
+    var xhr;
 
     onError = onError || function (msg) {
     };
@@ -611,13 +609,9 @@
 
     // Prepare to handle the response
 
-    util.listen(xhr, 'loadstart', function () {
-      log.v('loadstart');
-    });
-
     util.listen(xhr, 'progress', function (event) {
       if (event.lengthComputable) {
-        log.v('loadImageViaXHR.OnProgress', event.loaded + '/' + event.total);
+        //log.v('loadImageViaXHR.OnProgress', event.loaded + '/' + event.total);
         onProgress(event.loaded / event.total);
       } else {
         log.w('loadImageViaXHR.OnProgress', 'Length is not computable');
@@ -625,7 +619,7 @@
     });
 
     util.listen(xhr, 'load', function () {
-      log.v('load');
+      //log.v('load');
       var imageObjectURL;
 
       // Encode and add the image to the DOM
@@ -637,39 +631,32 @@
     });
 
     util.listen(xhr, 'loadend', function () {
-      log.v('loadend');
+      //log.v('loadend');
       onSuccess();
     });
 
     util.listen(xhr, 'abort', function () {
-      log.v('abort');
-      if (!xhr.aborted && onError) {
+      //log.v('abort');
+      if (!xhr.aborted) {
         onError('Abort');
       }
     });
 
     util.listen(xhr, 'error', function () {
-      log.v('error');
-      if (onError) {
-        onError('Error');
-      }
+      //log.v('error');
+      onError('Error');
     });
 
     util.listen(xhr, 'timeout', function () {
-      log.v('timeout');
-      if (onError) {
-        onError('Timeout');
-      }
+      //log.v('timeout');
+      onError('Timeout');
     });
 
-    setTimeout(function() {
     // Initialize the request
     try {
       xhr.open('GET', src, true);
     } catch (e) {
-      if (onError) {
-        onError('Unable to open the request');
-      }
+      onError('Unable to open the request');
     }
 
     //xhr.overrideMimeType('text/plain; charset=x-user-defined');
@@ -681,7 +668,6 @@
     } catch (e) {
       onError('Unable to send the request');
     }
-    }, 1);
 
     return xhr;
   }

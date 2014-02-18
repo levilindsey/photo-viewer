@@ -238,9 +238,8 @@
   function openPercentDisplay() {
     var progressCircle = this;
 
-    if (progressCircle.showPercent) {
-      progressCircle.elements.percentDisplay.innerHTML = '0%';
-
+    if (!progressCircle.percentIsShown && progressCircle.showPercent) {
+      progressCircle.percentIsShown = true;
       setElementVisibility(progressCircle.elements.percentDisplay, true, false, null);
     }
   }
@@ -251,6 +250,7 @@
   function closePercentDisplay() {
     var progressCircle = this;
 
+    progressCircle.percentIsShown = false;
     setElementVisibility(progressCircle.elements.percentDisplay, false, false, null);
   }
 
@@ -319,8 +319,6 @@
               progressCircle.left, progressCircle.top, progressCircle.diameter,
               progressCircle.dotRadius);
     }
-
-    openPercentDisplay.call(progressCircle);
   }
 
   /**
@@ -376,6 +374,8 @@
     text = parseInt(progress * 100) + '%';
 
     progressCircle.elements.percentDisplay.innerHTML = text;
+
+    openPercentDisplay.call(progressCircle);
   }
 
   // ------------------------------------------------------------------------------------------- //
@@ -450,6 +450,7 @@
     progressCircle.diameter = diameter;
     progressCircle.dotRadius = dotRadius;
     progressCircle.dots = null;
+    progressCircle.percentIsShown = false;
     progressCircle.open = open;
     progressCircle.close = close;
     progressCircle.updateProgress = updateProgress;
