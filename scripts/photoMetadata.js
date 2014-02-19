@@ -78,6 +78,26 @@
         thumb.w, thumb.h, Number.NaN, Number.NaN);
   }
 
+  /**
+   * @function photoMetadata~monitorDownloadSuccess
+   * @param {String} url The location of the photo metadata.
+   * @param {Function} onSuccess This function is called if the JSON data was successfully parsed.
+   * @param {Function} onError This function is called if there was an error parsing the JSON data.
+   */
+  function monitorDownloadSuccess(url, onSuccess, onError) {
+    setTimeout(function() {
+      if (!photoMetadata.downloadSuccessful) {
+        if (photoMetadata.downloadAttemptCount < params.PHOTO_METADATA.MAX_DOWNLOAD_ATTEMPT_COUNT) {
+          log.w('monitorDownloadSuccess', 'Download timeout. Re-trying download.');
+          util.abortXHR(photoMetadata.xhr);
+          downloadAndParsePhotoMetadata(url, onSuccess, onError);
+        } else {
+          onError('Reached max download attempt count');
+        }
+      }
+    }, params.PHOTO_METADATA.RETRY_TIMEOUT_DELAY);
+  }
+
   // ------------------------------------------------------------------------------------------- //
   // Public static functions
 
@@ -102,10 +122,17 @@
    * @param {Function} onError This function is called if there was an error parsing the JSON data.
    */
   function downloadAndParsePhotoMetadata(url, onSuccess, onError) {
-    util.sendRequest(url, function (responseText) {
+    photoMetadata.downloadSuccessful = false;
+    photoMetadata.downloadAttemptCount++;
+
+    photoMetadata.xhr = util.sendRequest(url, function (responseText) {
       log.i('downloadAndParsePhotoMetadata', 'Metadata successfully downloaded');
+      photoMetadata.downloadSuccessful = true;
+      photoMetadata.xhr = null;
       parsePhotoMetadata(responseText, onSuccess, onError);
     }, onError);
+
+    monitorDownloadSuccess(url, onSuccess, onError);
   }
 
   // ------------------------------------------------------------------------------------------- //
@@ -116,6 +143,9 @@
    * @global
    */
   photoMetadata = {
+    xhr: null,
+    downloadSuccessful: false,
+    downloadAttemptCount: 0,
     init: init,
     downloadAndParsePhotoMetadata: downloadAndParsePhotoMetadata
   };

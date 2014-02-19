@@ -7,6 +7,8 @@
 
   params = {};
 
+  params.BASE_DIR = '/..';
+
   // --- General app parameters --- //
 
   moduleParams = {};
@@ -23,6 +25,8 @@
   params.PHOTO_METADATA = moduleParams;
 
   moduleParams.URL = 'http://ukulelefury.com/weddingphotos/metadata.json';
+  moduleParams.RETRY_TIMEOUT_DELAY = 4000;
+  moduleParams.MAX_DOWNLOAD_ATTEMPT_COUNT = 3;
 
   // --- Photo lightbox parameters --- //
 
@@ -149,7 +153,7 @@
   moduleParams = {};
   params.SPRITES = moduleParams;
 
-  moduleParams.SRC = '../images/spritesheet.png';
+  moduleParams.SRC = params.BASE_DIR + '/images/spritesheet.png';
 
   // --- Localization parameters --- //
 
@@ -162,12 +166,13 @@
 
   moduleParams.BAD_BROWSER_MESSAGE =
       ':( Sorry, but some of the fancy features of this app may not work on your browser. You should really upgrade to a newer version.';
-  moduleParams.METADATA_ERROR_MESSAGE = ':( Unable to download or parse the metadata for the images.';
+  moduleParams.METADATA_ERROR_MESSAGE =
+      ':( Unable to download or parse the metadata for the images. Please check your Internet connection and try again.';
 
   // --- Miscellaneous parameters --- //
 
-  params.SPRITE_SHEET_URL = '../images/spritesheet.png';
-  params.TRANSPARENT_GIF_URL = '../images/transparent.gif';
+  params.SPRITE_SHEET_URL = params.BASE_DIR + '/images/spritesheet.png';
+  params.TRANSPARENT_GIF_URL = params.BASE_DIR + '/images/transparent.gif';
   params.ADD_CSS_TRANSITION_DELAY = 80;
   params.SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
   params.TWO_PI = Math.PI * 2;

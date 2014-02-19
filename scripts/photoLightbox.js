@@ -382,113 +382,116 @@
     photoLightbox = this;
     stillOnSameImage = false;
 
-    // Don't do anything if the lightbox has been closed
-    if (photoLightbox.isOpen) {
-      // Do NOT display this image if the viewer has already skipped past it
-      if (photoItem !== photoLightbox.photoGroup.photos[photoLightbox.currentIndex]) {
-        log.w('onPhotoImageLoadSuccess', 'Not displaying photo, because it is no longer current');
-      } else {
-        // Check which image just loaded
-        if (isMainImage) {
-          // We only want to display the main image version that is appropriate for the current
-          // fullscreen mode
-          if (!photoLightbox.inFullscreenMode || targetSize === 'full') {
-            stillOnSameImage = true;
-          } else {
-            // Do NOT display this image if the viewer has toggled fullscreens
-            log.w('onPhotoImageLoadSuccess',
-                'Not displaying photo, because viewer toggled fullscreen while it was loading: isMainImage=' +
-                    isMainImage + ', inFullscreenMode=' + photoLightbox.inFullscreenMode +
-                    ', targetSize=' + targetSize);
-          }
+    // Just a quick sanity check
+    if (photoItem[targetSize].image) {
+      // Don't do anything if the lightbox has been closed
+      if (photoLightbox.isOpen) {
+        // Do NOT display this image if the viewer has already skipped past it
+        if (photoItem !== photoLightbox.photoGroup.photos[photoLightbox.currentIndex]) {
+          log.w('onPhotoImageLoadSuccess', 'Not displaying photo, because it is no longer current');
         } else {
-          // Display whatever image is first available for the temporary, small, background image
-          stillOnSameImage = true;
-        }
-      }
-
-      if (stillOnSameImage) {
-        // Check whether we are displaying the main image or the small image
-        if (isMainImage) {
-          // Don't switch the images around while the lightbox is closing
-          if (!photoLightbox.closing) {
-            // Assign the freshly loaded photo item image as the lightbox's main image
-            photoLightbox.elements.newMainImage = photoItem[targetSize].image;
-
-            // Remove any pre-existing classes from the new image
-            util.clearClasses(photoLightbox.elements.newMainImage);
-
-            if (photoLightbox.opening) {
-              // Set the initial dimensions of the new image to match that of the lightbox, so that we
-              // can slide the image dimensions with the lightbox dimensions
-              photoLightbox.elements.newMainImage.style.width =
-                  util.getMidTransitionValue(photoLightbox.elements.lightbox, 'width');
-              photoLightbox.elements.newMainImage.style.height =
-                  util.getMidTransitionValue(photoLightbox.elements.lightbox, 'height');
-
-              photoLightbox.opening = false;
+          // Check which image just loaded
+          if (isMainImage) {
+            // We only want to display the main image version that is appropriate for the current
+            // fullscreen mode
+            if (!photoLightbox.inFullscreenMode || targetSize === 'full') {
+              stillOnSameImage = true;
             } else {
-              resizeMainImage(photoLightbox.elements.newMainImage, photoItem.small.width,
-                  photoItem.small.height, photoLightbox.inFullscreenMode, photoLightbox);
+              // Do NOT display this image if the viewer has toggled fullscreens
+              log.w('onPhotoImageLoadSuccess',
+                  'Not displaying photo, because viewer toggled fullscreen while it was loading: isMainImage=' +
+                      isMainImage + ', inFullscreenMode=' + photoLightbox.inFullscreenMode +
+                      ', targetSize=' + targetSize);
             }
+          } else {
+            // Display whatever image is first available for the temporary, small, background image
+            stillOnSameImage = true;
+          }
+        }
 
-            // Start the new image as hidden, so we can fade it in
-            setElementVisibility(photoLightbox.elements.newMainImage, false, false);
+        if (stillOnSameImage) {
+          // Check whether we are displaying the main image or the small image
+          if (isMainImage) {
+            // Don't switch the images around while the lightbox is closing
+            if (!photoLightbox.closing) {
+              // Assign the freshly loaded photo item image as the lightbox's main image
+              photoLightbox.elements.newMainImage = photoItem[targetSize].image;
 
-            // Start listening for the end of any transition that will run for the new main image
-            util.listenForTransitionEnd(photoLightbox.elements.newMainImage,
-                photoLightbox.newImageTransitionEndEventListener);
+              // Remove any pre-existing classes from the new image
+              util.clearClasses(photoLightbox.elements.newMainImage);
 
-            util.removeChildrenWithClass(photoLightbox.elements.lightbox, 'newMainImage');
+              if (photoLightbox.opening) {
+                // Set the initial dimensions of the new image to match that of the lightbox, so that we
+                // can slide the image dimensions with the lightbox dimensions
+                photoLightbox.elements.newMainImage.style.width =
+                    util.getMidTransitionValue(photoLightbox.elements.lightbox, 'width');
+                photoLightbox.elements.newMainImage.style.height =
+                    util.getMidTransitionValue(photoLightbox.elements.lightbox, 'height');
 
-            // Add the new main image to the DOM
-            photoLightbox.elements.lightbox.appendChild(photoLightbox.elements.newMainImage);
+                photoLightbox.opening = false;
+              } else {
+                resizeMainImage(photoLightbox.elements.newMainImage, photoItem.small.width,
+                    photoItem.small.height, photoLightbox.inFullscreenMode, photoLightbox);
+              }
 
-            // Set up the class and transitions for the new image
-            switchImageClassToOldOrNew(photoLightbox.elements.newMainImage, true, true);
+              // Start the new image as hidden, so we can fade it in
+              setElementVisibility(photoLightbox.elements.newMainImage, false, false);
 
-            // Hide the small image
+              // Start listening for the end of any transition that will run for the new main image
+              util.listenForTransitionEnd(photoLightbox.elements.newMainImage,
+                  photoLightbox.newImageTransitionEndEventListener);
+
+              util.removeChildrenWithClass(photoLightbox.elements.lightbox, 'newMainImage');
+
+              // Add the new main image to the DOM
+              photoLightbox.elements.lightbox.appendChild(photoLightbox.elements.newMainImage);
+
+              // Set up the class and transitions for the new image
+              switchImageClassToOldOrNew(photoLightbox.elements.newMainImage, true, true);
+
+              // Hide the small image
+              setElementVisibility(photoLightbox.elements.newSmallImage, false, false);
+
+              // Display this new image; there needs to be a slight delay after adding the element to
+              // the DOM, and before adding its CSS transitions; otherwise, the transitions will not
+              // work properly
+              setElementVisibility(photoLightbox.elements.newMainImage, true, true, function () {
+                // Set up the dimensions of the new image
+                resizeMainImage(photoLightbox.elements.newMainImage, photoItem.small.width,
+                    photoItem.small.height, photoLightbox.inFullscreenMode, photoLightbox);
+              });
+
+              // Start caching the neighboring images
+              previousIndex = getPreviousPhotoItemIndex(photoLightbox);
+              nextIndex = getNextPhotoItemIndex(photoLightbox);
+              cacheNeighborImage(photoLightbox, targetSize,
+                  photoLightbox.photoGroup.photos[previousIndex]);
+              cacheNeighborImage(photoLightbox, targetSize, photoLightbox.photoGroup.photos[nextIndex]);
+
+              // Hide the progress circle
+              photoLightbox.progressCircle.close();
+            }
+          } else {
+            // Assign the freshly loaded photo item image as the lightbox's small image
+            photoLightbox.elements.newSmallImage = photoItem[targetSize].image;
+
             setElementVisibility(photoLightbox.elements.newSmallImage, false, false);
 
-            // Display this new image; there needs to be a slight delay after adding the element to
-            // the DOM, and before adding its CSS transitions; otherwise, the transitions will not
-            // work properly
-            setElementVisibility(photoLightbox.elements.newMainImage, true, true, function () {
-              // Set up the dimensions of the new image
-              resizeMainImage(photoLightbox.elements.newMainImage, photoItem.small.width,
-                  photoItem.small.height, photoLightbox.inFullscreenMode, photoLightbox);
-            });
+            util.removeChildrenWithClass(photoLightbox.elements.lightbox, 'newSmallImage');
 
-            // Start caching the neighboring images
-            previousIndex = getPreviousPhotoItemIndex(photoLightbox);
-            nextIndex = getNextPhotoItemIndex(photoLightbox);
-            cacheNeighborImage(photoLightbox, targetSize,
-                photoLightbox.photoGroup.photos[previousIndex]);
-            cacheNeighborImage(photoLightbox, targetSize, photoLightbox.photoGroup.photos[nextIndex]);
+            // Add the new small image to the DOM
+            photoLightbox.elements.lightbox.appendChild(photoLightbox.elements.newSmallImage);
 
-            // Hide the progress circle
-            photoLightbox.progressCircle.close();
-          }
-        } else {
-          // Assign the freshly loaded photo item image as the lightbox's small image
-          photoLightbox.elements.newSmallImage = photoItem[targetSize].image;
+            // Set up the class and transitions for the new image
+            switchImageClassToOldOrNew(photoLightbox.elements.newSmallImage, false, true);
 
-          setElementVisibility(photoLightbox.elements.newSmallImage, false, false);
-
-          util.removeChildrenWithClass(photoLightbox.elements.lightbox, 'newSmallImage');
-
-          // Add the new small image to the DOM
-          photoLightbox.elements.lightbox.appendChild(photoLightbox.elements.newSmallImage);
-
-          // Set up the class and transitions for the new image
-          switchImageClassToOldOrNew(photoLightbox.elements.newSmallImage, false, true);
-
-          // Display this new image, but only if the main image has not already loaded
-          if (!photoItem.full.isCached &&
-              (!photoItem.small.isCached || photoLightbox.inFullscreenMode)) {
-            // There needs to be a slight delay after adding the element to the DOM, and before
-            // adding its CSS transitions; otherwise, the transitions will not work properly
-            setElementVisibility(photoLightbox.elements.newSmallImage, true, true, null);
+            // Display this new image, but only if the main image has not already loaded
+            if (!photoItem.full.isCached &&
+                (!photoItem.small.isCached || photoLightbox.inFullscreenMode)) {
+              // There needs to be a slight delay after adding the element to the DOM, and before
+              // adding its CSS transitions; otherwise, the transitions will not work properly
+              setElementVisibility(photoLightbox.elements.newSmallImage, true, true, null);
+            }
           }
         }
       }
