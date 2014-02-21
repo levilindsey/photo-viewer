@@ -25,7 +25,7 @@
   params.PHOTO_METADATA = moduleParams;
 
   moduleParams.URL = 'http://ukulelefury.com/weddingphotos/metadata.json';
-  moduleParams.RETRY_TIMEOUT_DELAY = 4000;
+ moduleParams.RETRY_TIMEOUT_DELAY = 5000;
   moduleParams.MAX_DOWNLOAD_ATTEMPT_COUNT = 3;
 
   // --- Photo lightbox parameters --- //
@@ -92,13 +92,13 @@
     p1x: .5,
     p1y: 0,
     p2x: .75,
-    p2y: 1.15
+    p2y: 1.45
   };
   moduleParams.TOP_ROW_BEZIER_PTS = {
     p1x: 1,
     p1y: 0,
     p2x: .75,
-    p2y: 1.85
+    p2y: 1.95
   };
 
   moduleParams.BOTTOM_ROW_DURATION_RATIO = 1;
