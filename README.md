@@ -2,7 +2,7 @@
 
 #### A photo-viewer web app.
 
-_See the app running at [www.jackieandlevi.com/wedding/photos](http://www.jackieandlevi.com/wedding/photos)!_
+_See the app running at [levi.dev/wedding/photos](https://levi.dev/wedding/photos)!_
 
 This fancy web app is loaded with bells and whistles. A smattering of them includes:
 
